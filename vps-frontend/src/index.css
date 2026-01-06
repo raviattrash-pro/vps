@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap');
+
+:root {
+    /* Core Colors - Modern Teal/Green Theme */
+    --primary: #0f4c3a;
+    /* Deep Green */
+    --primary-light: #2d6a4f;
+    /* Standard Green */
+    --accent: #52dd69;
+    /* Bright Green */
+    --accent-glow: rgba(82, 221, 105, 0.4);
+
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+
+    --text-main: #1b4332;
+    --text-muted: #5e796e;
+
+    --bg-gradient: linear-gradient(135deg, #e0f7fa 0%, #d8f3dc 100%);
+
+    --radius: 20px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Dark Mode Support (Future proofing, or if user prefers dark glass) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* --glass-bg: rgba(16, 28, 23, 0.7); */
+        /* --text-main: #e0f7fa; */
+        /* Enable these for dark mode glass later */
+    }
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    /* Remove mobile tap highlight */
+}
+
+body {
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    /* Parallax feel */
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* --- Glass Utilities --- */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: var(--glass-shadow);
+    transition: var(--transition);
+}
+
+.glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+    border-color: #fff;
+}
+
+.glass-input {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 16px;
+    border-radius: 16px;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    color: var(--text-main);
+    transition: var(--transition);
+}
+
+.glass-input:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.1);
+}
+
+.glass-btn {
+    background: var(--primary-light);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(45, 106, 79, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-btn:hover {
+    background: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(45, 106, 79, 0.4);
+}
+
+.glass-btn:active {
+    transform: scale(0.98);
+}
+
+/* --- Responsive Layout --- */
+
+/* Wrapper for the whole app */
+.app-wrapper {
+    display: flex;
+    max-width: 1440px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* Sidebar (Desktop) */
+.desktop-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+    height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1;
+    max-width: 100%;
+    /* Prevent overflow */
+    padding-bottom: 100px;
+    /* Space for mobile nav */
+}
+
+/* Mobile Nav (Hidden on Desktop) */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    height: 70px;
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 10px;
+}
+
+/* --- Media Queries --- */
+
+/* Mobile View (< 768px) */
+@media (max-width: 768px) {
+    .app-wrapper {
+        display: block;
+        /* Stack layout */
+        padding: 10px;
+    }
+
+    .desktop-sidebar {
+        display: none;
+        /* Hide sidebar */
+    }
+
+    .mobile-nav {
+        display: flex;
+        /* Show bottom nav */
+    }
+
+    .glass-card {
+        padding: 15px;
+        /* Smaller padding */
+        border-radius: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    h3 {
+        font-size: 18px;
+    }
+}
+
+/* Helper for "Desktop Only" elements */
+.hide-on-mobile {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+}
+
+/* Helper for "Mobile Only" elements */
+.hide-on-desktop {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .hide-on-desktop {
+        display: block !important;
+    }
+}
+
+/* --- Mobile Fixes & Responsive Enforcements --- */
+
+/* Quick Actions Grid */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+/* Dashboard Padding */
+.dashboard {
+    padding: 30px;
+}
+
+@media (max-width: 768px) {
+
+    /* Adjust Quick Actions for Mobile */
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr) !important;
+        /* Force 2 columns */
+        gap: 15px !important;
+        margin-bottom: 30px !important;
+    }
+
+    /* Adjust Dashboard Padding */
+    .dashboard {
+        padding: 20px 15px !important;
+    }
+
+    /* Improve Mobile Nav positioning */
+    .mobile-nav {
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        /* Rounded top only */
+        background: rgba(255, 255, 255, 0.85) !important;
+        /* Less transparent */
+        backdrop-filter: blur(15px) !important;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1) !important;
+        padding-bottom: 10px;
+        /* Safe area for swipe bar */
+        height: 80px !important;
+    }
+
+    /* Main content should have padding bottom to avoid overlap with nav */
+    .main-content {
+        padding-bottom: 100px !important;
+    }
+}
