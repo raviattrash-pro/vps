@@ -32,7 +32,10 @@ const ActiveUsers = () => {
 
     const getStatus = (lastLogin) => {
         if (!lastLogin) return 'Offline';
-        const loginTime = new Date(lastLogin).getTime();
+        // Assume server sends UTC time without Z (e.g., "2026-01-08T10:00:00")
+        // Appending 'Z' tells JS Date constructor this is UTC.
+        const timeString = lastLogin.endsWith('Z') ? lastLogin : lastLogin + 'Z';
+        const loginTime = new Date(timeString).getTime();
         const now = new Date().getTime();
         const diffMinutes = (now - loginTime) / (1000 * 60);
 

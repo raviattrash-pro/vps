@@ -41,12 +41,19 @@ const MarkSheet = () => {
             setStudents(data);
 
             if (user.role === 'TEACHER' && user.className) {
-                // Lock to assigned class
+                // Lock to assigned class & section
                 const assignedClass = user.className;
+                const assignedSection = user.section;
+
                 setClasses([assignedClass]);
                 setSelectedClass(assignedClass);
-                // Filter students immediately for this class
-                setFilteredStudents(data.filter(s => s.className === assignedClass));
+
+                // Filter students immediately for this class AND section
+                if (assignedSection) {
+                    setFilteredStudents(data.filter(s => s.className === assignedClass && s.section === assignedSection));
+                } else {
+                    setFilteredStudents(data.filter(s => s.className === assignedClass));
+                }
             } else {
                 const uniqueClasses = [...new Set(data.map(s => s.className))].sort();
                 setClasses(uniqueClasses);
