@@ -18,8 +18,8 @@ public class Marksheet {
     @JoinColumn(name = "student_id")
     private Student student;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "marksheet_subjects", joinColumns = @JoinColumn(name = "marksheet_id"))
+    @Convert(converter = SubjectMarkListConverter.class)
+    @Column(columnDefinition = "TEXT") // Store as JSON string
     private List<SubjectMark> subjects = new ArrayList<>();
 
     private Double totalObtained;

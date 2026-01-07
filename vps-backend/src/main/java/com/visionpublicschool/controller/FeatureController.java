@@ -367,31 +367,13 @@ public class FeatureController {
     @GetMapping("/marksheets")
     public List<Marksheet> getMarksheets(@RequestParam(required = false) Long studentId) {
         if (studentId != null) {
-            return marksheetRepository.findByStudentId(studentId);
-        }
         return marksheetRepository.findAll();
     }
-
-    @Autowired
-    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @PostMapping("/marksheets")
     public ResponseEntity<?> createMarksheet(@RequestBody Marksheet marksheet) {
         System.out.println("Received Marksheet Creation Request");
         try {
-            // Force create table if it's missing (Runtime fix for missing DDL)
-            try {
-                String checkTableSql = "CREATE TABLE IF NOT EXISTS marksheet_subjects (" +
-                        "marksheet_id BIGINT NOT NULL, " +
-                        "marks_obtained DOUBLE, " +
-                        "max_marks DOUBLE, " +
-                        "subject_name VARCHAR(255))";
-                jdbcTemplate.execute(checkTableSql);
-                System.out.println("Verified/Created marksheet_subjects table.");
-            } catch (Exception e) {
-                System.err.println("Runtime Table Creation failed: " + e.getMessage());
-            }
-
             if (marksheet.getStudent() == null || marksheet.getStudent().getId() == null) {
                 return ResponseEntity.badRequest().body("Student ID is required");
             }
