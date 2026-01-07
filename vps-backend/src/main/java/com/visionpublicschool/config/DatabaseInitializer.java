@@ -16,23 +16,37 @@ public class DatabaseInitializer implements CommandLineRunner {
         System.out.println("Running Database Initializer...");
 
         try {
-            // Fix for missing marksheet_subjects table
-            String sql = "CREATE TABLE IF NOT EXISTS marksheet_subjects (" +
+            // 1. Create table WITHOUT Foreign Key first to ensure it exists
+            String createTableSql = "CREATE TABLE IF NOT EXISTS marksheet_subjects (" +
                     "marksheet_id BIGINT NOT NULL, " +
                     "marks_obtained DOUBLE, " +
                     "max_marks DOUBLE, " +
-                    "subject_name VARCHAR(255), " +
-                    "FOREIGN KEY (marksheet_id) REFERENCES marksheet(id))";
+                    "subject_name VARCHAR(255))";
 
-            jdbcTemplate.execute(sql);
-            System.out.println("Ensured table 'marksheet_subjects' exists.");
+            jdbcTemplate.execute(createTableSql);
+            System.out.println("✅ Table 'marksheet_subjects' check/creation completed.");
+
+            // 2. Attempt to add Foreign Key constraint (Safely)
+            try {
+                // Check if constraint exists or just try to add it.
+                // MySQL doesn't support "IF NOT EXISTS" for constraints easily in one line
+                // without procedures.
+                // We will catch the exception if it fails (e.g., duplicate constraint).
+                String addFkSql = "ALTER TABLE marksheet_subjects " +
+                        "ADD CONSTRAINT fk_marksheet_subjects_marksheet " +
+                        "FOREIGN KEY (marksheet_id) REFERENCES marksheet(id)";
+                jdbcTemplate.execute(addFkSql);
+                System.out.println("✅ Foreign Key 'fk_marksheet_subjects_marksheet' added.");
+            } catch (Exception fkEx) {
+                // Ignore if it fails (likely already exists or parent table issue).
+                // The crucial part is the table existence for inserts to work.
+                System.out
+                        .println("⚠️ Foreign Key addition skipped/failed (might already exist): " + fkEx.getMessage());
+            }
 
         } catch (Exception e) {
-            System.err.println("Database Initializer Error: " + e.getMessage());
-            // If table 'marksheet' is capitalized by hibernate, try referencing
-            // 'Marksheet'?
-            // Usually Spring uses lowercase. We will just log error if it fails (e.g. if
-            // parent table missing).
+            System.err.println("❌ Database Initializer Critical Failure: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
