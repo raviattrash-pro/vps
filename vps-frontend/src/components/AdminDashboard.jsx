@@ -180,24 +180,29 @@ const AdminDashboard = () => {
                             <select className="glass-input" value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })}>
                                 <option value="STUDENT">Student</option>
                                 <option value="TEACHER">Teacher</option>
+                                <option value="ACCOUNTANT">Accountant</option>
                                 <option value="ADMIN">Admin</option>
                             </select>
                         </div>
 
-                        {newUser.role === 'STUDENT' && (
+                        {(newUser.role === 'STUDENT' || newUser.role === 'TEACHER') && (
                             <>
                                 <div>
-                                    <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: 'var(--text-muted)' }}>Class</label>
+                                    <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: 'var(--text-muted)' }}>
+                                        {newUser.role === 'TEACHER' ? 'Assigned Class (For Attendance)' : 'Class'}
+                                    </label>
                                     <input className="glass-input" placeholder="10" value={newUser.className} onChange={e => setNewUser({ ...newUser, className: e.target.value })} />
                                 </div>
-                                <div>
+                                <div style={{ display: newUser.role === 'TEACHER' ? 'none' : 'block' }}>
                                     <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: 'var(--text-muted)' }}>Section</label>
                                     <input className="glass-input" placeholder="A" value={newUser.section} onChange={e => setNewUser({ ...newUser, section: e.target.value })} />
                                 </div>
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: 'var(--text-muted)' }}>Roll Number</label>
-                                    <input className="glass-input" placeholder="Auto" value={newUser.rollNo || ''} onChange={e => setNewUser({ ...newUser, rollNo: e.target.value })} />
-                                </div>
+                                {newUser.role === 'STUDENT' && (
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: 'var(--text-muted)' }}>Roll Number</label>
+                                        <input className="glass-input" placeholder="Auto" value={newUser.rollNo || ''} onChange={e => setNewUser({ ...newUser, rollNo: e.target.value })} />
+                                    </div>
+                                )}
                             </>
                         )}
 
@@ -282,6 +287,9 @@ const AdminDashboard = () => {
                                             <div><strong>Class:</strong> {u.className} {u.section ? `(${u.section})` : ''}</div>
                                             {u.rollNo && <div><strong>Roll:</strong> {u.rollNo}</div>}
                                         </>
+                                    )}
+                                    {u.role === 'TEACHER' && u.className && (
+                                        <div><strong>Class Teacher of:</strong> Class {u.className}</div>
                                     )}
                                 </div>
 

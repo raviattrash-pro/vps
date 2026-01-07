@@ -84,9 +84,12 @@ public class AdminController {
             existingStudent.setPassword(updatedData.getPassword());
         }
 
-        if ("STUDENT".equals(updatedData.getRole())) {
+        if ("STUDENT".equals(updatedData.getRole()) || "TEACHER".equals(updatedData.getRole())) {
             existingStudent.setClassName(updatedData.getClassName());
             existingStudent.setSection(updatedData.getSection());
+        }
+
+        if ("STUDENT".equals(updatedData.getRole())) {
             existingStudent.setRollNo(updatedData.getRollNo());
         }
 
