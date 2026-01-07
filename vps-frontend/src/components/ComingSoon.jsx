@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
+import { API_BASE_URL } from '../config';
 
 const ComingSoon = () => {
     const { user } = useAuth();
@@ -10,7 +11,7 @@ const ComingSoon = () => {
 
     useEffect(() => {
         if (isAdmin) {
-            fetch('http://localhost:8080/api/feedback')
+            fetch(`${API_BASE_URL}/api/feedback`)
                 .then(res => res.json())
                 .then(data => setFeedbacks(data.reverse()))
                 .catch(err => console.error(err));
@@ -26,7 +27,7 @@ const ComingSoon = () => {
                 userName: user.name,
                 userRole: user.role
             };
-            const res = await fetch('http://localhost:8080/api/feedback', {
+            const res = await fetch(`${API_BASE_URL}/api/feedback`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(feedback)
