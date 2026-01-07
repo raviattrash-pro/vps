@@ -367,6 +367,8 @@ public class FeatureController {
     @GetMapping("/marksheets")
     public List<Marksheet> getMarksheets(@RequestParam(required = false) Long studentId) {
         if (studentId != null) {
+            return marksheetRepository.findByStudentId(studentId);
+        }
         return marksheetRepository.findAll();
     }
 
