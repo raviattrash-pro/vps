@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
-import { FaUserPlus, FaTrash, FaArrowLeft, FaEdit, FaSearch, FaChalkboardTeacher, FaUserGraduate, FaUserShield, FaCamera, FaTimes } from 'react-icons/fa';
+import { FaUserPlus, FaTrash, FaArrowLeft, FaEdit, FaSearch, FaChalkboardTeacher, FaUserGraduate, FaUserShield, FaCamera, FaTimes, FaUserCircle } from 'react-icons/fa';
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -140,6 +140,13 @@ const AdminDashboard = () => {
                         </p>
                     </div>
                 </div>
+                <button
+                    className="glass-btn"
+                    onClick={() => navigate('/admin/active-users')}
+                    style={{ background: 'var(--accent)', color: 'var(--primary)', fontWeight: '600', marginRight: '10px' }}
+                >
+                    <FaUserCircle /> Active Users
+                </button>
                 <button
                     className="glass-btn"
                     onClick={() => setShowForm(!showForm)}

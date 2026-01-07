@@ -27,6 +27,8 @@ public class AuthController {
         if (!student.getPassword().equals(password)) {
             throw new RuntimeException("Invalid credentials");
         }
-        return student;
+
+        student.setLastLogin(java.time.LocalDateTime.now());
+        return studentRepository.save(student);
     }
 }

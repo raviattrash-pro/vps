@@ -39,8 +39,18 @@ const MarkSheet = () => {
             const res = await fetch(`${API_BASE_URL}/api/students`);
             const data = await res.json();
             setStudents(data);
-            const uniqueClasses = [...new Set(data.map(s => s.className))].sort();
-            setClasses(uniqueClasses);
+
+            if (user.role === 'TEACHER' && user.className) {
+                // Lock to assigned class
+                const assignedClass = user.className;
+                setClasses([assignedClass]);
+                setSelectedClass(assignedClass);
+                // Filter students immediately for this class
+                setFilteredStudents(data.filter(s => s.className === assignedClass));
+            } else {
+                const uniqueClasses = [...new Set(data.map(s => s.className))].sort();
+                setClasses(uniqueClasses);
+            }
         } catch (e) { console.error(e); }
     };
 
@@ -201,7 +211,7 @@ const MarkSheet = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                     <div onClick={() => {
                         if (selectedStudent && isAdminOrTeacher) setSelectedStudent(null);
-                        else if (selectedClass && isAdminOrTeacher) setSelectedClass('');
+                        else if (selectedClass && isAdminOrTeacher && user.role !== 'TEACHER') setSelectedClass('');
                         else navigate('/');
                     }} style={{ background: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                         <FaArrowLeft color="var(--primary)" />

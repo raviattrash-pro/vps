@@ -23,10 +23,10 @@ const Reports = () => {
     const [showFeeModal, setShowFeeModal] = useState(false);
     const [editingFee, setEditingFee] = useState({ className: '', amount: '' });
 
-    const isAdmin = user && user.role === 'ADMIN';
+    const isFinanceAdmin = user && (user.role === 'ADMIN' || user.role === 'ACCOUNTANT');
 
     useEffect(() => {
-        if (isAdmin) {
+        if (isFinanceAdmin) {
             fetchData();
         }
     }, [user]);
@@ -100,7 +100,7 @@ const Reports = () => {
         return sum + (p > 0 ? p : 0);
     }, 0);
 
-    if (!isAdmin) {
+    if (!isFinanceAdmin) {
         return (
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
                 <h3>Access Denied</h3>

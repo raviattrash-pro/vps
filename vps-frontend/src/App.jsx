@@ -14,6 +14,7 @@ import LiveClass from './components/LiveClass';
 import MarkSheet from './components/MarkSheet';
 import Reports from './components/Reports';
 import Payment from './components/Payment';
+import ActiveUsers from './components/ActiveUsers';
 import { useAuth } from './AuthContext';
 
 const PrivateRoute = ({ children }) => {
@@ -83,6 +84,7 @@ function App() {
           <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
           <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
           <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
+          <Route path="/admin/active-users" element={<PrivateRoute><ActiveUsers /></PrivateRoute>} />
           <Route path="/coming-soon" element={<PrivateRoute><ComingSoon /></PrivateRoute>} />
         </Routes>
       </Layout>
