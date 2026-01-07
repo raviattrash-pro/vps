@@ -18,7 +18,7 @@ const Payment = () => {
     const [isEditingUpi, setIsEditingUpi] = useState(false);
     const [tempUpi, setTempUpi] = useState('');
 
-    const isAdmin = user && user.role === 'ADMIN';
+    const isFinanceAdmin = user && (user.role === 'ADMIN' || user.role === 'ACCOUNTANT');
 
     useEffect(() => {
         setQrCode(`${API_BASE_URL}/uploads/school_qr.png`);
@@ -28,7 +28,7 @@ const Payment = () => {
         if (savedUpi) setUpiId(savedUpi);
 
         let url = `${API_BASE_URL}/api/payment`;
-        if (!isAdmin && user) {
+        if (!isFinanceAdmin && user) {
             url += `?studentId=${user.id}`;
         }
 
@@ -36,7 +36,7 @@ const Payment = () => {
             .then(res => res.json())
             .then(data => setPayments(data.reverse()))
             .catch(err => console.error("Error loading payments", err));
-    }, [refresh, isAdmin, user]);
+    }, [refresh, isFinanceAdmin, user]);
 
     const handleQrUpload = async (e) => {
         const file = e.target.files[0];
@@ -130,14 +130,14 @@ const Payment = () => {
                         ) : (
                             <>
                                 <span style={{ fontWeight: 'bold', color: 'var(--primary)', fontSize: '16px', letterSpacing: '0.5px' }}>{upiId}</span>
-                                {isAdmin && (
+                                {isFinanceAdmin && (
                                     <FaEdit onClick={() => { setTempUpi(upiId); setIsEditingUpi(true); }} style={{ cursor: 'pointer', color: 'var(--text-muted)', fontSize: '14px' }} title="Edit UPI ID" />
                                 )}
                             </>
                         )}
                     </div>
 
-                    {isAdmin && (
+                    {isFinanceAdmin && (
                         <div style={{ marginTop: '25px', width: '100%' }}>
                             <label className="glass-btn btn-primary" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', width: '100%' }}>
                                 <FaCloudUploadAlt /> Update QR Image
@@ -151,7 +151,7 @@ const Payment = () => {
                 {/* RIGHT COLUMN: Payment Form (Student) OR Info (Admin) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {/* Make Payment Card */}
-                    {!isAdmin && (
+                    {!isFinanceAdmin && (
                         <div className="glass-card" style={{ padding: '30px', flex: 1 }}>
                             <h3 style={{ marginBottom: '20px', color: 'var(--primary)' }}>Make a Payment</h3>
 
@@ -210,7 +210,7 @@ const Payment = () => {
             {/* PAYMENT HISTORY SECTION */}
             <div style={{ marginTop: '50px', maxWidth: '1000px', margin: '0 auto' }}>
                 <h2 style={{ color: 'var(--primary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <FaHistory /> {isAdmin ? 'Payment Verification Queue' : 'My Payment History'}
+                    <FaHistory /> {isFinanceAdmin ? 'Payment Verification Queue' : 'My Payment History'}
                 </h2>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -256,7 +256,7 @@ const Payment = () => {
                                     </a>
                                 )}
 
-                                {isAdmin && p.status !== 'VERIFIED' && (
+                                {isFinanceAdmin && p.status !== 'VERIFIED' && (
                                     <button
                                         className="glass-btn"
                                         style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '8px 20px' }}

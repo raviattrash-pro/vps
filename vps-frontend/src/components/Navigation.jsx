@@ -5,12 +5,12 @@ import { useAuth } from '../AuthContext';
 
 // Navigation Items Configuration
 const navItems = [
-    { path: '/', label: 'Home', icon: <FaHome /> },
-    { path: '/attendance', label: 'Attendance', icon: <FaCalendarAlt /> },
-    { path: '/marks', label: 'Marks', icon: <FaFileAlt /> },
-    { path: '/live', label: 'Live', icon: <FaVideo /> },
-    { path: '/payment', label: 'Fees', icon: <FaMoneyBillWave /> },
-    // { path: '/admin', label: 'Admin', icon: <FaUserCog />, role: 'ADMIN' }, // Only show if admin
+    { path: '/', label: 'Home', icon: <FaHome />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT', 'ACCOUNTANT'] },
+    { path: '/attendance', label: 'Attendance', icon: <FaCalendarAlt />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
+    { path: '/marks', label: 'Marks', icon: <FaFileAlt />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
+    { path: '/live', label: 'Live', icon: <FaVideo />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
+    { path: '/payment', label: 'Fees', icon: <FaMoneyBillWave />, allowedRoles: ['ADMIN', 'STUDENT', 'ACCOUNTANT'] },
+    // { path: '/admin', label: 'Admin', icon: <FaUserCog />, allowedRoles: ['ADMIN'] }, 
 ];
 
 const NavItem = ({ item, isMobile, onClick }) => (
@@ -53,7 +53,7 @@ export const DesktopSidebar = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexGrow: 1 }}>
-                {navItems.map(item => (
+                {navItems.filter(item => !item.allowedRoles || item.allowedRoles.includes(user?.role)).map(item => (
                     <NavItem key={item.path} item={item} isMobile={false} />
                 ))}
 
@@ -90,7 +90,7 @@ export const MobileBottomNav = () => {
 
     return (
         <div className="mobile-nav glass-card" style={{ borderRadius: '20px 20px 0 0', display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-            {navItems.slice(0, 4).map(item => (
+            {navItems.filter(item => !item.allowedRoles || item.allowedRoles.includes(user?.role)).slice(0, 4).map(item => (
                 <NavItem key={item.path} item={item} isMobile={true} />
             ))}
             {/* Logout Icon for Mobile */}

@@ -44,6 +44,16 @@ const Attendance = () => {
                         }
                     });
                     setUniqueClasses(classes.sort((a, b) => a.className.localeCompare(b.className)));
+
+                    // Auto-select for Class Teacher
+                    if (user.role === 'TEACHER' && user.className) {
+                        // Find matching class/section if possible, or just use user's data
+                        // Assuming teacher is assigned to one class (and section optional or specific)
+                        // If section is null on teacher, maybe select all? 
+                        // For simplicity, let's assume strict match or default 'A' if missing in data but present in UI
+                        // But actually, the state object is just { className, section }
+                        setSelectedClass({ className: user.className, section: user.section || 'A' });
+                    }
                 })
                 .catch(err => console.error("Error fetching students", err));
         }
@@ -155,7 +165,10 @@ const Attendance = () => {
     return (
         <div style={{ padding: '20px 20px 100px 20px' }}>
             <div className="header" style={{ alignItems: 'center', marginBottom: '30px' }}>
-                <div onClick={() => selectedClass ? setSelectedClass(null) : navigate('/')} style={{ background: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                <div onClick={() => {
+                    if (user.role === 'TEACHER') navigate('/'); // Teachers go Home
+                    else selectedClass ? setSelectedClass(null) : navigate('/'); // Admins go back to selection
+                }} style={{ background: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                     <FaArrowLeft color="var(--primary)" />
                 </div>
                 <div style={{ marginLeft: '15px' }}>
