@@ -82,7 +82,7 @@ export const DesktopSidebar = () => {
 };
 
 export const MobileBottomNav = () => {
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
 
     // Mobile grid should include logout or have top-bar logout? 
     // Usually bottom nav has limited space. Let's add it as the last item or separate specific icon.
