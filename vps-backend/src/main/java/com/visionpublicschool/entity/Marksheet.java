@@ -28,8 +28,21 @@ public class Marksheet {
     private String grade;
 
     public void calculateStats() {
-        this.totalObtained = subjects.stream().mapToDouble(SubjectMark::getMarksObtained).sum();
-        this.totalMax = subjects.stream().mapToDouble(SubjectMark::getMaxMarks).sum();
+        if (subjects == null) {
+            this.totalObtained = 0.0;
+            this.totalMax = 0.0;
+            this.percentage = 0.0;
+            this.grade = "F";
+            return;
+        }
+
+        this.totalObtained = subjects.stream()
+                .mapToDouble(s -> s.getMarksObtained() != null ? s.getMarksObtained() : 0.0)
+                .sum();
+
+        this.totalMax = subjects.stream()
+                .mapToDouble(s -> s.getMaxMarks() != null ? s.getMaxMarks() : 0.0)
+                .sum();
         if (totalMax > 0) {
             this.percentage = (totalObtained / totalMax) * 100;
         } else {

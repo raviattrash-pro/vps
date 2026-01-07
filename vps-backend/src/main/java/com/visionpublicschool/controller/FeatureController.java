@@ -373,20 +373,37 @@ public class FeatureController {
     }
 
     @PostMapping("/marksheets")
-    public Marksheet createMarksheet(@RequestBody Marksheet marksheet) {
-        if (marksheet.getStudent() == null || marksheet.getStudent().getId() == null) {
-            throw new RuntimeException("Student ID Requirement");
+    public ResponseEntity<?> createMarksheet(@RequestBody Marksheet marksheet) {
+        System.out.println("Received Marksheet Creation Request");
+        try {
+            if (marksheet.getStudent() == null || marksheet.getStudent().getId() == null) {
+                return ResponseEntity.badRequest().body("Student ID is required");
+            }
+
+            System.out.println("Fetching student ID: " + marksheet.getStudent().getId());
+            Student student = studentRepository.findById(marksheet.getStudent().getId())
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+
+            marksheet.setStudent(student);
+
+            if (marksheet.getDate() == null) {
+                marksheet.setDate(LocalDate.now());
+            }
+
+            // Auto calculation
+            System.out.println("Calculating stats...");
+            marksheet.calculateStats();
+
+            System.out.println("Saving marksheet...");
+            Marksheet saved = marksheetRepository.save(marksheet);
+            System.out.println("Marksheet saved successfully with ID: " + saved.getId());
+
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error creating marksheet: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error creating marksheet: " + e.getMessage());
         }
-        Student student = studentRepository.findById(marksheet.getStudent().getId())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-        marksheet.setStudent(student);
-        if (marksheet.getDate() == null)
-            marksheet.setDate(LocalDate.now());
-
-        // Auto calculation
-        marksheet.calculateStats();
-
-        return marksheetRepository.save(marksheet);
     }
 
     @PutMapping("/marksheets/{id}")
