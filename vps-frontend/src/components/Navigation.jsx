@@ -10,6 +10,7 @@ const navItems = [
     { path: '/marks', label: 'Marks', icon: <FaFileAlt />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { path: '/live', label: 'Live', icon: <FaVideo />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { path: '/payment', label: 'Fees', icon: <FaMoneyBillWave />, allowedRoles: ['ADMIN', 'STUDENT', 'ACCOUNTANT'] },
+    { path: '/reports', label: 'Reports', icon: <FaBook />, allowedRoles: ['ADMIN', 'ACCOUNTANT'] },
     // { path: '/admin', label: 'Admin', icon: <FaUserCog />, allowedRoles: ['ADMIN'] }, 
 ];
 

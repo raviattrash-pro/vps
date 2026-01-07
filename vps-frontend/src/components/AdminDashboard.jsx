@@ -193,7 +193,7 @@ const AdminDashboard = () => {
                                     </label>
                                     <input className="glass-input" placeholder="10" value={newUser.className} onChange={e => setNewUser({ ...newUser, className: e.target.value })} />
                                 </div>
-                                <div style={{ display: newUser.role === 'TEACHER' ? 'none' : 'block' }}>
+                                <div>
                                     <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', color: 'var(--text-muted)' }}>Section</label>
                                     <input className="glass-input" placeholder="A" value={newUser.section} onChange={e => setNewUser({ ...newUser, section: e.target.value })} />
                                 </div>
