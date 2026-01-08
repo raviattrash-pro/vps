@@ -57,11 +57,6 @@ public class FeatureController {
     public Homework createHomework(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-
-    @PostMapping("/homework")
-    public Homework createHomework(
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
             @RequestParam("className") String className,
             @RequestParam("section") String section,
             @RequestParam(value = "dueDate", required = false) String dueDate,
