@@ -221,7 +221,7 @@ public class FeatureController {
     }
 
     @PostMapping("/studymaterial")
-    @PostMapping("/studymaterial")
+
     public StudyMaterial createStudyMaterial(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
@@ -311,7 +311,7 @@ public class FeatureController {
     }
 
     @PostMapping("/syllabus")
-    @PostMapping("/syllabus")
+
     public Syllabus createSyllabus(
             @RequestParam("subject") String subject,
             @RequestParam("className") String className,
