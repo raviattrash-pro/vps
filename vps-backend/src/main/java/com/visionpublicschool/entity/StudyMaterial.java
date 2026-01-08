@@ -13,6 +13,7 @@ public class StudyMaterial {
     private String description;
     private String fileName;
     private String className;
+    private String section;
     private LocalDate uploadDate;
 
     // Manual Getters and Setters
@@ -54,6 +55,14 @@ public class StudyMaterial {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 
     public LocalDate getUploadDate() {

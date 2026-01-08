@@ -8,8 +8,15 @@ const Homework = () => {
     const [assignments, setAssignments] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
+    const { user } = require('../AuthContext').useAuth();
+
     useEffect(() => {
-        fetch(`${API_BASE_URL}/api/homework`)
+        let url = `${API_BASE_URL}/api/homework`;
+        if (user && user.role === 'STUDENT') {
+            url += `?studentId=${user.id}`;
+        }
+
+        fetch(url)
             .then(res => res.json())
             .then(data => {
                 // Determine status based on date for sorting/display
@@ -17,7 +24,7 @@ const Homework = () => {
                 setAssignments(sorted);
             })
             .catch(err => console.error("Error fetching homework:", err));
-    }, []);
+    }, [user]);
 
     const handleDownload = (fileName) => {
         if (!fileName) return;

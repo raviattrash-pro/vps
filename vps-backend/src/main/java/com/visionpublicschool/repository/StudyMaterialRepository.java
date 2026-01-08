@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StudyMaterialRepository extends JpaRepository<StudyMaterial, Long> {
+    java.util.List<StudyMaterial> findByClassNameAndSection(String className, String section);
 }

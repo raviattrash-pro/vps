@@ -14,6 +14,8 @@ public class Syllabus {
     private String fileName;
     private LocalDate uploadDate;
 
+    private String section;
+
     // Manual Getters and Setters
     public Long getId() {
         return id;
@@ -37,6 +39,14 @@ public class Syllabus {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 
     public String getFileName() {

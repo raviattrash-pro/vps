@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HomeworkRepository extends JpaRepository<Homework, Long> {
+    java.util.List<Homework> findByClassNameAndSection(String className, String section);
 }

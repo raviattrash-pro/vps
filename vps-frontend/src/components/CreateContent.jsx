@@ -87,6 +87,8 @@ const CreateContent = () => {
                             const data = new FormData();
                             data.append('title', formData.title);
                             data.append('description', formData.description);
+                            data.append('className', formData.class);
+                            data.append('section', formData.section);
                             data.append('dueDate', formData.uploadDate);
                             if (formData.fileObj) {
                                 data.append('file', formData.fileObj);

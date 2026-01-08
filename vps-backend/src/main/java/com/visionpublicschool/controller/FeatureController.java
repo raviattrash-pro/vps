@@ -44,7 +44,12 @@ public class FeatureController {
 
     // Homework
     @GetMapping("/homework")
-    public List<Homework> getHomework() {
+    public List<Homework> getHomework(@RequestParam(required = false) Long studentId) {
+        if (studentId != null) {
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+            return homeworkRepository.findByClassNameAndSection(student.getClassName(), student.getSection());
+        }
         return homeworkRepository.findAll();
     }
 
@@ -52,12 +57,21 @@ public class FeatureController {
     public Homework createHomework(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
+
+    @PostMapping("/homework")
+    public Homework createHomework(
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("className") String className,
+            @RequestParam("section") String section,
             @RequestParam(value = "dueDate", required = false) String dueDate,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         Homework homework = new Homework();
         homework.setTitle(title);
         homework.setDescription(description);
+        homework.setClassName(className);
+        homework.setSection(section);
         if (dueDate != null && !dueDate.isEmpty()) {
             homework.setDueDate(LocalDate.parse(dueDate));
         } else {
@@ -202,19 +216,29 @@ public class FeatureController {
 
     // Study Material
     @GetMapping("/studymaterial")
-    public List<StudyMaterial> getStudyMaterial() {
+    public List<StudyMaterial> getStudyMaterial(@RequestParam(required = false) Long studentId) {
+        if (studentId != null) {
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+            return studyMaterialRepository.findByClassNameAndSection(student.getClassName(), student.getSection());
+        }
         return studyMaterialRepository.findAll();
     }
 
     @PostMapping("/studymaterial")
+    @PostMapping("/studymaterial")
     public StudyMaterial createStudyMaterial(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
+            @RequestParam("className") String className,
+            @RequestParam("section") String section,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         StudyMaterial material = new StudyMaterial();
         material.setTitle(title);
         material.setDescription(description);
+        material.setClassName(className);
+        material.setSection(section);
         material.setUploadDate(LocalDate.now());
 
         if (file != null && !file.isEmpty()) {
@@ -282,19 +306,27 @@ public class FeatureController {
 
     // Syllabus
     @GetMapping("/syllabus")
-    public List<Syllabus> getSyllabus() {
+    public List<Syllabus> getSyllabus(@RequestParam(required = false) Long studentId) {
+        if (studentId != null) {
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+            return syllabusRepository.findByClassNameAndSection(student.getClassName(), student.getSection());
+        }
         return syllabusRepository.findAll();
     }
 
     @PostMapping("/syllabus")
+    @PostMapping("/syllabus")
     public Syllabus createSyllabus(
             @RequestParam("subject") String subject,
             @RequestParam("className") String className,
+            @RequestParam("section") String section,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         Syllabus syllabus = new Syllabus();
         syllabus.setSubject(subject);
         syllabus.setClassName(className);
+        syllabus.setSection(section);
         syllabus.setUploadDate(LocalDate.now());
 
         if (file != null && !file.isEmpty()) {

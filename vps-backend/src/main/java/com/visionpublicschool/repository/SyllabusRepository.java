@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SyllabusRepository extends JpaRepository<Syllabus, Long> {
+    java.util.List<Syllabus> findByClassNameAndSection(String className, String section);
 }

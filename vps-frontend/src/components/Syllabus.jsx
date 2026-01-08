@@ -9,7 +9,8 @@ const Syllabus = () => {
     const { user } = useAuth();
     const [syllabusList, setSyllabusList] = useState([]);
     const [showUpload, setShowUpload] = useState(false);
-    const [newItem, setNewItem] = useState({ subject: '', className: '' });
+
+    const [newItem, setNewItem] = useState({ subject: '', className: '', section: '' });
     const [file, setFile] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -20,7 +21,11 @@ const Syllabus = () => {
     }, []);
 
     const fetchSyllabus = () => {
-        fetch(`${API_BASE_URL}/api/syllabus`)
+        let url = `${API_BASE_URL}/api/syllabus`;
+        if (user && user.role === 'STUDENT') {
+            url += `?studentId=${user.id}`;
+        }
+        fetch(url)
             .then(res => res.json())
             .then(data => setSyllabusList(data.reverse()))
             .catch(e => console.error(e));
@@ -35,6 +40,8 @@ const Syllabus = () => {
         const formData = new FormData();
         formData.append('subject', newItem.subject);
         formData.append('className', newItem.className);
+
+        formData.append('section', newItem.section);
         formData.append('file', file);
 
         try {
@@ -45,7 +52,7 @@ const Syllabus = () => {
             if (res.ok) {
                 alert('Syllabus Uploaded Successfully!');
                 setShowUpload(false);
-                setNewItem({ subject: '', className: '' });
+                setNewItem({ subject: '', className: '', section: '' });
                 setFile(null);
                 fetchSyllabus();
             } else {
@@ -204,9 +211,15 @@ const Syllabus = () => {
                             />
                             <input
                                 className="glass-input"
-                                placeholder="Class (e.g. 10th A)"
+                                placeholder="Class (e.g. 10)"
                                 value={newItem.className}
                                 onChange={e => setNewItem({ ...newItem, className: e.target.value })}
+                            />
+                            <input
+                                className="glass-input"
+                                placeholder="Section (e.g. A)"
+                                value={newItem.section}
+                                onChange={e => setNewItem({ ...newItem, section: e.target.value })}
                             />
 
                             <label className="glass-input" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: '#666', border: '2px dashed var(--primary-light)' }}>

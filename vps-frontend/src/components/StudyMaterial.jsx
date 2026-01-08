@@ -8,7 +8,8 @@ const StudyMaterial = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [showUpload, setShowUpload] = useState(false);
-    const [newItem, setNewItem] = useState({ title: '', description: '' });
+
+    const [newItem, setNewItem] = useState({ title: '', description: '', className: '', section: '' });
     const [file, setFile] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -21,7 +22,11 @@ const StudyMaterial = () => {
     }, []);
 
     const fetchMaterials = () => {
-        fetch(`${API_BASE_URL}/api/studymaterial`).then(res => res.json()).then(data => setStudyList(data.reverse()));
+        let url = `${API_BASE_URL}/api/studymaterial`;
+        if (user && user.role === 'STUDENT') {
+            url += `?studentId=${user.id}`;
+        }
+        fetch(url).then(res => res.json()).then(data => setStudyList(data.reverse()));
     };
 
     const handleUpload = async () => {
@@ -33,6 +38,9 @@ const StudyMaterial = () => {
         const formData = new FormData();
         formData.append('title', newItem.title);
         formData.append('description', newItem.description);
+
+        formData.append('className', newItem.className);
+        formData.append('section', newItem.section);
         formData.append('file', file);
 
         try {
@@ -43,8 +51,10 @@ const StudyMaterial = () => {
             if (res.ok) {
                 alert('Study Material Uploaded Successfully!');
                 setShowUpload(false);
-                setNewItem({ title: '', description: '' });
+
+                setNewItem({ title: '', description: '', className: '', section: '' });
                 setFile(null);
+
                 fetchMaterials();
             } else {
                 alert('Upload failed');
@@ -205,6 +215,20 @@ const StudyMaterial = () => {
                                 value={newItem.description}
                                 onChange={e => setNewItem({ ...newItem, description: e.target.value })}
                             />
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input
+                                    className="glass-input"
+                                    placeholder="Class (e.g. 10)"
+                                    value={newItem.className}
+                                    onChange={e => setNewItem({ ...newItem, className: e.target.value })}
+                                />
+                                <input
+                                    className="glass-input"
+                                    placeholder="Section (e.g. A)"
+                                    value={newItem.section}
+                                    onChange={e => setNewItem({ ...newItem, section: e.target.value })}
+                                />
+                            </div>
 
                             <label className="glass-input" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: '#666', border: '2px dashed var(--primary-light)' }}>
                                 <FaCloudUploadAlt size={20} />
