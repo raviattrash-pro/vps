@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 import { FaArrowLeft, FaDownload, FaSearch, FaBookOpen, FaCalendarAlt, FaFileAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
 
 const Homework = () => {
     const navigate = useNavigate();
     const [assignments, setAssignments] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const { user } = require('../AuthContext').useAuth();
+    const { user } = useAuth();
 
     useEffect(() => {
         let url = `${API_BASE_URL}/api/homework`;
