@@ -19,27 +19,30 @@ This guide explains how to set up free, continuous monitoring for your VPS appli
 2.  Click **"Add New Monitor"**.
 
 ### Monitor 1: Frontend (User Interface)
-This checks if your website is accessible to users.
+*   **Goal**: Check if your website is loading for users.
+*   **How to find the URL**:
+    1.  Go to your [Vercel Dashboard](https://vercel.com/dashboard).
+    2.  Click on your "vps" project.
+    3.  Click the **"Visit"** button or copy the domain listed under "Domains" (e.g., `https://vps-chi.vercel.app`).
+*   **Monitor Details**:
+    *   **Monitor Type**: HTTP(s)
+    *   **Friendly Name**: VPS Frontend
+    *   **URL**: Paste the URL you found above.
+    *   **Interval**: 5 minutes.
 
-*   **Monitor Type**: HTTP(s)
-*   **Friendly Name**: VPS Frontend
-*   **URL (or IP)**: `https://vps-frontend-one.vercel.app` (or your actual Vercel URL)
-*   **Monitoring Interval**: 5 minutes
-*   **Select "Alert Contacts To Notify"**: Check your email.
-*   Click **Create Monitor**.
-
-### Monitor 2: Backend & Database Health
-This checks if your Backend is running AND if it can successfully talk to your Database.
-
-*   **Monitor Type**: HTTP(s)
-*   **Friendly Name**: VPS Backend Health
-*   **URL (or IP)**: `https://vps-backend.onrender.com/actuator/health`
-    *   *Note: Replace `vps-backend.onrender.com` with your actual Render URL if different.*
-*   **Monitoring Interval**: 5 minutes
-*   **Advanced Settings (Optional)**:
-    *   You can look for the keyword `UP` in the response ensuring it returns `{"status":"UP"}`.
-*   **Select "Alert Contacts To Notify"**: Check your email.
-*   Click **Create Monitor**.
+### Monitor 2: Backend Health (The "Deployed" Status)
+*   **Goal**: Check if your Backend is running AND successfully connected to the Database.
+*   **How to find the URL**:
+    1.  Go to your [Render Dashboard](https://dashboard.render.com/).
+    2.  Click on your "vps" service.
+    3.  Look for the URL at the top left, under the service name. It usually looks like `https://vps-xxxx.onrender.com`.
+    4.  **Important**: Add `/actuator/health` to the end of this URL.
+    5.  Example: `https://vps-fast.onrender.com/actuator/health`
+*   **Monitor Details**:
+    *   **Monitor Type**: HTTP(s)
+    *   **Friendly Name**: VPS Backend Health
+    *   **URL**: Paste the URL ending in `/actuator/health`.
+    *   **Interval**: 5 minutes.
 
 ## How to Read Alerts
 
