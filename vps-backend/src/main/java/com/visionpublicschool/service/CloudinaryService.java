@@ -29,10 +29,12 @@ public class CloudinaryService {
             if (file == null || file.isEmpty()) {
                 return null;
             }
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            Map params = ObjectUtils.asMap(
+                    "resource_type", "auto");
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
             return (String) uploadResult.get("secure_url");
         } catch (IOException e) {
-            throw new RuntimeException("Image upload failed: " + e.getMessage());
+            throw new RuntimeException("File upload failed: " + e.getMessage());
         }
     }
 
