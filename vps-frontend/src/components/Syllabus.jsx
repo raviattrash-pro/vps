@@ -157,7 +157,7 @@ const Syllabus = () => {
                                 <div style={{ display: 'flex', gap: '10px' }}>
                                     {item.fileName && (
                                         <a
-                                            href={`${API_BASE_URL}/uploads/${item.fileName}`}
+                                            href={item.fileName.startsWith('http') ? item.fileName : `${API_BASE_URL}/uploads/${item.fileName}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="glass-btn"

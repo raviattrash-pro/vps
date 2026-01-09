@@ -29,7 +29,7 @@ const Homework = () => {
 
     const handleDownload = (fileName) => {
         if (!fileName) return;
-        window.open(`${API_BASE_URL}/uploads/${fileName}`, '_blank');
+        window.open(fileName.startsWith('http') ? fileName : `${API_BASE_URL}/uploads/${fileName}`, '_blank');
     };
 
     const getStatusColor = (dueDate) => {

@@ -32,17 +32,12 @@ This guide explains how to set up free, continuous monitoring for your VPS appli
 
 ### Monitor 2: Backend Health (The "Deployed" Status)
 *   **Goal**: Check if your Backend is running AND successfully connected to the Database.
-*   **How to find the URL**:
-    1.  Go to your [Render Dashboard](https://dashboard.render.com/).
-    2.  Click on your "vps" service.
-    3.  Look for the URL at the top left, under the service name. It usually looks like `https://vps-xxxx.onrender.com`.
-    4.  **Important**: Add `/actuator/health` to the end of this URL.
-    5.  Example: `https://vps-fast.onrender.com/actuator/health`
 *   **Monitor Details**:
     *   **Monitor Type**: HTTP(s)
     *   **Friendly Name**: VPS Backend Health
-    *   **URL**: Paste the URL ending in `/actuator/health`.
+    *   **URL**: `https://vps-hqtk.onrender.com/actuator/health`
     *   **Interval**: 5 minutes.
+    *   **Advanced**: You can optionally text-match for `"status": "UP"`.
 
 ## How to Read Alerts
 

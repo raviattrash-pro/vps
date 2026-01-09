@@ -36,7 +36,7 @@ public class FeatureController {
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private FileStorageService fileStorageService;
+    private CloudinaryService cloudinaryService;
     @Autowired
     private EmailService emailService;
     @Autowired
@@ -74,7 +74,7 @@ public class FeatureController {
         }
 
         if (file != null && !file.isEmpty()) {
-            String fileName = fileStorageService.storeFile(file);
+            String fileName = cloudinaryService.uploadFile(file);
             homework.setFileName(fileName);
         }
 
@@ -96,30 +96,14 @@ public class FeatureController {
 
     @PostMapping("/payment/qr")
     public String uploadQrCode(@RequestParam("file") MultipartFile file) {
-        // Force save as 'school_qr.png' (or jpg, detecting extension would be better
-        // but let's assume image)
-        // Actually, let's just use the FileStorageService and return the name.
-        // To make it persistent and "single source", we should probably have a
-        // "Setting" entity.
-        // For this homework, I will simply store the filename in a specific "Payment"
-        // record with ID=1 or something?
-        // No, let's simply save it to disk and return the name, and the frontend can
-        // assume a fixed URL if we save it as fixed name.
+        // Cloudinary upload with fixed ID "school_qr" to allow overwriting
+        return cloudinaryService.uploadFile(file, "school_qr");
+    }
 
-        try {
-            java.nio.file.Path uploadPath = java.nio.file.Paths.get("uploads");
-            if (!java.nio.file.Files.exists(uploadPath)) {
-                java.nio.file.Files.createDirectories(uploadPath);
-            }
-            String fileName = "school_qr.png";
-            try (java.io.InputStream inputStream = file.getInputStream()) {
-                java.nio.file.Files.copy(inputStream, uploadPath.resolve(fileName),
-                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-            }
-            return fileName;
-        } catch (Exception e) {
-            throw new RuntimeException("Could not store file " + e.getMessage());
-        }
+    @GetMapping("/payment/qr")
+    public String getQrCode() {
+        // Return the URL of the fixed QR code
+        return cloudinaryService.getUrl("school_qr");
     }
 
     @DeleteMapping("/homework/{id}")
@@ -166,7 +150,7 @@ public class FeatureController {
         if (file != null && !file.isEmpty()) {
             System.out.println("Storing File: " + file.getOriginalFilename());
             try {
-                String fileName = fileStorageService.storeFile(file);
+                String fileName = cloudinaryService.uploadFile(file);
                 payment.setScreenshotFileName(fileName);
                 System.out.println("File Stored: " + fileName);
             } catch (Exception e) {
@@ -237,7 +221,7 @@ public class FeatureController {
         material.setUploadDate(LocalDate.now());
 
         if (file != null && !file.isEmpty()) {
-            String fileName = fileStorageService.storeFile(file);
+            String fileName = cloudinaryService.uploadFile(file);
             material.setFileName(fileName);
         }
 
@@ -325,7 +309,7 @@ public class FeatureController {
         syllabus.setUploadDate(LocalDate.now());
 
         if (file != null && !file.isEmpty()) {
-            String fileName = fileStorageService.storeFile(file);
+            String fileName = cloudinaryService.uploadFile(file);
             syllabus.setFileName(fileName);
         }
 

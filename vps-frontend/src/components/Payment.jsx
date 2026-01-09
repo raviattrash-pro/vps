@@ -21,7 +21,11 @@ const Payment = () => {
     const isFinanceAdmin = user && (user.role === 'ADMIN' || user.role === 'ACCOUNTANT');
 
     useEffect(() => {
-        setQrCode(`${API_BASE_URL}/uploads/school_qr.png`);
+        // Fetch QR Code URL
+        fetch(`${API_BASE_URL}/api/payment/qr`)
+            .then(res => res.text())
+            .then(url => setQrCode(url))
+            .catch(err => console.error("Failed to load QR", err));
 
         // Load UPI ID from local storage for persistence (simulation)
         const savedUpi = localStorage.getItem('vps_upi_id');
@@ -246,7 +250,7 @@ const Payment = () => {
                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                 {p.screenshotFileName && (
                                     <a
-                                        href={`${API_BASE_URL}/uploads/${p.screenshotFileName}`}
+                                        href={p.screenshotFileName.startsWith('http') ? p.screenshotFileName : `${API_BASE_URL}/uploads/${p.screenshotFileName}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="glass-btn"
