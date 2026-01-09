@@ -47,6 +47,8 @@ public class CloudinaryService {
                 String publicId = System.currentTimeMillis() + "_" + cleanName;
 
                 params.put("public_id", publicId);
+                // Force Content-Type header so browser knows it's a PDF
+                params.put("headers", "Content-Type: application/pdf");
             }
 
             params.put("resource_type", resourceType);
