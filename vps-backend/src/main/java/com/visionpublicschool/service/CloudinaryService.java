@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -29,12 +30,27 @@ public class CloudinaryService {
             if (file == null || file.isEmpty()) {
                 return null;
             }
+
+            Map<String, Object> params = new HashMap<>();
             String resourceType = "auto";
+
+            // If PDF, force 'raw' and preserve extension in public_id
             if (file.getContentType() != null && file.getContentType().toLowerCase().contains("pdf")) {
                 resourceType = "raw";
+                String originalName = file.getOriginalFilename();
+                if (originalName == null)
+                    originalName = "document.pdf";
+
+                // Sanitize filename to be URL safe
+                String cleanName = originalName.replaceAll("[^a-zA-Z0-9.-]", "_");
+                // Prepend timestamp to ensure uniqueness
+                String publicId = System.currentTimeMillis() + "_" + cleanName;
+
+                params.put("public_id", publicId);
             }
-            Map params = ObjectUtils.asMap(
-                    "resource_type", resourceType);
+
+            params.put("resource_type", resourceType);
+
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
             return (String) uploadResult.get("secure_url");
         } catch (IOException e) {
@@ -46,14 +62,17 @@ public class CloudinaryService {
         try {
             if (file == null || file.isEmpty())
                 return null;
+
             String resourceType = "auto";
             if (file.getContentType() != null && file.getContentType().toLowerCase().contains("pdf")) {
                 resourceType = "raw";
             }
+
             Map params = ObjectUtils.asMap(
                     "public_id", publicId,
                     "overwrite", true,
                     "resource_type", resourceType);
+
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
             return (String) uploadResult.get("secure_url");
         } catch (IOException e) {
