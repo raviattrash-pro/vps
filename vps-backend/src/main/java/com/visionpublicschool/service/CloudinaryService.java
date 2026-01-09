@@ -29,8 +29,12 @@ public class CloudinaryService {
             if (file == null || file.isEmpty()) {
                 return null;
             }
+            String resourceType = "auto";
+            if (file.getContentType() != null && file.getContentType().toLowerCase().contains("pdf")) {
+                resourceType = "raw";
+            }
             Map params = ObjectUtils.asMap(
-                    "resource_type", "auto");
+                    "resource_type", resourceType);
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
             return (String) uploadResult.get("secure_url");
         } catch (IOException e) {
@@ -42,10 +46,14 @@ public class CloudinaryService {
         try {
             if (file == null || file.isEmpty())
                 return null;
+            String resourceType = "auto";
+            if (file.getContentType() != null && file.getContentType().toLowerCase().contains("pdf")) {
+                resourceType = "raw";
+            }
             Map params = ObjectUtils.asMap(
                     "public_id", publicId,
                     "overwrite", true,
-                    "resource_type", "auto");
+                    "resource_type", resourceType);
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
             return (String) uploadResult.get("secure_url");
         } catch (IOException e) {
