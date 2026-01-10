@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import Dashboard from './components/Dashboard';
 import Attendance from './components/Attendance';
 import CreateContent from './components/CreateContent';
@@ -51,44 +53,48 @@ const Layout = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={
-            <PrivateRoute><Dashboard /></PrivateRoute>
-          } />
-          <Route path="/attendance" element={
-            <PrivateRoute><Attendance /></PrivateRoute>
-          } />
-          <Route path="/create-content" element={
-            <PrivateRoute><CreateContent /></PrivateRoute>
-          } />
-          <Route path="/syllabus" element={
-            <PrivateRoute><Syllabus /></PrivateRoute>
-          } />
-          <Route path="/homework" element={
-            <PrivateRoute><Homework /></PrivateRoute>
-          } />
-          <Route path="/notices" element={
-            <PrivateRoute><Notices /></PrivateRoute>
-          } />
-          <Route path="/study-material" element={
-            <PrivateRoute><StudyMaterial /></PrivateRoute>
-          } />
-          <Route path="/question" element={
-            <PrivateRoute><Question /></PrivateRoute>
-          } />
-          <Route path="/marks" element={<PrivateRoute><MarkSheet /></PrivateRoute>} />
-          <Route path="/live" element={<PrivateRoute><LiveClass /></PrivateRoute>} />
-          <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
-          <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
-          <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-          <Route path="/admin/active-users" element={<PrivateRoute><ActiveUsers /></PrivateRoute>} />
-          <Route path="/coming-soon" element={<PrivateRoute><ComingSoon /></PrivateRoute>} />
-        </Routes>
-      </Layout>
-    </Router>
+    <>
+      <Analytics />
+      <SpeedInsights />
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={
+              <PrivateRoute><Dashboard /></PrivateRoute>
+            } />
+            <Route path="/attendance" element={
+              <PrivateRoute><Attendance /></PrivateRoute>
+            } />
+            <Route path="/create-content" element={
+              <PrivateRoute><CreateContent /></PrivateRoute>
+            } />
+            <Route path="/syllabus" element={
+              <PrivateRoute><Syllabus /></PrivateRoute>
+            } />
+            <Route path="/homework" element={
+              <PrivateRoute><Homework /></PrivateRoute>
+            } />
+            <Route path="/notices" element={
+              <PrivateRoute><Notices /></PrivateRoute>
+            } />
+            <Route path="/study-material" element={
+              <PrivateRoute><StudyMaterial /></PrivateRoute>
+            } />
+            <Route path="/question" element={
+              <PrivateRoute><Question /></PrivateRoute>
+            } />
+            <Route path="/marks" element={<PrivateRoute><MarkSheet /></PrivateRoute>} />
+            <Route path="/live" element={<PrivateRoute><LiveClass /></PrivateRoute>} />
+            <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+            <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
+            <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
+            <Route path="/admin/active-users" element={<PrivateRoute><ActiveUsers /></PrivateRoute>} />
+            <Route path="/coming-soon" element={<PrivateRoute><ComingSoon /></PrivateRoute>} />
+          </Routes>
+        </Layout>
+      </Router>
+    </>
   );
 }
 
