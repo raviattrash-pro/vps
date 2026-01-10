@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Toaster } from 'react-hot-toast';
+import { ThemeProvider } from './context/ThemeContext';
+import CommandPalette from './components/CommandPalette';
 import Dashboard from './components/Dashboard';
 import Attendance from './components/Attendance';
 import CreateContent from './components/CreateContent';
@@ -55,11 +57,12 @@ const Layout = ({ children }) => {
 
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <Analytics />
       <SpeedInsights />
       <Toaster position="top-right" />
       <Router>
+        <CommandPalette />
         <Layout>
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -98,7 +101,7 @@ function App() {
           </Routes>
         </Layout>
       </Router>
-    </>
+    </ThemeProvider>
   );
 }
 

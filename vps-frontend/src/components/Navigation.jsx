@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaHome, FaChalkboardTeacher, FaBook, FaCalendarAlt, FaUserCog, FaFileAlt, FaVideo, FaMoneyBillWave, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaChalkboardTeacher, FaBook, FaCalendarAlt, FaUserCog, FaFileAlt, FaVideo, FaMoneyBillWave, FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
 import { useAuth } from '../AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 // Navigation Items Configuration
 const navItems = [
@@ -44,6 +45,7 @@ const NavItem = ({ item, isMobile, onClick }) => (
 
 export const DesktopSidebar = () => {
     const { user, logout } = useAuth();
+    const { theme, toggleTheme } = useTheme();
 
     return (
         <div className="desktop-sidebar glass-card" style={{ padding: '30px 20px', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.6)', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 40px)' }}>
@@ -65,6 +67,21 @@ export const DesktopSidebar = () => {
             </div>
 
             <div style={{ marginTop: 'auto' }}>
+                <button
+                    onClick={toggleTheme}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: '15px',
+                        width: '100%', padding: '12px 20px', borderRadius: '16px',
+                        border: 'none', background: 'transparent', color: 'var(--text-main)',
+                        cursor: 'pointer', fontSize: '16px', fontWeight: '500', transition: 'all 0.3s',
+                        marginBottom: '10px'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--glass-border)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                    <span style={{ fontSize: '22px' }}>{theme === 'dark' ? <FaSun /> : <FaMoon />}</span>
+                    {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                </button>
                 <button
                     onClick={logout}
                     style={{
@@ -93,6 +110,7 @@ export const DesktopSidebar = () => {
 
 export const MobileBottomNav = () => {
     const { user, logout } = useAuth();
+    const { theme, toggleTheme } = useTheme();
 
     // Mobile grid should include logout or have top-bar logout? 
     // Usually bottom nav has limited space. Let's add it as the last item or separate specific icon.
@@ -103,6 +121,17 @@ export const MobileBottomNav = () => {
             {navItems.filter(item => !item.allowedRoles || item.allowedRoles.includes(user?.role)).slice(0, 4).map(item => (
                 <NavItem key={item.path} item={item} isMobile={true} />
             ))}
+
+            <button
+                onClick={toggleTheme}
+                style={{
+                    background: 'none', border: 'none', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: '5px', color: 'var(--text-main)', cursor: 'pointer'
+                }}
+            >
+                <span style={{ fontSize: '20px' }}>{theme === 'dark' ? <FaSun /> : <FaMoon />}</span>
+                <span style={{ fontSize: '10px', fontWeight: '500' }}>Theme</span>
+            </button>
             {/* Logout Icon for Mobile */}
             <button
                 onClick={logout}

@@ -8,21 +8,21 @@ import IdCard from './IdCard';
 
 
 
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [newUser, setNewUser] = useState({ name: '', admissionNo: '', password: '', role: 'STUDENT', className: '', section: '' });
-    const [editingUserId, setEditingUserId] = useState(null);
-    const [file, setFile] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [showForm, setShowForm] = useState(false); // Toggle for mobile/cleaner UI
-    const [selectedUserForId, setSelectedUserForId] = useState(null);
-    const navigate = useNavigate();
+    // ... rest of state
 
     useEffect(() => {
         fetchUsers();
     }, []);
 
     const fetchUsers = async () => {
+        setLoading(true);
         try {
             const res = await fetch(`${API_BASE_URL}/api/admin/users`);
             if (res.ok) {
@@ -34,7 +34,11 @@ const AdminDashboard = () => {
                 setUsers([]);
             }
         } catch (e) { console.error(e); setUsers([]); }
+        finally { setLoading(false); }
     };
+
+    // ... handle functions ...
+
 
     const handleAddUser = async () => {
         try {
@@ -276,7 +280,24 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {filteredUsers.length === 0 ? (
+                {loading ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                        {[...Array(8)].map((_, i) => (
+                            <div key={i} className="glass-card" style={{ padding: '20px' }}>
+                                <div style={{ display: 'flex', gap: '15px' }}>
+                                    <Skeleton circle width={60} height={60} />
+                                    <div style={{ flex: 1 }}>
+                                        <Skeleton width="60%" height={24} style={{ marginBottom: '8px' }} />
+                                        <Skeleton width="40%" />
+                                    </div>
+                                </div>
+                                <div style={{ marginTop: '20px' }}>
+                                    <Skeleton count={3} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : filteredUsers.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '50px', color: 'var(--text-muted)' }}>
                         <p>No users found matching your search.</p>
                     </div>

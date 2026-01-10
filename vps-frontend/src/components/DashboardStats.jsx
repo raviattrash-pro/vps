@@ -1,9 +1,26 @@
 import React from 'react';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
-const DashboardStats = ({ users }) => {
+const DashboardStats = ({ users, loading }) => {
+    if (loading) {
+        return (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                <div className="glass-card" style={{ padding: '20px', height: '300px' }}>
+                    <Skeleton width={150} height={24} style={{ marginBottom: '20px', marginInline: 'auto', display: 'block' }} />
+                    <Skeleton circle height={180} width={180} style={{ marginInline: 'auto', display: 'block' }} />
+                </div>
+                <div className="glass-card" style={{ padding: '20px', height: '300px' }}>
+                    <Skeleton width={200} height={24} style={{ marginBottom: '20px', marginInline: 'auto', display: 'block' }} />
+                    <Skeleton height={200} />
+                </div>
+            </div>
+        );
+    }
+
     // 1. Calculate Role Distribution
     const roleCounts = users.reduce((acc, user) => {
         acc[user.role] = (acc[user.role] || 0) + 1;

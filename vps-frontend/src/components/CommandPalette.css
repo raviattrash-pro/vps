@@ -1,0 +1,31 @@
+.cmd-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cmd-wrapper {
+    width: 100%;
+    max-width: 600px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    overflow: hidden;
+}
+
+.cmd-item[data-selected='true'] {
+    background: var(--primary-light);
+    color: white !important;
+}
+
+.cmd-item[data-selected='true'] svg {
+    color: white !important;
+}

@@ -23,13 +23,21 @@
     --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Dark Mode Support (Future proofing, or if user prefers dark glass) */
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* --glass-bg: rgba(16, 28, 23, 0.7); */
-        /* --text-main: #e0f7fa; */
-        /* Enable these for dark mode glass later */
-    }
+/* Dark Mode Support */
+[data-theme='dark'] {
+    --primary: #52dd69;
+    --primary-light: #4ade80;
+    --accent: #0f4c3a;
+    --accent-glow: rgba(82, 221, 105, 0.2);
+
+    --glass-bg: rgba(20, 30, 25, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+
+    --text-main: #e8f5e9;
+    --text-muted: #81c784;
+
+    --bg-gradient: linear-gradient(135deg, #051410 0%, #0b261d 100%);
 }
 
 * {
