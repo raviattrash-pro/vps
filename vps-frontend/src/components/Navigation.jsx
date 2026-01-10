@@ -64,19 +64,27 @@ export const DesktopSidebar = () => {
                 )}
             </div>
 
-            <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '20px' }}>
+            <div style={{ marginTop: 'auto' }}>
                 <button
                     onClick={logout}
                     style={{
                         display: 'flex', alignItems: 'center', gap: '15px',
                         width: '100%', padding: '12px 20px', borderRadius: '16px',
-                        border: 'none', background: 'rgba(255, 0, 0, 0.05)', color: '#d32f2f',
-                        cursor: 'pointer', fontSize: '16px', fontWeight: '500', transition: 'all 0.3s'
+                        border: 'none', background: 'transparent', color: '#666',
+                        cursor: 'pointer', fontSize: '16px', fontWeight: '500', transition: 'all 0.3s',
+                        marginTop: '10px'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 0, 0, 0.1)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 0, 0, 0.05)'}
+                    onMouseEnter={e => {
+                        e.currentTarget.style.background = 'rgba(255, 0, 0, 0.1)';
+                        e.currentTarget.style.color = '#d32f2f';
+                    }}
+                    onMouseLeave={e => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = '#666'; // Reset to muted text color
+                    }}
                 >
-                    <FaSignOutAlt /> Logout
+                    <span style={{ fontSize: '22px' }}><FaSignOutAlt /></span>
+                    Logout
                 </button>
             </div>
         </div>
