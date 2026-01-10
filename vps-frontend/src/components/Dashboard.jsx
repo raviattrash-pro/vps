@@ -24,7 +24,7 @@ const Dashboard = () => {
 
                 <div style={{ position: 'relative' }}>
                     {user?.profilePhoto ? (
-                        <img src={`${API_BASE_URL}${user.profilePhoto}`} alt="Profile" style={{ width: '70px', height: '70px', borderRadius: '25px', objectFit: 'cover', border: '4px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }} />
+                        <img src={`${user.profilePhoto?.startsWith('http') ? user.profilePhoto : `${API_BASE_URL}${user.profilePhoto}`}`} alt="Profile" style={{ width: '70px', height: '70px', borderRadius: '25px', objectFit: 'cover', border: '4px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }} />
                     ) : (
                         <div style={{ width: '70px', height: '70px', background: 'var(--primary)', borderRadius: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '28px', border: '4px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}>
                             {user?.name?.charAt(0)}

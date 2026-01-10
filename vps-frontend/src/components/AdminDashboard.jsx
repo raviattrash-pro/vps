@@ -270,7 +270,7 @@ const AdminDashboard = () => {
                                         border: `2px solid ${getRoleColor(u.role)}`
                                     }}>
                                         {u.profilePhoto ? (
-                                            <img src={`${API_BASE_URL}${u.profilePhoto}`} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <img src={`${u.profilePhoto?.startsWith('http') ? u.profilePhoto : `${API_BASE_URL}${u.profilePhoto}`}`} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         ) : (
                                             <span style={{ fontSize: '24px', color: getRoleColor(u.role) }}>{u.name.charAt(0).toUpperCase()}</span>
                                         )}

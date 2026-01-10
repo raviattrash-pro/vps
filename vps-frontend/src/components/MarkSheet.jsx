@@ -268,7 +268,7 @@ const MarkSheet = () => {
                         <div className="glass-card" style={{ padding: '5px', borderRadius: '50%' }}>
                             {(selectedStudent?.profilePhoto || (!isAdminOrTeacher && user?.profilePhoto)) ? (
                                 <img
-                                    src={`${API_BASE_URL}${selectedStudent ? selectedStudent.profilePhoto : user.profilePhoto}`}
+                                    src={`${(selectedStudent ? selectedStudent.profilePhoto : user.profilePhoto)?.startsWith('http') ? (selectedStudent ? selectedStudent.profilePhoto : user.profilePhoto) : `${API_BASE_URL}${selectedStudent ? selectedStudent.profilePhoto : user.profilePhoto}`}`}
                                     alt="Profile"
                                     style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', display: 'block' }}
                                 />

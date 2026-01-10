@@ -96,7 +96,7 @@ const ActiveUsers = () => {
                                         <td style={{ padding: '15px 20px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                 {u.profilePhoto ? (
-                                                    <img src={`${API_BASE_URL}${u.profilePhoto}`} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} alt="" />
+                                                    <img src={`${u.profilePhoto?.startsWith('http') ? u.profilePhoto : `${API_BASE_URL}${u.profilePhoto}`}`} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} alt="" />
                                                 ) : (
                                                     <FaUserCircle size={36} color="#ccc" />
                                                 )}

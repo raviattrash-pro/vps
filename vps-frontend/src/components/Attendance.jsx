@@ -244,7 +244,7 @@ const Attendance = () => {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                                     <div style={{ width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', border: '2px solid white', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
                                         {student.profilePhoto ? (
-                                            <img src={`${API_BASE_URL}${student.profilePhoto}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <img src={`${student.profilePhoto?.startsWith('http') ? student.profilePhoto : `${API_BASE_URL}${student.profilePhoto}`}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         ) : (
                                             <div style={{ width: '100%', height: '100%', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '18px' }}>
                                                 {student.name.charAt(0)}
