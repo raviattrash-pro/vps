@@ -50,17 +50,23 @@ public class ReportController {
         for (Student user : listUsers) {
             Row row = sheet.createRow(rowNum++);
 
-            row.createCell(0).setCellValue(user.getId());
-            row.createCell(1).setCellValue(user.getName());
-            row.createCell(2).setCellValue(user.getAdmissionNo());
-            row.createCell(3).setCellValue(user.getRole());
+            // Use toString for ID to avoid double conversion issues
+            row.createCell(0).setCellValue(user.getId() != null ? user.getId().toString() : "");
+
+            // Safe null checks for all fields
+            row.createCell(1).setCellValue(user.getName() != null ? user.getName() : "");
+            row.createCell(2).setCellValue(user.getAdmissionNo() != null ? user.getAdmissionNo() : "");
+            row.createCell(3).setCellValue(user.getRole() != null ? user.getRole() : "");
             row.createCell(4).setCellValue(user.getClassName() != null ? user.getClassName() : "");
             row.createCell(5).setCellValue(user.getSection() != null ? user.getSection() : "");
             row.createCell(6).setCellValue(user.getRollNo() != null ? user.getRollNo() : "");
         }
 
+        // Removed autoSizeColumn because it crashes on servers without Fonts installed
+        // (like Render)
+        // Instead, we set a reasonable default width
         for (int i = 0; i < columns.length; i++) {
-            sheet.autoSizeColumn(i);
+            sheet.setColumnWidth(i, 20 * 256); // 20 characters wide
         }
 
         workbook.write(response.getOutputStream());
