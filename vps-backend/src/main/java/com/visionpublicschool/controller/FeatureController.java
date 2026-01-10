@@ -2,9 +2,12 @@ package com.visionpublicschool.controller;
 
 import com.visionpublicschool.entity.*;
 import com.visionpublicschool.repository.*;
+import com.visionpublicschool.repository.*;
 import com.visionpublicschool.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 
@@ -38,9 +41,31 @@ public class FeatureController {
     @Autowired
     private CloudinaryService cloudinaryService;
     @Autowired
+    private FileStorageService fileStorageService;
+    @Autowired
     private EmailService emailService;
     @Autowired
     private WhatsAppService whatsAppService;
+
+    private String uploadFileBasedOnType(MultipartFile file) {
+        if (file == null || file.isEmpty())
+            return null;
+        String contentType = file.getContentType();
+        if (contentType != null && (contentType.contains("pdf") || contentType.contains("msword")
+                || contentType.contains("officedocument") || contentType.contains("application"))) {
+            // Store on Disk
+            String fileName = fileStorageService.storeFile(file);
+            // Generate full URL
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/uploads/")
+                    .path(fileName)
+                    .toUriString();
+            return fileDownloadUri;
+        } else {
+            // Store in Cloudinary (Images/Videos)
+            return cloudinaryService.uploadFile(file);
+        }
+    }
 
     // Helper removed as we only use Cloudinary now
 
@@ -77,7 +102,7 @@ public class FeatureController {
 
         if (file != null && !file.isEmpty()) {
             if (file != null && !file.isEmpty()) {
-                String fileName = cloudinaryService.uploadFile(file);
+                String fileName = uploadFileBasedOnType(file);
                 homework.setFileName(fileName);
             }
         }
@@ -226,7 +251,7 @@ public class FeatureController {
 
         if (file != null && !file.isEmpty()) {
             if (file != null && !file.isEmpty()) {
-                String fileName = cloudinaryService.uploadFile(file);
+                String fileName = uploadFileBasedOnType(file);
                 material.setFileName(fileName);
             }
         }
@@ -316,7 +341,7 @@ public class FeatureController {
 
         if (file != null && !file.isEmpty()) {
             if (file != null && !file.isEmpty()) {
-                String fileName = cloudinaryService.uploadFile(file);
+                String fileName = uploadFileBasedOnType(file);
                 syllabus.setFileName(fileName);
             }
         }
