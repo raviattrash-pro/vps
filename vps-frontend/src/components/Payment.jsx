@@ -42,6 +42,16 @@ const Payment = () => {
             .catch(err => console.error("Error loading payments", err));
     }, [refresh, isFinanceAdmin, user]);
 
+    const getQrUrl = () => {
+        if (!qrCode) return '';
+        let url = qrCode.startsWith('http') ? qrCode : `${API_BASE_URL}${qrCode}`;
+        // Force HTTPS if needed (though backend should handle it, double safety)
+        if (url.startsWith('http:')) {
+            url = url.replace('http:', 'https:');
+        }
+        return `${url}?t=${new Date().getTime()}`;
+    };
+
     const handleQrUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -112,9 +122,9 @@ const Payment = () => {
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
                         <img
-                            src={qrCode ? (qrCode.startsWith('http') ? qrCode : `${API_BASE_URL}${qrCode}`) : ''}
+                            src={getQrUrl()}
                             alt="Payment QR"
-                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                            style={{ width: '100%', height: '100%', objectFit: 'contain', display: qrCode ? 'block' : 'none' }}
                             onError={(e) => { e.target.style.display = 'none'; if (e.target.parentNode) { e.target.parentNode.innerText = 'QR Code Not Available'; e.target.parentNode.style.color = '#999'; } }}
                         />
                     </div>
