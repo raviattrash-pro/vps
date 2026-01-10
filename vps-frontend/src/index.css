@@ -122,6 +122,20 @@ body {
     box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.1);
 }
 
+[data-theme='dark'] .glass-input {
+    background: rgba(0, 0, 0, 0.2);
+    /* Darker background for contrast */
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    /* Ensure white text */
+}
+
+[data-theme='dark'] .glass-input:focus {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(82, 221, 105, 0.1);
+}
+
 .glass-btn {
     background: var(--primary-light);
     color: white;
