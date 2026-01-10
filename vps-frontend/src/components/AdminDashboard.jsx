@@ -15,7 +15,12 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [newUser, setNewUser] = useState({ name: '', admissionNo: '', password: '', role: 'STUDENT', className: '', section: '' });
-    // ... rest of state
+    const [editingUserId, setEditingUserId] = useState(null);
+    const [file, setFile] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showForm, setShowForm] = useState(false); // Toggle for mobile/cleaner UI
+    const [selectedUserForId, setSelectedUserForId] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchUsers();
