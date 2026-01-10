@@ -298,16 +298,16 @@ const MarkSheet = () => {
                                 </div>
 
                                 {/* Simple Table Preview */}
-                                <div style={{ background: 'rgba(255,255,255,0.5)', borderRadius: '12px', padding: '15px', marginBottom: '15px' }}>
+                                <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', padding: '15px', marginBottom: '15px' }}>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                                         {ms.subjects.map((s, i) => (
-                                            <span key={i} style={{ fontSize: '13px', background: 'white', padding: '5px 10px', borderRadius: '8px', border: '1px solid #eee' }}>
+                                            <span key={i} style={{ fontSize: '13px', background: 'var(--primary-light)', color: 'white', padding: '5px 10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
                                                 {s.subjectName}: <b>{s.marksObtained}</b>
                                             </span>
                                         ))}
                                     </div>
                                 </div>
-                                <div style={{ marginTop: '5px', fontSize: '14px', color: '#555' }}>
+                                <div style={{ marginTop: '5px', fontSize: '14px', color: 'var(--text-muted)' }}>
                                     Total Score: <b>{ms.totalObtained}</b> / {ms.totalMax}
                                 </div>
 
@@ -379,13 +379,13 @@ const MarkSheet = () => {
                                 + Add Another Subject
                             </button>
 
-                            <div style={{ background: 'rgba(255,255,255,0.6)', padding: '20px', borderRadius: '16px', marginBottom: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', padding: '20px', borderRadius: '16px', marginBottom: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div>
-                                    <p style={{ fontSize: '12px', color: '#666' }}>Total Score</p>
-                                    <h3 style={{ fontSize: '20px' }}>{totalObtained} <span style={{ fontSize: '14px', color: '#999' }}>/ {totalMax}</span></h3>
+                                    <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Total Score</p>
+                                    <h3 style={{ fontSize: '20px', color: 'var(--text-main)' }}>{totalObtained} <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>/ {totalMax}</span></h3>
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontSize: '12px', color: '#666' }}>Grade</p>
+                                    <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Grade</p>
                                     <h3 style={{ fontSize: '24px', color: 'var(--primary)' }}>{getGrade(percentage)} <span style={{ fontSize: '14px' }}>({percentage}%)</span></h3>
                                 </div>
                             </div>
