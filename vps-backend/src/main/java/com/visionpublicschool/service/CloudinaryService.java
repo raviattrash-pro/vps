@@ -78,6 +78,7 @@ public class CloudinaryService {
             Map params = ObjectUtils.asMap(
                     "public_id", publicId,
                     "overwrite", true,
+                    "invalidate", true,
                     "resource_type", resourceType);
 
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
