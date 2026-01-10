@@ -22,7 +22,7 @@ public class AdminController {
     }
 
     @Autowired
-    private com.visionpublicschool.service.FileStorageService fileStorageService;
+    private com.visionpublicschool.service.CloudinaryService cloudinaryService;
 
     @Autowired
     private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
@@ -34,8 +34,7 @@ public class AdminController {
         Student student = objectMapper.readValue(studentJson, Student.class);
 
         if (file != null && !file.isEmpty()) {
-            String fileName = fileStorageService.storeFile(file);
-            String fileUrl = "/uploads/" + fileName;
+            String fileUrl = cloudinaryService.uploadFile(file);
             student.setProfilePhoto(fileUrl);
         }
 
@@ -94,8 +93,7 @@ public class AdminController {
         }
 
         if (file != null && !file.isEmpty()) {
-            String fileName = fileStorageService.storeFile(file);
-            String fileUrl = "/uploads/" + fileName;
+            String fileUrl = cloudinaryService.uploadFile(file);
             existingStudent.setProfilePhoto(fileUrl);
         }
 
