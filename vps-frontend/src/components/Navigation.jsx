@@ -49,14 +49,31 @@ export const DesktopSidebar = () => {
 
     return (
         <div className="desktop-sidebar glass-card" style={{ padding: '30px 20px', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.6)', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 40px)' }}>
-            <div style={{ marginBottom: '40px', textAlign: 'center' }}>
+            <div style={{ marginBottom: '30px', textAlign: 'center' }}>
                 <h1 style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '28px', letterSpacing: '-1px' }}>VPS App</h1>
-                <p style={{ fontSize: '13px', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.5)', padding: '5px 10px', borderRadius: '20px', display: 'inline-block', marginTop: '5px' }}>
-                    Welcome, {user?.name?.split(' ')[0]}
-                </p>
+                <div style={{ marginTop: '15px', padding: '15px', background: 'rgba(255,255,255,0.5)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '50px', height: '50px', background: 'var(--primary)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 'bold' }}>
+                        {user?.name?.charAt(0)}
+                    </div>
+                    <div>
+                        <p style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>{user?.name?.split(' ')[0]}</p>
+                        <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: 0 }}>{user?.role}</p>
+                    </div>
+
+                    <button
+                        onClick={logout}
+                        style={{
+                            width: '100%', padding: '8px', borderRadius: '8px',
+                            border: '1px solid rgba(255,0,0,0.2)', background: 'rgba(255,0,0,0.05)', color: '#d32f2f',
+                            cursor: 'pointer', fontSize: '12px', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'
+                        }}
+                    >
+                        <FaSignOutAlt /> Logout
+                    </button>
+                </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexGrow: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexGrow: 1, overflowY: 'auto' }}>
                 {navItems.filter(item => !item.allowedRoles || item.allowedRoles.includes(user?.role)).map(item => (
                     <NavItem key={item.path} item={item} isMobile={false} />
                 ))}
@@ -66,42 +83,20 @@ export const DesktopSidebar = () => {
                 )}
             </div>
 
-            <div style={{ marginTop: 'auto' }}>
+            <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
                 <button
                     onClick={toggleTheme}
                     style={{
                         display: 'flex', alignItems: 'center', gap: '15px',
                         width: '100%', padding: '12px 20px', borderRadius: '16px',
                         border: 'none', background: 'transparent', color: 'var(--text-main)',
-                        cursor: 'pointer', fontSize: '16px', fontWeight: '500', transition: 'all 0.3s',
-                        marginBottom: '10px'
+                        cursor: 'pointer', fontSize: '16px', fontWeight: '500', transition: 'all 0.3s'
                     }}
                     onMouseEnter={e => e.currentTarget.style.background = 'var(--glass-border)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                     <span style={{ fontSize: '22px' }}>{theme === 'dark' ? <FaSun /> : <FaMoon />}</span>
                     {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-                </button>
-                <button
-                    onClick={logout}
-                    style={{
-                        display: 'flex', alignItems: 'center', gap: '15px',
-                        width: '100%', padding: '12px 20px', borderRadius: '16px',
-                        border: 'none', background: 'transparent', color: '#666',
-                        cursor: 'pointer', fontSize: '16px', fontWeight: '500', transition: 'all 0.3s',
-                        marginTop: '10px'
-                    }}
-                    onMouseEnter={e => {
-                        e.currentTarget.style.background = 'rgba(255, 0, 0, 0.1)';
-                        e.currentTarget.style.color = '#d32f2f';
-                    }}
-                    onMouseLeave={e => {
-                        e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.color = '#666'; // Reset to muted text color
-                    }}
-                >
-                    <span style={{ fontSize: '22px' }}><FaSignOutAlt /></span>
-                    Logout
                 </button>
             </div>
         </div>
@@ -112,36 +107,38 @@ export const MobileBottomNav = () => {
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
 
-    // Mobile grid should include logout or have top-bar logout? 
-    // Usually bottom nav has limited space. Let's add it as the last item or separate specific icon.
-    // For now, let's append a Logout item to the list for mobile manually
+    const mobileItems = navItems.filter(item => !item.allowedRoles || item.allowedRoles.includes(user?.role)).slice(0, 4);
 
     return (
-        <div className="mobile-nav glass-card" style={{ borderRadius: '20px 20px 0 0', display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-            {navItems.filter(item => !item.allowedRoles || item.allowedRoles.includes(user?.role)).slice(0, 4).map(item => (
+        <div className="mobile-nav glass-card" style={{ borderRadius: '20px 20px 0 0', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', padding: '0 5px' }}>
+            {mobileItems.map(item => (
                 <NavItem key={item.path} item={item} isMobile={true} />
             ))}
+
+            <div style={{ width: '1px', height: '30px', background: 'rgba(0,0,0,0.1)', margin: '0 5px' }}></div>
 
             <button
                 onClick={toggleTheme}
                 style={{
                     background: 'none', border: 'none', display: 'flex', flexDirection: 'column',
-                    alignItems: 'center', gap: '5px', color: 'var(--text-main)', cursor: 'pointer'
+                    alignItems: 'center', gap: '4px', color: 'var(--text-main)', cursor: 'pointer',
+                    minWidth: '50px'
                 }}
             >
-                <span style={{ fontSize: '20px' }}>{theme === 'dark' ? <FaSun /> : <FaMoon />}</span>
-                <span style={{ fontSize: '10px', fontWeight: '500' }}>Theme</span>
+                <span style={{ fontSize: '18px' }}>{theme === 'dark' ? <FaSun /> : <FaMoon />}</span>
+                <span style={{ fontSize: '9px', fontWeight: '500' }}>Theme</span>
             </button>
-            {/* Logout Icon for Mobile */}
+
             <button
                 onClick={logout}
                 style={{
                     background: 'none', border: 'none', display: 'flex', flexDirection: 'column',
-                    alignItems: 'center', gap: '5px', color: '#d32f2f', cursor: 'pointer'
+                    alignItems: 'center', gap: '4px', color: '#d32f2f', cursor: 'pointer',
+                    minWidth: '50px'
                 }}
             >
-                <span style={{ fontSize: '20px' }}><FaSignOutAlt /></span>
-                <span style={{ fontSize: '10px', fontWeight: '500' }}>Logout</span>
+                <span style={{ fontSize: '18px' }}><FaSignOutAlt /></span>
+                <span style={{ fontSize: '9px', fontWeight: '500' }}>Logout</span>
             </button>
         </div>
     );
