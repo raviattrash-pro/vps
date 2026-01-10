@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Toaster } from 'react-hot-toast';
 import Dashboard from './components/Dashboard';
 import Attendance from './components/Attendance';
 import CreateContent from './components/CreateContent';
@@ -17,6 +18,7 @@ import MarkSheet from './components/MarkSheet';
 import Reports from './components/Reports';
 import Payment from './components/Payment';
 import ActiveUsers from './components/ActiveUsers';
+import SchoolCalendar from './components/SchoolCalendar';
 import { useAuth } from './AuthContext';
 
 const PrivateRoute = ({ children }) => {
@@ -56,6 +58,7 @@ function App() {
     <>
       <Analytics />
       <SpeedInsights />
+      <Toaster position="top-right" />
       <Router>
         <Layout>
           <Routes>
@@ -90,6 +93,7 @@ function App() {
             <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
             <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
             <Route path="/admin/active-users" element={<PrivateRoute><ActiveUsers /></PrivateRoute>} />
+            <Route path="/calendar" element={<PrivateRoute><SchoolCalendar /></PrivateRoute>} />
             <Route path="/coming-soon" element={<PrivateRoute><ComingSoon /></PrivateRoute>} />
           </Routes>
         </Layout>

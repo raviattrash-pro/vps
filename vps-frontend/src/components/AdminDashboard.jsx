@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
+import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { FaUserPlus, FaTrash, FaArrowLeft, FaEdit, FaSearch, FaChalkboardTeacher, FaUserGraduate, FaUserShield, FaCamera, FaTimes, FaUserCircle, FaFileExcel } from 'react-icons/fa';
+import { FaUserPlus, FaTrash, FaArrowLeft, FaEdit, FaSearch, FaChalkboardTeacher, FaUserGraduate, FaUserShield, FaCamera, FaTimes, FaUserCircle, FaFileExcel, FaIdCard } from 'react-icons/fa';
 import DashboardStats from './DashboardStats';
+import IdCard from './IdCard';
+
 
 
 const AdminDashboard = () => {
@@ -12,6 +15,7 @@ const AdminDashboard = () => {
     const [file, setFile] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [showForm, setShowForm] = useState(false); // Toggle for mobile/cleaner UI
+    const [selectedUserForId, setSelectedUserForId] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -52,13 +56,13 @@ const AdminDashboard = () => {
             });
 
             if (res.ok) {
-                alert(editingUserId ? 'User Updated Successfully!' : 'User Added Successfully!');
+                toast.success(editingUserId ? 'User Updated Successfully!' : 'User Added Successfully!');
                 fetchUsers();
                 resetForm();
             } else {
-                alert('Failed to save user. Please check inputs.');
+                toast.error('Failed to save user. Please check inputs.');
             }
-        } catch (e) { alert('Failed to save user. Network error.'); }
+        } catch (e) { toast.error('Failed to save user. Network error.'); }
     };
 
     const resetForm = () => {
@@ -89,14 +93,15 @@ const AdminDashboard = () => {
             const res = await fetch(`${API_BASE_URL}/api/admin/users/${id}`, { method: 'DELETE' });
             if (res.ok) {
                 fetchUsers();
+                toast.success('User Deleted Successfully');
             } else {
                 const text = await res.text();
                 console.error("Delete failed:", text);
-                alert('Failed to delete user: ' + text);
+                toast.error('Failed to delete user: ' + text);
             }
         } catch (e) {
             console.error("Delete error:", e);
-            alert('Failed to delete user due to network error');
+            toast.error('Failed to delete user due to network error');
         }
     };
 
@@ -342,11 +347,30 @@ const AdminDashboard = () => {
                                         <FaTrash /> Delete
                                     </button>
                                 </div>
+                                <div style={{ marginTop: '10px' }}>
+                                    <button
+                                        onClick={() => setSelectedUserForId(u)}
+                                        style={{
+                                            width: '100%', padding: '8px', border: '1px solid var(--text-muted)', borderRadius: '10px',
+                                            background: 'transparent', color: 'var(--text-main)', cursor: 'pointer', fontSize: '13px',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', transition: 'all 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--text-muted)'; e.currentTarget.style.color = 'white'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-main)'; }}
+                                    >
+                                        <FaIdCard /> ID Card
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
                 )}
             </div>
+
+            {/* ID Card Modal */}
+            {selectedUserForId && (
+                <IdCard user={selectedUserForId} onClose={() => setSelectedUserForId(null)} />
+            )}
         </div>
     );
 };
