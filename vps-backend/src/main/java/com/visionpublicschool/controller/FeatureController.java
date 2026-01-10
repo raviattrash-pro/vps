@@ -38,23 +38,11 @@ public class FeatureController {
     @Autowired
     private CloudinaryService cloudinaryService;
     @Autowired
-    private FirebaseStorageService firebaseStorageService;
-    @Autowired
     private EmailService emailService;
     @Autowired
     private WhatsAppService whatsAppService;
 
-    private String uploadFileBasedOnType(MultipartFile file) {
-        if (file == null || file.isEmpty())
-            return null;
-        String contentType = file.getContentType();
-        if (contentType != null && (contentType.contains("pdf") || contentType.contains("msword")
-                || contentType.contains("officedocument"))) {
-            return firebaseStorageService.uploadFile(file);
-        } else {
-            return cloudinaryService.uploadFile(file);
-        }
-    }
+    // Helper removed as we only use Cloudinary now
 
     // Homework
     @GetMapping("/homework")
@@ -88,8 +76,10 @@ public class FeatureController {
         }
 
         if (file != null && !file.isEmpty()) {
-            String fileName = uploadFileBasedOnType(file);
-            homework.setFileName(fileName);
+            if (file != null && !file.isEmpty()) {
+                String fileName = cloudinaryService.uploadFile(file);
+                homework.setFileName(fileName);
+            }
         }
 
         Homework saved = homeworkRepository.save(homework);
@@ -235,8 +225,10 @@ public class FeatureController {
         material.setUploadDate(LocalDate.now());
 
         if (file != null && !file.isEmpty()) {
-            String fileName = uploadFileBasedOnType(file);
-            material.setFileName(fileName);
+            if (file != null && !file.isEmpty()) {
+                String fileName = cloudinaryService.uploadFile(file);
+                material.setFileName(fileName);
+            }
         }
 
         return studyMaterialRepository.save(material);
@@ -323,8 +315,10 @@ public class FeatureController {
         syllabus.setUploadDate(LocalDate.now());
 
         if (file != null && !file.isEmpty()) {
-            String fileName = uploadFileBasedOnType(file);
-            syllabus.setFileName(fileName);
+            if (file != null && !file.isEmpty()) {
+                String fileName = cloudinaryService.uploadFile(file);
+                syllabus.setFileName(fileName);
+            }
         }
 
         return syllabusRepository.save(syllabus);

@@ -34,21 +34,24 @@ public class CloudinaryService {
             Map<String, Object> params = new HashMap<>();
             String resourceType = "auto";
 
-            // If PDF, force 'raw' and preserve extension in public_id
-            if (file.getContentType() != null && file.getContentType().toLowerCase().contains("pdf")) {
+            // If PDF or Doc, use 'raw' and preserve extension
+            String contentType = file.getContentType();
+            if (contentType != null && (contentType.contains("pdf") ||
+                    contentType.contains("document") ||
+                    contentType.contains("msword") ||
+                    contentType.contains("text"))) {
+
                 resourceType = "raw";
                 String originalName = file.getOriginalFilename();
                 if (originalName == null)
-                    originalName = "document.pdf";
+                    originalName = "document.file";
 
                 // Sanitize filename to be URL safe
                 String cleanName = originalName.replaceAll("[^a-zA-Z0-9.-]", "_");
-                // Prepend timestamp to ensure uniqueness
+                // Prepend timestamp
                 String publicId = System.currentTimeMillis() + "_" + cleanName;
 
                 params.put("public_id", publicId);
-                // Force Content-Type header so browser knows it's a PDF
-                params.put("headers", "Content-Type: application/pdf");
             }
 
             params.put("resource_type", resourceType);
@@ -66,7 +69,9 @@ public class CloudinaryService {
                 return null;
 
             String resourceType = "auto";
-            if (file.getContentType() != null && file.getContentType().toLowerCase().contains("pdf")) {
+            if (file.getContentType() != null && (file.getContentType().contains("pdf") ||
+                    file.getContentType().contains("document") ||
+                    file.getContentType().contains("msword"))) {
                 resourceType = "raw";
             }
 
