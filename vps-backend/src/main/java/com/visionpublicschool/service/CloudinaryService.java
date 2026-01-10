@@ -88,6 +88,6 @@ public class CloudinaryService {
     }
 
     public String getUrl(String publicId) {
-        return cloudinary.url().generate(publicId);
+        return cloudinary.url().secure(true).generate(publicId);
     }
 }

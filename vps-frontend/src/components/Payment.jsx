@@ -112,10 +112,10 @@ const Payment = () => {
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
                         <img
-                            src={`${qrCode}?t=${new Date().getTime()}`}
+                            src={qrCode ? (qrCode.startsWith('http') ? qrCode : `${API_BASE_URL}${qrCode}`) : ''}
                             alt="Payment QR"
                             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                            onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.innerText = 'QR Code Not Available'; e.target.parentNode.style.color = '#999'; }}
+                            onError={(e) => { e.target.style.display = 'none'; if (e.target.parentNode) { e.target.parentNode.innerText = 'QR Code Not Available'; e.target.parentNode.style.color = '#999'; } }}
                         />
                     </div>
 
