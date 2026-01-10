@@ -11,9 +11,13 @@ export default defineConfig({
             includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
             manifest: {
                 name: 'Vision Public School',
-                short_name: 'VPS',
-                description: 'Vision Public School App',
-                theme_color: '#ffffff',
+                short_name: 'VPS App',
+                description: 'The Official App for Vision Public School Management',
+                theme_color: '#0f4c3a',
+                background_color: '#f0fdf4',
+                display: 'standalone',
+                orientation: 'portrait',
+                start_url: '/',
                 icons: [
                     {
                         src: 'pwa-192x192.png',
@@ -23,7 +27,8 @@ export default defineConfig({
                     {
                         src: 'pwa-512x512.png',
                         sizes: '512x512',
-                        type: 'image/png'
+                        type: 'image/png',
+                        purpose: 'any maskable'
                     }
                 ]
             }

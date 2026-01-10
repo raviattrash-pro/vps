@@ -3,13 +3,17 @@ import { API_BASE_URL } from '../config';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { FaUserPlus, FaTrash, FaArrowLeft, FaEdit, FaSearch, FaChalkboardTeacher, FaUserGraduate, FaUserShield, FaCamera, FaTimes, FaUserCircle, FaFileExcel, FaIdCard } from 'react-icons/fa';
+import { Tooltip } from 'react-tooltip';
+import { Helmet } from 'react-helmet-async';
 import DashboardStats from './DashboardStats';
 import IdCard from './IdCard';
+import DailyQuote from './DailyQuote';
 
 
 
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import confetti from 'canvas-confetti';
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -65,7 +69,15 @@ const AdminDashboard = () => {
             });
 
             if (res.ok) {
-                toast.success(editingUserId ? 'User Updated Successfully!' : 'User Added Successfully!');
+                const isEdit = !!editingUserId;
+                toast.success(isEdit ? 'User Updated Successfully!' : 'User Added Successfully!');
+                if (!isEdit) {
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }
                 fetchUsers();
                 resetForm();
             } else {
@@ -118,6 +130,11 @@ const AdminDashboard = () => {
         window.location.href = `${API_BASE_URL}/api/reports/users/excel`;
     };
 
+    const handleCopy = (text, label) => {
+        navigator.clipboard.writeText(text);
+        toast.success(`Copied ${label}!`);
+    };
+
     const filteredUsers = users.filter(u =>
         u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         u.admissionNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,6 +159,11 @@ const AdminDashboard = () => {
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '40px' }}>
+            <Helmet>
+                <title>Admin Dashboard - VPS</title>
+            </Helmet>
+            <Tooltip id="my-tooltip" style={{ borderRadius: '8px', padding: '8px 12px', fontSize: '12px' }} />
+            <DailyQuote />
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '30px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -170,6 +192,8 @@ const AdminDashboard = () => {
                 <button
                     className="glass-btn"
                     onClick={handleExport}
+                    data-tooltip-id="my-tooltip"
+                    data-tooltip-content="Download User List as Excel"
                     style={{ background: '#1D6F42', color: 'white', fontWeight: '600', marginRight: '10px' }}
                 >
                     <FaFileExcel /> Export
@@ -177,6 +201,8 @@ const AdminDashboard = () => {
                 <button
                     className="glass-btn"
                     onClick={() => setShowForm(!showForm)}
+                    data-tooltip-id="my-tooltip"
+                    data-tooltip-content={showForm ? "Cancel Adding User" : "Add a New User"}
                     style={{ background: showForm ? '#e63946' : 'var(--primary-light)' }}
                 >
                     {showForm ? <><FaTimes /> Cancel</> : <><FaUserPlus /> Add New User</>}
@@ -257,7 +283,7 @@ const AdminDashboard = () => {
                     </div>
 
                     <div style={{ marginTop: '30px', textAlign: 'right' }}>
-                        <button className="glass-btn" onClick={handleAddUser} style={{ width: '200px' }}>
+                        <button className="glass-btn ripple-btn" onClick={handleAddUser} style={{ width: '200px' }}>
                             {editingUserId ? 'Update User' : 'Create User'}
                         </button>
                     </div>
@@ -316,11 +342,11 @@ const AdminDashboard = () => {
                                         background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         border: `2px solid ${getRoleColor(u.role)}`
                                     }}>
-                                        {u.profilePhoto ? (
-                                            <img src={`${u.profilePhoto?.startsWith('http') ? u.profilePhoto : `${API_BASE_URL}${u.profilePhoto}`}`} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        ) : (
-                                            <span style={{ fontSize: '24px', color: getRoleColor(u.role) }}>{u.name.charAt(0).toUpperCase()}</span>
-                                        )}
+                                        <img
+                                            src={u.profilePhoto?.startsWith('http') ? u.profilePhoto : (u.profilePhoto ? `${API_BASE_URL}${u.profilePhoto}` : `https://api.dicebear.com/9.x/notionists/svg?seed=${u.name}&backgroundColor=c0aede,b6e3f4`)}
+                                            alt="Profile"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
                                     </div>
                                     <div>
                                         <h4 style={{ margin: 0, color: 'var(--text-main)', fontSize: '16px' }}>{u.name}</h4>
@@ -335,7 +361,13 @@ const AdminDashboard = () => {
                                 </div>
 
                                 <div style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '20px' }}>
-                                    <div><strong>ID:</strong> {u.admissionNo}</div>
+                                    <div
+                                        onClick={() => handleCopy(u.admissionNo, 'ID')}
+                                        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                                        title="Click to Copy ID"
+                                    >
+                                        <strong>ID:</strong> <span style={{ textDecoration: 'underline dotted' }}>{u.admissionNo}</span>
+                                    </div>
                                     {u.role === 'STUDENT' && (
                                         <>
                                             <div><strong>Class:</strong> {u.className} {u.section ? `(${u.section})` : ''}</div>
@@ -350,6 +382,8 @@ const AdminDashboard = () => {
                                 <div style={{ display: 'flex', gap: '10px', paddingTop: '15px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
                                     <button
                                         onClick={() => handleEdit(u)}
+                                        data-tooltip-id="my-tooltip"
+                                        data-tooltip-content="Edit User Details"
                                         style={{
                                             flex: 1, padding: '8px', border: '1px solid var(--primary)', borderRadius: '10px',
                                             background: 'transparent', color: 'var(--primary)', cursor: 'pointer', fontSize: '13px',
@@ -362,6 +396,8 @@ const AdminDashboard = () => {
                                     </button>
                                     <button
                                         onClick={() => handleDelete(u.id)}
+                                        data-tooltip-id="my-tooltip"
+                                        data-tooltip-content="Delete User Permanently"
                                         style={{
                                             flex: 1, padding: '8px', border: '1px solid #e63946', borderRadius: '10px',
                                             background: 'transparent', color: '#e63946', cursor: 'pointer', fontSize: '13px',

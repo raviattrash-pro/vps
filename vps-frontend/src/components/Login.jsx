@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { FaUserGraduate, FaLock, FaArrowRight } from 'react-icons/fa';
+import { FaUserGraduate, FaLock, FaArrowRight, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login = () => {
     const [admissionNo, setAdmissionNo] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
@@ -74,15 +75,25 @@ const Login = () => {
                     <div style={{ position: 'relative' }}>
                         <FaLock style={{ position: 'absolute', top: '18px', left: '15px', color: 'rgba(255,255,255,0.6)' }} />
                         <input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             style={{
-                                width: '100%', padding: '15px 15px 15px 45px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.3)',
+                                width: '100%', padding: '15px 45px 15px 45px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.3)',
                                 background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none', fontSize: '16px'
                             }}
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{
+                                position: 'absolute', top: '50%', right: '15px', transform: 'translateY(-50%)',
+                                background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '18px'
+                            }}
+                        >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
                     </div>
 
                     <button type="submit" style={{

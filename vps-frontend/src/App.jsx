@@ -28,6 +28,16 @@ const PrivateRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" />;
 };
 
+import { AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
+import { HelmetProvider, Helmet } from 'react-helmet-async';
+import PageTransition from './components/PageTransition';
+import NotFound from './pages/NotFound';
+import OfflineIndicator from './components/OfflineIndicator';
+import ScrollToTop from './components/ScrollToTop';
+import SessionTimeout from './components/SessionTimeout';
+import Breadcrumbs from './components/Breadcrumbs';
+
 import { DesktopSidebar, MobileBottomNav } from './components/Navigation';
 
 const Layout = ({ children }) => {
@@ -44,6 +54,7 @@ const Layout = ({ children }) => {
 
       {/* Main Content (Center) */}
       <div className="main-content">
+        <Breadcrumbs />
         {children}
       </div>
 
@@ -55,52 +66,73 @@ const Layout = ({ children }) => {
   );
 };
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/" element={
+          <PrivateRoute><PageTransition><Dashboard /></PageTransition></PrivateRoute>
+        } />
+        <Route path="/attendance" element={
+          <PrivateRoute><PageTransition><Attendance /></PageTransition></PrivateRoute>
+        } />
+        <Route path="/create-content" element={
+          <PrivateRoute><PageTransition><CreateContent /></PageTransition></PrivateRoute>
+        } />
+        <Route path="/syllabus" element={
+          <PrivateRoute><PageTransition><Syllabus /></PageTransition></PrivateRoute>
+        } />
+        <Route path="/homework" element={
+          <PrivateRoute><PageTransition><Homework /></PageTransition></PrivateRoute>
+        } />
+        <Route path="/notices" element={
+          <PrivateRoute><PageTransition><Notices /></PageTransition></PrivateRoute>
+        } />
+        <Route path="/study-material" element={
+          <PrivateRoute><PageTransition><StudyMaterial /></PageTransition></PrivateRoute>
+        } />
+        <Route path="/question" element={
+          <PrivateRoute><PageTransition><Question /></PageTransition></PrivateRoute>
+        } />
+        <Route path="/marks" element={<PrivateRoute><PageTransition><MarkSheet /></PageTransition></PrivateRoute>} />
+        <Route path="/live" element={<PrivateRoute><PageTransition><LiveClass /></PageTransition></PrivateRoute>} />
+        <Route path="/reports" element={<PrivateRoute><PageTransition><Reports /></PageTransition></PrivateRoute>} />
+        <Route path="/payment" element={<PrivateRoute><PageTransition><Payment /></PageTransition></PrivateRoute>} />
+        <Route path="/admin" element={<PrivateRoute><PageTransition><AdminDashboard /></PageTransition></PrivateRoute>} />
+        <Route path="/admin/active-users" element={<PrivateRoute><PageTransition><ActiveUsers /></PageTransition></PrivateRoute>} />
+        <Route path="/calendar" element={<PrivateRoute><PageTransition><SchoolCalendar /></PageTransition></PrivateRoute>} />
+        <Route path="/coming-soon" element={<PrivateRoute><PageTransition><ComingSoon /></PageTransition></PrivateRoute>} />
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 function App() {
   return (
     <ThemeProvider>
-      <Analytics />
-      <SpeedInsights />
-      <Toaster position="top-right" />
-      <Router>
-        <CommandPalette />
-        <Layout>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={
-              <PrivateRoute><Dashboard /></PrivateRoute>
-            } />
-            <Route path="/attendance" element={
-              <PrivateRoute><Attendance /></PrivateRoute>
-            } />
-            <Route path="/create-content" element={
-              <PrivateRoute><CreateContent /></PrivateRoute>
-            } />
-            <Route path="/syllabus" element={
-              <PrivateRoute><Syllabus /></PrivateRoute>
-            } />
-            <Route path="/homework" element={
-              <PrivateRoute><Homework /></PrivateRoute>
-            } />
-            <Route path="/notices" element={
-              <PrivateRoute><Notices /></PrivateRoute>
-            } />
-            <Route path="/study-material" element={
-              <PrivateRoute><StudyMaterial /></PrivateRoute>
-            } />
-            <Route path="/question" element={
-              <PrivateRoute><Question /></PrivateRoute>
-            } />
-            <Route path="/marks" element={<PrivateRoute><MarkSheet /></PrivateRoute>} />
-            <Route path="/live" element={<PrivateRoute><LiveClass /></PrivateRoute>} />
-            <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
-            <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
-            <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-            <Route path="/admin/active-users" element={<PrivateRoute><ActiveUsers /></PrivateRoute>} />
-            <Route path="/calendar" element={<PrivateRoute><SchoolCalendar /></PrivateRoute>} />
-            <Route path="/coming-soon" element={<PrivateRoute><ComingSoon /></PrivateRoute>} />
-          </Routes>
-        </Layout>
-      </Router>
+      <HelmetProvider>
+        <Helmet>
+          <title>Vision Public School</title>
+          <meta name="description" content="Official School Management App" />
+        </Helmet>
+        <Analytics />
+        <SpeedInsights />
+        <Toaster position="top-right" />
+        <OfflineIndicator />
+        <ScrollToTop />
+        {/* Only show session timeout if user is logged in (handled inside component, but better here) */}
+        <SessionTimeout />
+        <Router>
+          <CommandPalette />
+          <Layout>
+            <AnimatedRoutes />
+          </Layout>
+        </Router>
+      </HelmetProvider>
     </ThemeProvider>
   );
 }

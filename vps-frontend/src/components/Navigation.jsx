@@ -52,8 +52,12 @@ export const DesktopSidebar = () => {
             <div style={{ marginBottom: '30px', textAlign: 'center' }}>
                 <h1 style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '28px', letterSpacing: '-1px' }}>VPS App</h1>
                 <div style={{ marginTop: '15px', padding: '15px', background: 'rgba(255,255,255,0.5)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '50px', height: '50px', background: 'var(--primary)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 'bold' }}>
-                        {user?.name?.charAt(0)}
+                    <div style={{ width: '60px', height: '60px', borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--primary)' }}>
+                        <img
+                            src={`https://api.dicebear.com/9.x/notionists/svg?seed=${user?.name || 'User'}&backgroundColor=c0aede,b6e3f4`}
+                            alt="Avatar"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
                     </div>
                     <div>
                         <p style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>{user?.name?.split(' ')[0]}</p>
