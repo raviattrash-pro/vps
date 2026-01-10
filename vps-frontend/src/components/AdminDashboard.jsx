@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
-import { FaUserPlus, FaTrash, FaArrowLeft, FaEdit, FaSearch, FaChalkboardTeacher, FaUserGraduate, FaUserShield, FaCamera, FaTimes, FaUserCircle } from 'react-icons/fa';
+import { FaUserPlus, FaTrash, FaArrowLeft, FaEdit, FaSearch, FaChalkboardTeacher, FaUserGraduate, FaUserShield, FaCamera, FaTimes, FaUserCircle, FaFileExcel } from 'react-icons/fa';
+import DashboardStats from './DashboardStats';
+
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -98,6 +100,10 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleExport = () => {
+        window.location.href = `${API_BASE_URL}/api/reports/users/excel`;
+    };
+
     const filteredUsers = users.filter(u =>
         u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         u.admissionNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -146,6 +152,13 @@ const AdminDashboard = () => {
                     style={{ background: 'var(--accent)', color: 'var(--primary)', fontWeight: '600', marginRight: '10px' }}
                 >
                     <FaUserCircle /> Active Users
+                </button>
+                <button
+                    className="glass-btn"
+                    onClick={handleExport}
+                    style={{ background: '#1D6F42', color: 'white', fontWeight: '600', marginRight: '10px' }}
+                >
+                    <FaFileExcel /> Export
                 </button>
                 <button
                     className="glass-btn"
@@ -236,6 +249,9 @@ const AdminDashboard = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Dashboard Stats */}
+            <DashboardStats users={users} />
 
             {/* List Section */}
             <div>

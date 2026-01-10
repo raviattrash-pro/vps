@@ -34,6 +34,7 @@ public class SecurityConfig {
                         // Allow all requests to API endpoints, Images, and Actuator
                         // Since our Custom AuthController handles login logic/token, we just open the
                         // door here.
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/**").permitAll());
 
         return http.build();
