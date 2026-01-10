@@ -125,8 +125,8 @@ function App() {
         <OfflineIndicator />
         <ScrollToTop />
         {/* Only show session timeout if user is logged in (handled inside component, but better here) */}
-        <SessionTimeout />
         <Router>
+          <SessionTimeout />
           <CommandPalette />
           <Layout>
             <AnimatedRoutes />
