@@ -14,6 +14,9 @@ import java.util.List;
 public class StudentController {
 
     @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+    @Autowired
     private StudentRepository studentRepository;
 
     @GetMapping
@@ -23,6 +26,7 @@ public class StudentController {
 
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
+        student.setPassword(passwordEncoder.encode(student.getPassword()));
         return studentRepository.save(student);
     }
 }
