@@ -301,7 +301,15 @@ const MarkSheet = () => {
                                 <div style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '12px', padding: '15px', marginBottom: '15px' }}>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                                         {ms.subjects.map((s, i) => (
-                                            <span key={i} style={{ fontSize: '13px', background: 'var(--primary-light)', color: 'white', padding: '5px 10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                            <span key={i} style={{
+                                                fontSize: '13px',
+                                                background: 'rgba(127, 255, 212, 0.1)', // Very faint transparent green
+                                                border: '1px solid var(--primary)',
+                                                color: 'var(--text-main)',
+                                                padding: '5px 12px',
+                                                borderRadius: '20px',
+                                                fontWeight: '500'
+                                            }}>
                                                 {s.subjectName}: <b>{s.marksObtained}</b>
                                             </span>
                                         ))}
