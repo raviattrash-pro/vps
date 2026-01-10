@@ -12,6 +12,7 @@ const Payment = () => {
     const [paymentFile, setPaymentFile] = useState(null);
     const [payments, setPayments] = useState([]);
     const [refresh, setRefresh] = useState(false);
+    const [qrError, setQrError] = useState(false);
 
     // UPI ID State
     const [upiId, setUpiId] = useState('school@upi'); // Default
@@ -24,7 +25,10 @@ const Payment = () => {
         // Fetch QR Code URL
         fetch(`${API_BASE_URL}/api/payment/qr`)
             .then(res => res.text())
-            .then(url => setQrCode(url))
+            .then(url => {
+                setQrCode(url);
+                setQrError(false);
+            })
             .catch(err => console.error("Failed to load QR", err));
 
         // Load UPI ID from local storage for persistence (simulation)
@@ -121,12 +125,18 @@ const Payment = () => {
                         padding: '15px', boxShadow: '0 5px 15px rgba(0,0,0,0.1)', marginBottom: '20px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
-                        <img
-                            src={getQrUrl()}
-                            alt="Payment QR"
-                            style={{ width: '100%', height: '100%', objectFit: 'contain', display: qrCode ? 'block' : 'none' }}
-                            onError={(e) => { e.target.style.display = 'none'; if (e.target.parentNode) { e.target.parentNode.innerText = 'QR Code Not Available'; e.target.parentNode.style.color = '#999'; } }}
-                        />
+                        {!qrError && qrCode ? (
+                            <img
+                                src={getQrUrl()}
+                                alt="Payment QR"
+                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                onError={() => setQrError(true)}
+                            />
+                        ) : (
+                            <div style={{ color: '#999', fontSize: '14px', fontWeight: 'bold' }}>
+                                QR Code Not Available
+                            </div>
+                        )}
                     </div>
 
                     {/* UPI ID Section */}
