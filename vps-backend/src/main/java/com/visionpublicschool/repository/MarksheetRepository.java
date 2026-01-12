@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface MarksheetRepository extends JpaRepository<Marksheet, Long> {
     List<Marksheet> findByStudentId(Long studentId);
+
+    List<Marksheet> findByStudentClassName(String className);
 }
