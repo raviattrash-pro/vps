@@ -107,8 +107,8 @@ const PollSystem = () => {
                         <div className="glass-panel p-8 rounded-3xl border border-teal-100 dark:border-teal-900/30 shadow-xl mb-8 bg-gradient-to-br from-white to-teal-50/50 dark:from-gray-800 dark:to-teal-900/20">
                             <h2 className="text-xl font-bold mb-6 text-teal-800 dark:text-teal-200">Create a New Poll</h2>
                             <form onSubmit={createPoll} className="space-y-5">
-                                <input
-                                    className="w-full text-xl font-bold p-4 bg-white dark:bg-black/20 border-2 border-teal-100 dark:border-teal-900 rounded-2xl focus:border-teal-500 outline-none transition-colors"
+                                <textarea
+                                    className="w-full text-xl font-bold p-4 bg-white dark:bg-black/20 border-2 border-teal-100 dark:border-teal-900 rounded-2xl focus:border-teal-500 outline-none transition-colors resize-none h-32"
                                     placeholder="What's your question?"
                                     value={question} onChange={e => setQuestion(e.target.value)} required
                                 />

@@ -189,7 +189,7 @@ const Transport = () => {
                                     </div>
                                     <div>
                                         <p className="text-xs text-gray-400 font-bold uppercase mb-1">Coverage</p>
-                                        <p className="text-sm leading-relaxed font-medium">{route.routeAreas}</p>
+                                        <p className="text-sm leading-relaxed font-medium break-words line-clamp-3" title={route.routeAreas}>{route.routeAreas}</p>
                                     </div>
                                 </div>
                             </div>

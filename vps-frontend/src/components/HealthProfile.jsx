@@ -138,11 +138,11 @@ const HealthProfile = () => {
                         <div className="space-y-4">
                             <div>
                                 <span className="text-sm text-gray-500">Known Allergies:</span>
-                                <div className="font-semibold text-red-600 text-lg">{healthData.allergies || 'None'}</div>
+                                <div className="font-semibold text-red-600 text-lg break-words">{healthData.allergies || 'None'}</div>
                             </div>
                             <div>
                                 <span className="text-sm text-gray-500">Ongoing Medications:</span>
-                                <div className="font-semibold text-gray-800 dark:text-gray-200">{healthData.medications || 'None'}</div>
+                                <div className="font-semibold text-gray-800 dark:text-gray-200 break-words">{healthData.medications || 'None'}</div>
                             </div>
                         </div>
                     </div>

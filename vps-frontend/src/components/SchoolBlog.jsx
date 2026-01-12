@@ -106,9 +106,10 @@ const SchoolBlog = () => {
                             <form onSubmit={handlePublish} className="space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Headline</label>
-                                    <input
-                                        className="w-full text-4xl font-bold border-b-2 border-gray-200 dark:border-gray-600 focus:border-red-600 outline-none p-2 bg-transparent dark:text-white font-serif placeholder-gray-300/50 transition-colors"
+                                    <textarea
+                                        className="w-full text-4xl font-bold border-b-2 border-gray-200 dark:border-gray-600 focus:border-red-600 outline-none p-2 bg-transparent dark:text-white font-serif placeholder-gray-300/50 transition-colors resize-none overflow-hidden"
                                         placeholder="An Epic Title..."
+                                        rows="2"
                                         value={title} onChange={e => setTitle(e.target.value)} required
                                     />
                                 </div>
