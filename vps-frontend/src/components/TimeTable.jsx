@@ -1,45 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
-import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../config';
+import { FaCalendarAlt, FaPlus, FaTrash } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const TimeTable = () => {
     const { user } = useAuth();
-    const [timeTable, setTimeTable] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [days] = useState(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']);
+    const [timetable, setTimetable] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    // Form State (for Admin/Teacher)
+    // Admin/Teacher State
+    const [targetClass, setTargetClass] = useState(user.className || '10');
+    const [targetSection, setTargetSection] = useState(user.section || 'A');
     const [showForm, setShowForm] = useState(false);
-    const [newItem, setNewItem] = useState({
+    const [newEntry, setNewEntry] = useState({
         dayOfWeek: 'MONDAY',
-        startTime: '',
-        endTime: '',
+        periodTime: '09:00 - 10:00',
         subject: '',
         teacherName: '',
-        className: user?.className || '',
-        section: user?.section || ''
+        roomNumber: ''
     });
 
     useEffect(() => {
-        fetchTimeTable();
-    }, [user, user?.className, user?.section]); // Re-fetch if user class/section changes (for students)
+        if (targetClass && targetSection) {
+            fetchTimeTable();
+        }
+    }, [targetClass, targetSection]);
 
     const fetchTimeTable = async () => {
         setLoading(true);
         try {
-            let url = `${API_BASE_URL}/api/timetable`;
-            if (user.role === 'STUDENT') {
-                url += `?studentId=${user.id}`;
-            } else if (newItem.className && newItem.section) {
-                // For admin viewing a specific class
-                url += `?className=${newItem.className}&section=${newItem.section}`;
-            }
+            const url = user.role === 'STUDENT'
+                ? `${API_BASE_URL}/api/timetable/my-table` // Assuming backend extracts class from logged in user
+                : `${API_BASE_URL}/api/timetable?className=${targetClass}&section=${targetSection}`;
 
             const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
-                setTimeTable(data);
+                setTimetable(data);
             }
         } catch (error) {
             console.error("Error fetching timetable", error);
@@ -48,22 +46,21 @@ const TimeTable = () => {
         }
     };
 
-    const handleAddItem = async (e) => {
+    const handleAdd = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${API_BASE_URL}/api/timetable`, {
+            const response = await fetch(`${API_BASE_URL}/api/timetable?className=${targetClass}&section=${targetSection}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newItem)
+                body: JSON.stringify(newEntry)
             });
             if (response.ok) {
                 setShowForm(false);
-                fetchTimeTable(); // Refresh
-                // Reset minimal form fields
-                setNewItem({ ...newItem, subject: '', teacherName: '', startTime: '', endTime: '' });
+                fetchTimeTable();
+                setNewEntry({ ...newEntry, subject: '', teacherName: '', roomNumber: '' });
             }
         } catch (error) {
-            console.error("Error adding item", error);
+            console.error("Error creating entry", error);
         }
     };
 
@@ -73,147 +70,188 @@ const TimeTable = () => {
             await fetch(`${API_BASE_URL}/api/timetable/${id}`, { method: 'DELETE' });
             fetchTimeTable();
         } catch (error) {
-            console.error("Error deleting item", error);
+            console.error("Error deleting", error);
         }
     };
 
-    // Helper to filter items for a day
-    const getItemsForDay = (day) => {
-        return timeTable.filter(item => item.dayOfWeek === day);
+    const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    const periods = [
+        '08:00 - 09:00', '09:00 - 10:00', '10:00 - 11:00',
+        '11:00 - 11:30', // Break
+        '11:30 - 12:30', '12:30 - 01:30', '01:30 - 02:30'
+    ];
+
+    // Helper to get color based on subject (simple hash)
+    const getSubjectColor = (subject) => {
+        if (!subject) return 'bg-gray-50 dark:bg-gray-800';
+        const colors = [
+            'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border-blue-200 dark:border-blue-800',
+            'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 border-green-200 dark:border-green-800',
+            'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 border-purple-200 dark:border-purple-800',
+            'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200 border-orange-200 dark:border-orange-800',
+            'bg-pink-100 text-pink-800 dark:bg-pink-900/40 dark:text-pink-200 border-pink-200 dark:border-pink-800',
+            'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-200 border-teal-200 dark:border-teal-800',
+        ];
+        let hash = 0;
+        for (let i = 0; i < subject.length; i++) hash = subject.charCodeAt(i) + ((hash << 5) - hash);
+        return colors[Math.abs(hash) % colors.length];
     };
 
     return (
-        <div className="p-6 space-y-6">
-            <header className="flex justify-between items-center">
+        <div className="p-4 md:p-8 max-w-[95%] mx-auto space-y-6">
+            <header className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Class Time-Table</h1>
-                    <p className="text-gray-500 dark:text-gray-400">Weekly Schedule</p>
+                    <h1 className="text-3xl font-black flex items-center gap-3 text-gray-800 dark:text-white">
+                        <FaCalendarAlt className="text-indigo-600" /> Class Schedule
+                    </h1>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">Weekly Academic Planner</p>
                 </div>
+
                 {user.role !== 'STUDENT' && (
-                    <button
-                        onClick={() => setShowForm(!showForm)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        {showForm ? 'Close Form' : 'Manage Schedule'}
-                    </button>
+                    <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-gray-800 p-2 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <input
+                            placeholder="Class"
+                            className="w-16 p-2 bg-transparent text-center font-bold outline-none border-b-2 border-indigo-100 focus:border-indigo-500 transition-colors"
+                            value={targetClass} onChange={e => setTargetClass(e.target.value)}
+                        />
+                        <input
+                            placeholder="Sec"
+                            className="w-12 p-2 bg-transparent text-center font-bold outline-none border-b-2 border-indigo-100 focus:border-indigo-500 transition-colors"
+                            value={targetSection} onChange={e => setTargetSection(e.target.value)}
+                        />
+                        <button
+                            onClick={() => setShowForm(!showForm)}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 flex items-center gap-2"
+                        >
+                            <FaPlus /> Add
+                        </button>
+                    </div>
                 )}
             </header>
 
-            {/* Admin Filter / Add Form */}
-            {user.role !== 'STUDENT' && (
-                <div className="glass-panel p-6 rounded-2xl">
-                    <div className="flex gap-4 mb-4">
-                        <input
-                            type="text"
-                            placeholder="Class (e.g. 10)"
-                            className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            value={newItem.className}
-                            onChange={(e) => setNewItem({ ...newItem, className: e.target.value })}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Section (e.g. A)"
-                            className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            value={newItem.section}
-                            onChange={(e) => setNewItem({ ...newItem, section: e.target.value })}
-                        />
-                        <button onClick={fetchTimeTable} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-                            Load
-                        </button>
-                    </div>
+            {/* Timetable Grid */}
+            <div className="overflow-x-auto pb-4 custom-scrollbar">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="min-w-[1000px] bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                >
+                    <div className="grid grid-cols-8 divide-x divide-gray-200 dark:divide-gray-700">
+                        {/* Header Row */}
+                        <div className="p-4 font-black text-gray-400 uppercase tracking-widest text-xs bg-gray-50 dark:bg-gray-900/50 flex items-center justify-center">Day / Time</div>
+                        {periods.map(time => (
+                            <div key={time} className="p-4 font-bold text-gray-600 dark:text-gray-300 text-center text-xs bg-gray-50 dark:bg-gray-900/50 flex items-center justify-center">
+                                {time}
+                            </div>
+                        ))}
 
-                    {showForm && (
-                        <form onSubmit={handleAddItem} className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 dark:border-gray-700">
-                            <select
-                                value={newItem.dayOfWeek}
-                                onChange={e => setNewItem({ ...newItem, dayOfWeek: e.target.value })}
-                                className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            >
-                                {days.map(d => <option key={d} value={d}>{d}</option>)}
-                            </select>
-                            <input
-                                type="text"
-                                placeholder="Subject"
-                                className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                value={newItem.subject}
-                                onChange={e => setNewItem({ ...newItem, subject: e.target.value })}
-                                required
-                            />
-                            <div className="flex gap-2">
-                                <input
-                                    type="time"
-                                    className="p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    value={newItem.startTime}
-                                    onChange={e => setNewItem({ ...newItem, startTime: e.target.value })}
-                                    required
-                                />
-                                <input
-                                    type="time"
-                                    className="p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    value={newItem.endTime}
-                                    onChange={e => setNewItem({ ...newItem, endTime: e.target.value })}
-                                    required
-                                />
+                        {/* Data Rows */}
+                        {days.map(day => (
+                            <React.Fragment key={day}>
+                                <div className="p-4 font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/10 flex items-center justify-center border-t border-gray-100 dark:border-gray-700">
+                                    {day.substring(0, 3)}
+                                </div>
+                                {periods.map(time => {
+                                    const entry = timetable.find(t => t.dayOfWeek === day && t.periodTime === time);
+
+                                    // Handle Break Time specifically if modeled or just visual
+                                    if (time === '11:00 - 11:30') {
+                                        return day === 'MONDAY' ? ( // Clean way to render it just once visually or for valid grid structure render empty but styled
+                                            <div key={`${day}-${time}`} className="bg-gray-100 dark:bg-gray-800 flex items-center justify-center border-t border-gray-100 dark:border-gray-700">
+                                                <span className="text-[10px] font-bold text-gray-400 -rotate-90">BREAK</span>
+                                            </div>
+                                        ) : (
+                                            <div key={`${day}-${time}`} className="bg-gray-100 dark:bg-gray-800 flex items-center justify-center border-t border-gray-100 dark:border-gray-700">
+                                                <span className="text-[10px] font-bold text-gray-400 -rotate-90"></span>
+                                            </div>
+                                        );
+                                    }
+
+                                    return (
+                                        <div key={`${day}-${time}`} className="min-h-[100px] p-2 border-t border-gray-100 dark:border-gray-700 relative group">
+                                            {entry ? (
+                                                <motion.div
+                                                    whileHover={{ scale: 1.05 }}
+                                                    className={`h-full w-full rounded-xl p-3 flex flex-col justify-between border ${getSubjectColor(entry.subject)} shadow-sm`}
+                                                >
+                                                    <div>
+                                                        <div className="font-black text-sm leading-tight">{entry.subject}</div>
+                                                        <div className="text-[10px] font-bold opacity-80 mt-1">{entry.teacherName}</div>
+                                                    </div>
+                                                    <div className="text-[10px] font-mono opacity-70 bg-white/30 rounded px-1 w-max">
+                                                        R-{entry.roomNumber}
+                                                    </div>
+
+                                                    {user.role === 'ADMIN' && (
+                                                        <button
+                                                            onClick={() => handleDelete(entry.id)}
+                                                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1.5 bg-red-500 text-white rounded-full shadow-md hover:bg-red-600 transition-all"
+                                                        >
+                                                            <FaTrash className="text-[10px]" />
+                                                        </button>
+                                                    )}
+                                                </motion.div>
+                                            ) : (
+                                                <div className="h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {user.role === 'ADMIN' && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setNewEntry({ ...newEntry, dayOfWeek: day, periodTime: time });
+                                                                setShowForm(true);
+                                                            }}
+                                                            className="text-gray-300 hover:text-indigo-500 text-2xl"
+                                                        >
+                                                            +
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Modal Form for Adding */}
+            {showForm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md shadow-2xl"
+                    >
+                        <h2 className="text-xl font-bold mb-4 dark:text-white">Add Schedule Entry</h2>
+                        <form onSubmit={handleAdd} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="dark:text-white font-mono text-sm">{newEntry.dayOfWeek}</div>
+                                <div className="dark:text-white font-mono text-sm">{newEntry.periodTime}</div>
                             </div>
                             <input
-                                type="text"
-                                placeholder="Teacher Name"
-                                className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                value={newItem.teacherName}
-                                onChange={e => setNewItem({ ...newItem, teacherName: e.target.value })}
+                                placeholder="Subject"
+                                className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg outline-none border focus:border-indigo-500 transition-colors"
+                                value={newEntry.subject} onChange={e => setNewEntry({ ...newEntry, subject: e.target.value })} required
                             />
-                            <button type="submit" className="col-span-full md:col-span-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                                Add Period
-                            </button>
+                            <input
+                                placeholder="Teacher Name"
+                                className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg outline-none border focus:border-indigo-500 transition-colors"
+                                value={newEntry.teacherName} onChange={e => setNewEntry({ ...newEntry, teacherName: e.target.value })}
+                            />
+                            <input
+                                placeholder="Room Number"
+                                className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg outline-none border focus:border-indigo-500 transition-colors"
+                                value={newEntry.roomNumber} onChange={e => setNewEntry({ ...newEntry, roomNumber: e.target.value })}
+                            />
+                            <div className="flex justify-end gap-3 pt-4">
+                                <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 text-gray-500 font-bold">Cancel</button>
+                                <button type="submit" className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold">Save</button>
+                            </div>
                         </form>
-                    )}
+                    </motion.div>
                 </div>
             )}
-
-            {/* Time Table Grid */}
-            <div className="space-y-6">
-                {days.map(day => (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        key={day}
-                        className="glass-panel p-6 rounded-2xl"
-                    >
-                        <h2 className="text-xl font-bold mb-4 text-purple-600 dark:text-purple-400 border-b pb-2 dark:border-gray-700">
-                            {day}
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {getItemsForDay(day).length === 0 ? (
-                                <p className="text-gray-400 italic">No classes scheduled.</p>
-                            ) : (
-                                getItemsForDay(day).map(item => (
-                                    <div key={item.id} className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm relative group">
-                                        <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1">
-                                            {item.startTime} - {item.endTime}
-                                        </div>
-                                        <div className="font-bold text-lg text-gray-800 dark:text-white">
-                                            {item.subject}
-                                        </div>
-                                        {item.teacherName && (
-                                            <div className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                                                👨‍🏫 {item.teacherName}
-                                            </div>
-                                        )}
-                                        {user.role !== 'STUDENT' && (
-                                            <button
-                                                onClick={() => handleDelete(item.id)}
-                                                className="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                ✕
-                                            </button>
-                                        )}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
         </div>
     );
 };
