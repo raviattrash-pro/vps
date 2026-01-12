@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { API_BASE_URL } from '../config';
-import { FaImages, FaPlus, FaTimes, FaExpand } from 'react-icons/fa';
+import { FaImage, FaUpload, FaLink, FaTimes, FaCamera, FaSearch } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Gallery = () => {
     const { user } = useAuth();
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showForm, setShowForm] = useState(false);
-    const [filter, setFilter] = useState('All');
-    const [selectedImage, setSelectedImage] = useState(null); // For Lightbox
+    const [uploadMode, setUploadMode] = useState('url'); // 'url' or 'file'
+    const [showUpload, setShowUpload] = useState(false);
 
+    // Form State
     const [newImage, setNewImage] = useState({
         imageUrl: '',
         title: '',
-        description: '',
-        category: 'Sports'
+        category: 'Campus',
+        description: ''
     });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState('');
 
     useEffect(() => {
         fetchImages();
@@ -37,8 +39,35 @@ const Gallery = () => {
         }
     };
 
-    const handleAddImage = async (e) => {
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5000000) { // 5MB limit
+                alert("File size should be less than 5MB");
+                return;
+            }
+            setSelectedFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result);
+                // In a real app, you'd upload to Cloudinary/S3 here and get a URL.
+                // For this request, we'll send the Date URI if the backend supports text, 
+                // or just alert the user if it fails.
+                setNewImage({ ...newImage, imageUrl: reader.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUpload = async (e) => {
         e.preventDefault();
+
+        // Simple validation
+        if (!newImage.imageUrl) {
+            alert("Please provide an image URL or select a file.");
+            return;
+        }
+
         try {
             const response = await fetch(`${API_BASE_URL}/api/gallery`, {
                 method: 'POST',
@@ -47,82 +76,169 @@ const Gallery = () => {
             });
 
             if (response.ok) {
-                setShowForm(false);
-                setNewImage({ imageUrl: '', title: '', description: '', category: 'Sports' });
+                setNewImage({ imageUrl: '', title: '', category: 'Campus', description: '' });
+                setSelectedFile(null);
+                setPreviewUrl('');
+                setShowUpload(false);
                 fetchImages();
+            } else {
+                alert("Upload failed. The server might not accept large files encoded as text. Please use an Image URL.");
             }
         } catch (error) {
-            console.error("Error adding image", error);
+            console.error("Error uploading image", error);
+            alert("Upload failed. Check console.");
         }
     };
 
-    const categories = ['All', 'Sports', 'Cultural', 'Academic', 'Campus'];
-    const filteredImages = filter === 'All' ? images : images.filter(img => img.category === filter);
+    // Masonry Grid Columns based on categories
+    const categories = ['All', 'Campus', 'Sports', 'Cultural', 'Academic'];
+    const [activeCategory, setActiveCategory] = useState('All');
+
+    const filteredImages = activeCategory === 'All'
+        ? images
+        : images.filter(img => img.category === activeCategory);
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-8 min-h-screen">
-            <header className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                    <h1 className="text-4xl font-black flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500 tracking-tight">
-                        <FaImages className="text-pink-500" /> VPS Gallery
+        <div className="min-h-screen p-4 md:p-8 max-w-[1600px] mx-auto space-y-8">
+            {/* Header */}
+            <header className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 transition-all">
+                <div className="text-center md:text-left">
+                    <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-300 flex items-center gap-4 justify-center md:justify-start">
+                        <FaCamera className="text-emerald-600 dark:text-emerald-400" /> VPS Gallery
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium tracking-wide">Capturing Moments, Creating Memories</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium mt-2 text-lg">Capturing Moments, Creating Memories</p>
                 </div>
+
                 {user.role === 'ADMIN' && (
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => setShowForm(!showForm)}
-                        className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-xl font-bold shadow-lg shadow-pink-500/30 flex items-center gap-2"
+                        onClick={() => setShowUpload(!showUpload)}
+                        className="px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full font-bold shadow-lg hover:shadow-emerald-500/40 transition-all flex items-center gap-2"
                     >
-                        <FaPlus /> Upload Photo
+                        {showUpload ? <FaTimes /> : <FaUpload />} {showUpload ? 'Close Upload' : 'Upload Photo'}
                     </motion.button>
                 )}
             </header>
 
-            {/* Category Filter */}
-            <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
-                {categories.map(cat => (
-                    <button
-                        key={cat}
-                        onClick={() => setFilter(cat)}
-                        className={`px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 ${filter === cat
-                            ? 'bg-pink-500 text-white shadow-md shadow-pink-500/20 transform scale-105'
-                            : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-pink-50 dark:hover:bg-gray-700'
-                            }`}
-                    >
-                        {cat}
-                    </button>
-                ))}
-            </div>
-
-            {/* Upload Form */}
+            {/* Upload Section */}
             <AnimatePresence>
-                {showForm && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-6">
-                        <div className="glass-panel p-8 rounded-3xl border border-pink-100 dark:border-pink-900/30 shadow-xl">
-                            <form onSubmit={handleAddImage} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <input
-                                    type="text" placeholder="Image URL (e.g. https://...)" className="col-span-full p-4 border rounded-xl bg-white/50 dark:bg-black/20 focus:ring-2 focus:ring-pink-500/50 outline-none transition-all"
-                                    value={newImage.imageUrl} onChange={e => setNewImage({ ...newImage, imageUrl: e.target.value })} required
-                                />
-                                <input
-                                    type="text" placeholder="Title" className="p-4 border rounded-xl bg-white/50 dark:bg-black/20 focus:ring-2 focus:ring-pink-500/50 outline-none"
-                                    value={newImage.title} onChange={e => setNewImage({ ...newImage, title: e.target.value })} required
-                                />
-                                <select className="p-4 border rounded-xl bg-white/50 dark:bg-black/20 focus:ring-2 focus:ring-pink-500/50 outline-none" value={newImage.category} onChange={e => setNewImage({ ...newImage, category: e.target.value })}>
-                                    <option value="Sports">Sports</option>
-                                    <option value="Cultural">Cultural</option>
-                                    <option value="Academic">Academic</option>
-                                    <option value="Campus">Campus</option>
-                                </select>
-                                <textarea
-                                    placeholder="Description" className="col-span-full p-4 border rounded-xl bg-white/50 dark:bg-black/20 focus:ring-2 focus:ring-pink-500/50 outline-none h-32 resize-none"
-                                    value={newImage.description} onChange={e => setNewImage({ ...newImage, description: e.target.value })}
-                                ></textarea>
-                                <div className="col-span-full flex justify-end gap-3">
-                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                                    <button type="submit" className="px-8 py-2 bg-pink-600 text-white font-bold rounded-lg shadow-lg hover:bg-pink-700">Upload</button>
+                {showUpload && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden"
+                    >
+                        <div className="glass-panel p-8 mb-12 border-t-4 border-emerald-500 relative">
+                            {/* Decorative element */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full -mr-16 -mt-16 pointer-events-none"></div>
+
+                            <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-2">
+                                <FaUpload className="text-emerald-500" /> Upload New Memory
+                            </h2>
+
+                            <form onSubmit={handleUpload} className="space-y-6">
+                                {/* Upload Mode Toggle */}
+                                <div className="flex gap-4 mb-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setUploadMode('url')}
+                                        className={`flex-1 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${uploadMode === 'url' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 ring-2 ring-emerald-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
+                                    >
+                                        <FaLink /> Image Link
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setUploadMode('file')}
+                                        className={`flex-1 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${uploadMode === 'file' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 ring-2 ring-emerald-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'}`}
+                                    >
+                                        <FaImage /> Local File
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-4">
+                                        {/* Image Input */}
+                                        {uploadMode === 'url' ? (
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Image URL</label>
+                                                <input
+                                                    type="url"
+                                                    className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none backdrop-blur-sm"
+                                                    placeholder="https://example.com/image.jpg"
+                                                    value={newImage.imageUrl}
+                                                    onChange={e => setNewImage({ ...newImage, imageUrl: e.target.value })}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="border-2 border-dashed border-emerald-300 dark:border-emerald-700 rounded-2xl p-8 text-center bg-emerald-50/50 dark:bg-emerald-900/10 hover:bg-emerald-100/50 transition-colors cursor-pointer relative group">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleFileChange}
+                                                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-20"
+                                                />
+                                                <div className="pointer-events-none relative z-10">
+                                                    {previewUrl ? (
+                                                        <div className="relative">
+                                                            <img src={previewUrl} alt="Preview" className="h-48 mx-auto rounded-lg shadow-lg object-cover" />
+                                                            <p className="text-sm text-center mt-2 text-emerald-600 font-bold">Image Selected</p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="py-4">
+                                                            <FaUpload className="text-4xl text-emerald-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                                                            <p className="text-gray-500 dark:text-gray-400 font-medium">Click or Drag photo here</p>
+                                                            <p className="text-xs text-gray-400 mt-1">Supports JPG, PNG (Max 5MB)</p>
+                                                            <p className="text-[10px] text-amber-500 mt-2">* Large files may be rejected by server</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                                                <select
+                                                    className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none backdrop-blur-sm appearance-none"
+                                                    value={newImage.category}
+                                                    onChange={e => setNewImage({ ...newImage, category: e.target.value })}
+                                                >
+                                                    {categories.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none backdrop-blur-sm"
+                                                    placeholder="e.g. Annual Sports Day"
+                                                    value={newImage.title}
+                                                    onChange={e => setNewImage({ ...newImage, title: e.target.value })}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4 flex flex-col">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                                            <textarea
+                                                className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none backdrop-blur-sm h-full min-h-[150px] resize-none"
+                                                placeholder="Tell the story behind this photo..."
+                                                value={newImage.description}
+                                                onChange={e => setNewImage({ ...newImage, description: e.target.value })}
+                                            />
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold shadow-lg hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all"
+                                        >
+                                            Publish to Gallery
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -130,74 +246,59 @@ const Gallery = () => {
                 )}
             </AnimatePresence>
 
-            {/* Gallery Grid */}
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Filters */}
+            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                {categories.map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`px-6 py-2 rounded-full font-medium transition-all transform ${activeCategory === cat ? 'bg-emerald-600 text-white shadow-lg scale-105' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
+
+            {/* Masonry Grid */}
+            <div className="columns-1 md:columns-2 lg:columns-3 ga-6 space-y-6">
                 <AnimatePresence>
                     {filteredImages.map((img, idx) => (
                         <motion.div
-                            key={img.id}
                             layout
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ duration: 0.3 }}
-                            className="group relative rounded-2xl overflow-hidden shadow-lg h-72 cursor-pointer bg-gray-100 dark:bg-gray-800"
-                            onClick={() => setSelectedImage(img)}
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.3, delay: idx * 0.05 }}
+                            key={img.id || idx}
+                            className="break-inside-avoid relative group rounded-2xl overflow-hidden mb-6 shadow-md hover:shadow-2xl transition-all"
                         >
-                            <img src={img.imageUrl} alt={img.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-
-                            {/* Overlay */}
+                            <img
+                                src={img.imageUrl}
+                                alt={img.title}
+                                className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                loading="lazy"
+                            />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                                <span className="inline-block px-2 py-1 bg-pink-500/80 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider rounded-md mb-2 w-max shadow-sm">{img.category}</span>
-                                <h3 className="text-white font-bold text-xl leading-tight mb-1">{img.title}</h3>
-                                <p className="text-gray-300 text-sm line-clamp-2">{img.description}</p>
-                                <div className="absolute top-4 right-4 text-white p-2 bg-white/20 backdrop-blur-md rounded-full transform translate-x-10 group-hover:translate-x-0 transition-transform duration-300">
-                                    <FaExpand />
+                                <span className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">{img.category}</span>
+                                <h3 className="text-white text-xl font-bold leading-tight">{img.title}</h3>
+                                {img.description && <p className="text-gray-200 text-sm mt-2 line-clamp-2">{img.description}</p>}
+                                <div className="mt-4 flex justify-between items-center">
+                                    <span className="text-gray-400 text-xs">{new Date(img.uploadDate || Date.now()).toLocaleDateString()}</span>
                                 </div>
                             </div>
                         </motion.div>
                     ))}
                 </AnimatePresence>
-            </motion.div>
+            </div>
 
             {filteredImages.length === 0 && !loading && (
-                <div className="text-center py-20 opacity-50">
-                    <FaImages className="text-6xl mx-auto mb-4 text-gray-300" />
-                    <p className="text-xl font-medium">No images found in this category.</p>
+                <div className="text-center py-20">
+                    <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <FaImage className="text-4xl text-gray-300" />
+                    </div>
+                    <p className="text-gray-500 text-lg">No photos found in this category.</p>
                 </div>
             )}
-
-            {/* Lightbox Modal */}
-            <AnimatePresence>
-                {selectedImage && (
-                    <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
-                        onClick={() => setSelectedImage(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-                            className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center"
-                            onClick={e => e.stopPropagation()} // Prevent close on content click
-                        >
-                            <button
-                                onClick={() => setSelectedImage(null)}
-                                className="absolute -top-12 right-0 text-white p-2 hover:bg-white/20 rounded-full transition-colors"
-                            >
-                                <FaTimes className="text-2xl" />
-                            </button>
-
-                            <img src={selectedImage.imageUrl} alt={selectedImage.title} className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl" />
-
-                            <div className="w-full bg-white/10 backdrop-blur-md border border-white/10 p-6 rounded-b-2xl mt-4 text-white">
-                                <span className="text-pink-400 font-bold text-xs uppercase tracking-wider">{selectedImage.category}</span>
-                                <h2 className="text-2xl font-bold mt-1">{selectedImage.title}</h2>
-                                <p className="text-gray-300 mt-2 text-lg font-light leading-relaxed">{selectedImage.description}</p>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 };
