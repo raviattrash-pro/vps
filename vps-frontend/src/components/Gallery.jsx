@@ -115,6 +115,25 @@ const Gallery = () => {
             setUploading(false);
         }
     };
+    const handleDelete = async (id, e) => {
+        e.stopPropagation(); // Prevent modal opening if we had one
+        if (!window.confirm("Are you sure you want to delete this memory?")) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/gallery/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                setImages(images.filter(img => img.id !== id));
+            } else {
+                alert("Failed to delete image.");
+            }
+        } catch (error) {
+            console.error("Error deleting image", error);
+            alert("Delete failed due to error.");
+        }
+    };
 
     // Categories
     const categories = ['All', 'Campus', 'Sports', 'Cultural', 'Academic', 'Events'];
@@ -285,6 +304,15 @@ const Gallery = () => {
                             >
                                 <div className="relative">
                                     <img src={img.imageUrl} alt={img.title} className="w-full h-auto object-cover" loading="lazy" />
+                                    {canEdit && (
+                                        <button
+                                            onClick={(e) => handleDelete(img.id, e)}
+                                            className="absolute top-2 right-2 bg-red-500/80 text-white p-2 rounded-full shadow-md hover:bg-red-600 transition-colors z-20 opacity-0 group-hover:opacity-100"
+                                            title="Delete Image"
+                                        >
+                                            <FaTrash size={14} />
+                                        </button>
+                                    )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                                         <span className="text-emerald-400 text-xs font-bold uppercase tracking-wider">{img.category}</span>
                                         <h3 className="text-white font-bold text-lg">{img.title}</h3>

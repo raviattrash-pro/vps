@@ -47,4 +47,9 @@ public class GalleryController {
 
         return galleryImageRepository.save(image);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteImage(@PathVariable Long id) {
+        galleryImageRepository.deleteById(id);
+    }
 }
