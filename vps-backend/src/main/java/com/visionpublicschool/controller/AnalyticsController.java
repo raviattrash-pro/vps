@@ -1,14 +1,14 @@
 package com.visionpublicschool.controller;
 
-import com.visionpublicschool.entity.Result;
-import com.visionpublicschool.repository.ResultRepository;
+import com.visionpublicschool.entity.Marksheet;
+import com.visionpublicschool.entity.SubjectMark;
+import com.visionpublicschool.repository.MarksheetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/analytics")
@@ -16,23 +16,25 @@ import java.util.stream.Collectors;
 public class AnalyticsController {
 
     @Autowired
-    private ResultRepository resultRepository;
+    private MarksheetRepository marksheetRepository;
 
     @GetMapping("/class-average")
     public Map<String, Double> getClassAverage(@RequestParam String className) {
-        List<Result> results = resultRepository.findByClassName(className);
+        List<Marksheet> results = marksheetRepository.findByStudentClassName(className);
 
         // Calculate average per subject
         Map<String, List<Double>> subjectMarks = new HashMap<>();
 
-        for (Result r : results) {
-            subjectMarks.computeIfAbsent(r.getSubject(), k -> new java.util.ArrayList<>())
-                    .add(Double.valueOf(r.getMarksObtained()));
+        for (Marksheet r : results) {
+            for (SubjectMark sm : r.getSubjects()) {
+                subjectMarks.computeIfAbsent(sm.getSubjectName(), k -> new java.util.ArrayList<>())
+                        .add(sm.getMarksObtained());
+            }
         }
 
         Map<String, Double> averages = new HashMap<>();
         for (Map.Entry<String, List<Double>> entry : subjectMarks.entrySet()) {
-            double avg = entry.getValue().stream().mapToDouble(val -> val).average().orElse(0.0);
+            double avg = entry.getValue().stream().mapToDouble(val -> val != null ? val : 0.0).average().orElse(0.0);
             averages.put(entry.getKey(), avg);
         }
 
