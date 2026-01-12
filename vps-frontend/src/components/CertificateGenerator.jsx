@@ -12,6 +12,27 @@ const CertificateGenerator = () => {
     const [generatedCert, setGeneratedCert] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    // Search State
+    const [students, setStudents] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+
+    useEffect(() => {
+        fetchStudents();
+    }, []);
+
+    const fetchStudents = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/students`);
+            if (response.ok) {
+                const data = await response.json();
+                setStudents(data);
+            }
+        } catch (error) {
+            console.error("Error fetching students", error);
+        }
+    };
+
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -71,19 +92,48 @@ const CertificateGenerator = () => {
                 style={{ padding: '25px', maxWidth: '900px', margin: '0 auto' }}
             >
                 <form onSubmit={handleGenerate} className="flex flex-col md:flex-row gap-6 items-end">
-                    <div className="flex-1 w-full">
-                        <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Student ID (Admission No.)</label>
+                    <div className="flex-1 w-full relative">
+                        <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Student Name</label>
                         <div className="relative">
                             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input
-                                type="number"
+                                type="text"
                                 className="glass-input pl-10"
-                                value={studentId}
-                                onChange={e => setStudentId(e.target.value)}
-                                placeholder="Search by ID..."
-                                required
+                                value={searchTerm}
+                                onChange={e => {
+                                    setSearchTerm(e.target.value);
+                                    setStudentId(''); // Reset ID on new search
+                                    setShowDropdown(true);
+                                }}
+                                onFocus={() => setShowDropdown(true)}
+                                placeholder="Search by Name..."
+                                required={!studentId}
                             />
                         </div>
+                        {showDropdown && searchTerm && !studentId && (
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 max-h-60 overflow-y-auto z-50">
+                                {students.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase())).map(student => (
+                                    <div
+                                        key={student.id}
+                                        onClick={() => {
+                                            setStudentId(student.id);
+                                            setSearchTerm(student.name); // Show name in input
+                                            setShowDropdown(false);
+                                        }}
+                                        className="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-3 border-b border-gray-50 dark:border-gray-700 last:border-0"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold text-xs">
+                                            {student.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-sm dark:text-gray-200">{student.name}</div>
+                                            <div className="text-xs text-gray-500">Class {student.className}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {studentId && <div className="text-xs text-green-500 font-bold mt-1 ml-2">✓ Student Selected (ID: {studentId})</div>}
                     </div>
                     <div className="flex-1 w-full">
                         <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Document Type</label>

@@ -422,7 +422,7 @@ const Gallery = () => {
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200">
+                                    <div className="flex gap-2 mt-4 transition-opacity duration-300">
                                         <button
                                             onClick={() => handleDownload(img.imageUrl, img.title)}
                                             className="p-2 rounded-full bg-white/20 hover:bg-white text-white hover:text-black backdrop-blur-md transition-all"

@@ -157,7 +157,7 @@ const AskDoubt = () => {
             </header>
 
             {/* Ask Box */}
-            <div className="glass-panel p-6 rounded-3xl border border-indigo-100 dark:border-indigo-900 shadow-xl relative overflow-hidden">
+            <div className="glass-panel p-8 rounded-3xl border border-indigo-100 dark:border-indigo-900 shadow-xl relative overflow-hidden mb-12">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
                 <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
@@ -258,7 +258,7 @@ const AskDoubt = () => {
                                         </div>
                                     </div>
 
-                                    <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 ml-13 pl-13 my-2 leading-relaxed whitespace-pre-line">
+                                    <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 ml-0 md:ml-14 pl-2 my-4 leading-relaxed whitespace-pre-line">
                                         {doubt.question}
                                     </h3>
 

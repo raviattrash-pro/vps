@@ -7,17 +7,18 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
 const AnalyticsDashboard = () => {
     const { user } = useAuth();
     const [className, setClassName] = useState(user.className || '10');
+    const [section, setSection] = useState(user.section || 'A');
     const [averages, setAverages] = useState({});
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchAverages();
-    }, [className]);
+    }, [className, section]);
 
     const fetchAverages = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/api/analytics/class-average?className=${className}`);
+            const response = await fetch(`${API_BASE_URL}/api/analytics/class-average?className=${className}&section=${section}`);
             if (response.ok) {
                 const data = await response.json();
                 setAverages(data);
@@ -78,16 +79,24 @@ const AnalyticsDashboard = () => {
                     <h1 className="text-4xl font-black flex items-center gap-3 text-indigo-600 dark:text-indigo-400">
                         <FaChartBar /> Performance Analytics
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">Class {className} Overview</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">Class {className} - Section {section} Overview</p>
                 </div>
                 {user.role === 'ADMIN' && (
                     <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                         <label className="text-sm font-bold text-gray-500 px-2">Class:</label>
                         <input
                             type="text"
-                            className="p-1 border-b-2 border-indigo-100 focus:border-indigo-500 bg-transparent text-center font-bold w-16 outline-none dark:text-white transition-colors"
+                            className="p-1 border-b-2 border-indigo-100 focus:border-indigo-500 bg-transparent text-center font-bold w-12 outline-none dark:text-white transition-colors"
                             value={className}
                             onChange={(e) => setClassName(e.target.value)}
+                        />
+                        <span className="text-gray-300">|</span>
+                        <label className="text-sm font-bold text-gray-500 px-2">Sec:</label>
+                        <input
+                            type="text"
+                            className="p-1 border-b-2 border-indigo-100 focus:border-indigo-500 bg-transparent text-center font-bold w-12 outline-none dark:text-white transition-colors"
+                            value={section}
+                            onChange={(e) => setSection(e.target.value)}
                         />
                     </div>
                 )}

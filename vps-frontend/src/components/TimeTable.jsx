@@ -31,7 +31,7 @@ const TimeTable = () => {
         setLoading(true);
         try {
             const url = user.role === 'STUDENT'
-                ? `${API_BASE_URL}/api/timetable/my-table` // Assuming backend extracts class from logged in user
+                ? `${API_BASE_URL}/api/timetable?className=${user.className}&section=${user.section}`
                 : `${API_BASE_URL}/api/timetable?className=${targetClass}&section=${targetSection}`;
 
             const response = await fetch(url);

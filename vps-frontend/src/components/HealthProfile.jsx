@@ -113,8 +113,8 @@ const HealthProfile = () => {
     };
 
     const filteredStudents = students.filter(s =>
-        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.email.toLowerCase().includes(searchTerm.toLowerCase())
+        s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (!user) return null;

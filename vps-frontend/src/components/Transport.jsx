@@ -163,11 +163,11 @@ const Transport = () => {
                                     <FaBus />
                                 </div>
                                 <div className="text-xs font-black tracking-wider text-orange-600/60 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/40 px-3 py-1 rounded-full uppercase">
-                                    {route.vehicleNumber}
+                                    {route.vehicleNumber || 'No Number'}
                                 </div>
                             </div>
 
-                            <h3 className="text-2xl font-black text-gray-800 dark:text-white mb-2">{route.routeName}</h3>
+                            <h3 className="text-2xl font-black text-gray-800 dark:text-white mb-2">{route.routeName || 'Unnamed Route'}</h3>
 
                             <div className="space-y-4 mb-6">
                                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300 bg-gray-50/50 dark:bg-gray-700/30 p-3 rounded-xl">
@@ -176,7 +176,7 @@ const Transport = () => {
                                     </div>
                                     <div>
                                         <p className="text-xs text-gray-400 font-bold uppercase">Driver</p>
-                                        <p className="font-bold text-sm">{route.driverName}</p>
+                                        <p className="font-bold text-sm">{route.driverName || 'N/A'}</p>
                                     </div>
                                     <a href={`tel:${route.driverPhone}`} className="ml-auto w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-full hover:bg-green-200 transition-colors">
                                         <FaPhone size={12} />
@@ -189,7 +189,7 @@ const Transport = () => {
                                     </div>
                                     <div>
                                         <p className="text-xs text-gray-400 font-bold uppercase mb-1">Coverage</p>
-                                        <p className="text-sm leading-relaxed font-medium break-words line-clamp-3" title={route.routeAreas}>{route.routeAreas}</p>
+                                        <p className="text-sm leading-relaxed font-medium break-words line-clamp-3" title={route.routeAreas}>{route.routeAreas || 'No details available'}</p>
                                     </div>
                                 </div>
                             </div>

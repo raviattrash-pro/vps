@@ -128,7 +128,7 @@ const Inventory = () => {
                 )}
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
                 <StatCard label="Total Inventory Count" value={totalItems} icon={FaClipboardList} color="blue" />
                 <StatCard label="Low Stock Alerts" value={lowStock} icon={FaExclamationTriangle} color="orange" />
                 <StatCard label="Damaged / Repairs" value={damaged} icon={FaTrash} color="red" />
@@ -197,11 +197,11 @@ const Inventory = () => {
             </AnimatePresence>
 
             {/* Search */}
-            <div className="relative max-w-md">
-                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <div className="relative max-w-2xl mx-auto mb-12">
+                <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
-                    className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 outline-none"
-                    placeholder="Search inventory..."
+                    className="w-full pl-14 pr-6 py-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg focus:ring-4 focus:ring-cyan-500/20 outline-none text-lg transition-all"
+                    placeholder="Search inventory items..."
                     value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
                 />
             </div>

@@ -242,12 +242,21 @@ const VisitorManagement = () => {
                                         </div>
 
                                         {viewMode === 'active' && (
-                                            <button
-                                                onClick={() => handleCheckOut(visitor.id)}
-                                                className="w-full py-3 rounded-xl bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 font-bold flex items-center justify-center gap-2 transition-colors border border-red-100 dark:border-red-900/50"
-                                            >
-                                                <FaSignOutAlt /> Mark as Checkout
-                                            </button>
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => handleCheckOut(visitor.id)}
+                                                    className="flex-1 py-3 rounded-xl bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 font-bold flex items-center justify-center gap-2 transition-colors border border-red-100 dark:border-red-900/50"
+                                                >
+                                                    <FaSignOutAlt /> Checkout
+                                                </button>
+                                                <button
+                                                    onClick={() => window.print()}
+                                                    className="px-4 py-3 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 font-bold flex items-center justify-center gap-2 transition-colors"
+                                                    title="Download/Print Pass"
+                                                >
+                                                    <FaIdBadge />
+                                                </button>
+                                            </div>
                                         )}
                                         {viewMode === 'history' && (
                                             <div className="text-center text-xs text-green-600 dark:text-green-400 font-bold flex items-center justify-center gap-1">
@@ -261,7 +270,7 @@ const VisitorManagement = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
