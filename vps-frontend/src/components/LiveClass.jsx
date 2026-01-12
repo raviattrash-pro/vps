@@ -113,30 +113,23 @@ const LiveClass = () => {
                             <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
                                 <div style={{ flex: 1 }}>
                                     <label style={{ display: 'block', textAlign: 'left', marginBottom: '5px', color: 'var(--text-muted)', fontWeight: 'bold' }}>Class</label>
-                                    <select
+                                    <input
                                         className="glass-input"
+                                        placeholder="e.g. 10, Nursery"
                                         value={targetClass}
                                         onChange={(e) => setTargetClass(e.target.value)}
                                         style={{ width: '100%', padding: '10px' }}
-                                    >
-                                        <option value="9">Class 9</option>
-                                        <option value="10">Class 10</option>
-                                        <option value="11">Class 11</option>
-                                        <option value="12">Class 12</option>
-                                    </select>
+                                    />
                                 </div>
                                 <div style={{ flex: 1 }}>
                                     <label style={{ display: 'block', textAlign: 'left', marginBottom: '5px', color: 'var(--text-muted)', fontWeight: 'bold' }}>Section</label>
-                                    <select
+                                    <input
                                         className="glass-input"
+                                        placeholder="e.g. A, Rose"
                                         value={targetSection}
                                         onChange={(e) => setTargetSection(e.target.value)}
                                         style={{ width: '100%', padding: '10px' }}
-                                    >
-                                        <option value="A">Section A</option>
-                                        <option value="B">Section B</option>
-                                        <option value="C">Section C</option>
-                                    </select>
+                                    />
                                 </div>
                             </div>
 
