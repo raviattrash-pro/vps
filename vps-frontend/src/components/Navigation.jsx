@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaHome, FaChalkboardTeacher, FaBook, FaCalendarAlt, FaUserCog, FaFileAlt, FaVideo, FaMoneyBillWave, FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
+import { FaHome, FaChalkboardTeacher, FaBook, FaCalendarAlt, FaUserCog, FaFileAlt, FaVideo, FaMoneyBillWave, FaSignOutAlt, FaSun, FaMoon, FaHeartbeat } from 'react-icons/fa';
 import { useAuth } from '../AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -12,6 +12,7 @@ const navItems = [
     { path: '/live', label: 'Live', icon: <FaVideo />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { path: '/payment', label: 'Fees', icon: <FaMoneyBillWave />, allowedRoles: ['ADMIN', 'STUDENT', 'ACCOUNTANT'] },
     { path: '/reports', label: 'Reports', icon: <FaBook />, allowedRoles: ['ADMIN', 'ACCOUNTANT'] },
+    { path: '/health', label: 'Health Card', icon: <FaHeartbeat />, allowedRoles: ['ADMIN', 'STUDENT'] },
     { path: '/calendar', label: 'Calendar', icon: <FaCalendarAlt />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { path: '/timetable', label: 'Time Table', icon: <FaChalkboardTeacher />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     // { path: '/admin', label: 'Admin', icon: <FaUserCog />, allowedRoles: ['ADMIN'] }, 
