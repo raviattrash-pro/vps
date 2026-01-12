@@ -16,14 +16,35 @@ public class GalleryController {
     @Autowired
     private GalleryImageRepository galleryImageRepository;
 
+    @Autowired
+    private com.visionpublicschool.service.CloudinaryService cloudinaryService;
+
     @GetMapping
     public List<GalleryImage> getAllImages() {
         return galleryImageRepository.findAllByOrderByUploadDateDesc();
     }
 
     @PostMapping
-    public GalleryImage addImage(@RequestBody GalleryImage image) {
+    public GalleryImage addImage(
+            @RequestParam(value = "file", required = false) org.springframework.web.multipart.MultipartFile file,
+            @RequestParam(value = "imageUrl", required = false) String imageUrl,
+            @RequestParam("title") String title,
+            @RequestParam("category") String category,
+            @RequestParam("description") String description) {
+
+        String finalUrl = imageUrl;
+
+        if (file != null && !file.isEmpty()) {
+            finalUrl = cloudinaryService.uploadFile(file);
+        }
+
+        GalleryImage image = new GalleryImage();
+        image.setTitle(title);
+        image.setCategory(category);
+        image.setDescription(description);
+        image.setImageUrl(finalUrl);
         image.setUploadDate(LocalDate.now());
+
         return galleryImageRepository.save(image);
     }
 }
