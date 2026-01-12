@@ -15,6 +15,17 @@ const PollSystem = () => {
     const [question, setQuestion] = useState('');
     const [options, setOptions] = useState(['', '']);
 
+    const handleOptionChange = (index, value) => {
+        const newOptions = [...options];
+        newOptions[index] = value;
+        setOptions(newOptions);
+    };
+
+    const removeOption = (index) => {
+        const newOptions = options.filter((_, i) => i !== index);
+        setOptions(newOptions);
+    };
+
     useEffect(() => {
         fetchPolls();
     }, []);

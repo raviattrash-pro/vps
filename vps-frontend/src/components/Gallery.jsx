@@ -383,9 +383,9 @@ const Gallery = () => {
                 )}
             </AnimatePresence>
 
-            {/* Gallery Grid - Masonry-like feel with standard grid */}
+            {/* Gallery Grid - Standard Grid for better arrangement */}
             <div className="max-w-7xl mx-auto">
-                <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     <AnimatePresence>
                         {filteredImages.map((img, idx) => (
                             <motion.div
@@ -394,59 +394,61 @@ const Gallery = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
                                 key={img.id || idx}
-                                className="break-inside-avoid relative group rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500"
+                                className="relative group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-gray-900"
                             >
                                 {/* Image */}
-                                <img
-                                    src={img.imageUrl}
-                                    alt={img.title}
-                                    className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-110"
-                                    loading="lazy"
-                                />
+                                <div className="aspect-[4/5] overflow-hidden">
+                                    <img
+                                        src={img.imageUrl}
+                                        alt={img.title}
+                                        className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
+                                        loading="lazy"
+                                    />
+                                </div>
 
                                 {/* Overlay Gradient */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300"></div>
 
                                 {/* Content Overlay */}
                                 <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                                     <div className="transform origin-left transition-all duration-300">
-                                        <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-500/80 text-white text-[10px] font-black uppercase tracking-wider mb-2 backdrop-blur-sm">
+                                        <span className="inline-block px-3 py-1 rounded-lg bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider mb-2 shadow-lg">
                                             {img.category}
                                         </span>
-                                        <h3 className="text-white font-black text-xl leading-tight mb-1 drop-shadow-md">{img.title}</h3>
+                                        <h3 className="text-white font-black text-xl leading-tight mb-2 drop-shadow-md">{img.title}</h3>
                                         {img.description && (
-                                            <p className="text-gray-200 text-xs font-medium line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                                            <p className="text-gray-200 text-xs font-medium line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 mb-2">
                                                 {img.description}
                                             </p>
                                         )}
                                     </div>
 
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-2 mt-4 transition-opacity duration-300">
+                                    {/* Action Buttons - Larger and clearer */}
+                                    <div className="flex gap-3 mt-2 transition-opacity duration-300">
                                         <button
                                             onClick={() => handleDownload(img.imageUrl, img.title)}
-                                            className="p-2 rounded-full bg-white/20 hover:bg-white text-white hover:text-black backdrop-blur-md transition-all"
-                                            title="Download"
+                                            className="flex-1 py-3 px-4 rounded-xl bg-white text-gray-900 hover:bg-gray-100 font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all transform hover:-translate-y-1"
+                                            title="Download Image"
                                         >
-                                            <FaDownload size={14} />
+                                            <FaDownload size={14} /> Download
                                         </button>
                                         {canEdit && (
-                                            <>
+                                            <div className="flex gap-2">
                                                 <button
                                                     onClick={() => handleStartEdit(img)}
-                                                    className="p-2 rounded-full bg-blue-500/80 hover:bg-blue-500 text-white backdrop-blur-md transition-all"
+                                                    className="p-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all transform hover:-translate-y-1"
                                                     title="Edit"
                                                 >
                                                     <FaEdit size={14} />
                                                 </button>
                                                 <button
                                                     onClick={(e) => handleDelete(img.id, e)}
-                                                    className="p-2 rounded-full bg-red-500/80 hover:bg-red-500 text-white backdrop-blur-md transition-all"
+                                                    className="p-3 rounded-xl bg-red-500 hover:bg-red-600 text-white shadow-lg transition-all transform hover:-translate-y-1"
                                                     title="Delete"
                                                 >
                                                     <FaTrash size={14} />
                                                 </button>
-                                            </>
+                                            </div>
                                         )}
                                     </div>
                                 </div>

@@ -169,27 +169,29 @@ const Transport = () => {
 
                             <h3 className="text-2xl font-black text-gray-800 dark:text-white mb-2">{route.routeName || 'Unnamed Route'}</h3>
 
-                            <div className="space-y-4 mb-6">
-                                <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300 bg-gray-50/50 dark:bg-gray-700/30 p-3 rounded-xl">
-                                    <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-gray-600 flex items-center justify-center text-orange-600">
-                                        <FaUserTie size={14} />
+                            <div className="space-y-6 mb-8">
+                                <div className="flex items-center gap-4 text-gray-700 dark:text-gray-200 bg-gray-50/80 dark:bg-gray-700/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50">
+                                    <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-gray-600 flex items-center justify-center text-orange-600 shadow-sm flex-shrink-0">
+                                        <FaUserTie size={16} />
                                     </div>
-                                    <div>
-                                        <p className="text-xs text-gray-400 font-bold uppercase">Driver</p>
-                                        <p className="font-bold text-sm">{route.driverName || 'N/A'}</p>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider mb-0.5">Driver</p>
+                                        <p className="font-bold text-sm truncate">{route.driverName || 'N/A'}</p>
                                     </div>
-                                    <a href={`tel:${route.driverPhone}`} className="ml-auto w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-full hover:bg-green-200 transition-colors">
-                                        <FaPhone size={12} />
+                                    <a href={`tel:${route.driverPhone}`} className="w-10 h-10 flex items-center justify-center bg-green-500 text-white rounded-xl hover:bg-green-600 hover:scale-105 transition-all shadow-green-500/20 shadow-lg">
+                                        <FaPhone size={14} />
                                     </a>
                                 </div>
 
-                                <div className="flex gap-3 text-gray-600 dark:text-gray-300">
-                                    <div className="mt-1 min-w-[32px] h-8 rounded-full bg-blue-100 dark:bg-gray-600 flex items-center justify-center text-blue-600">
-                                        <FaMapMarkerAlt size={14} />
+                                <div className="flex gap-4 text-gray-700 dark:text-gray-300">
+                                    <div className="mt-1 w-10 h-10 rounded-full bg-blue-50 dark:bg-gray-700/50 flex items-center justify-center text-blue-500 border border-blue-100 dark:border-gray-600 flex-shrink-0">
+                                        <FaMapMarkerAlt size={16} />
                                     </div>
-                                    <div>
-                                        <p className="text-xs text-gray-400 font-bold uppercase mb-1">Coverage</p>
-                                        <p className="text-sm leading-relaxed font-medium break-words line-clamp-3" title={route.routeAreas}>{route.routeAreas || 'No details available'}</p>
+                                    <div className="flex-1">
+                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider mb-2">Route Coverage</p>
+                                        <p className="text-sm leading-relaxed font-medium text-gray-600 dark:text-gray-300 bg-white/50 dark:bg-gray-800/50 p-3 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                                            {route.routeAreas || 'No details available'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

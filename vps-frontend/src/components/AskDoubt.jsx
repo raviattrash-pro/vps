@@ -238,20 +238,20 @@ const AskDoubt = () => {
                                                 {doubt.status === 'RESOLVED' && <FaCheckCircle />} {doubt.status || 'OPEN'}
                                             </div>
                                             {canEdit(doubt) && (
-                                                <div className="flex gap-1 ml-2">
+                                                <div className="flex gap-2 ml-4">
                                                     <button
                                                         onClick={() => setEditingDoubt({ ...doubt })}
-                                                        className="p-1.5 text-gray-400 hover:text-emerald-500 transition-colors"
+                                                        className="p-2.5 bg-gray-100 hover:bg-emerald-100 text-gray-400 hover:text-emerald-600 rounded-xl transition-all"
                                                         title="Edit Discussion"
                                                     >
-                                                        <FaEdit />
+                                                        <FaEdit size={16} />
                                                     </button>
                                                     <button
                                                         onClick={(e) => handleDelete(doubt.id, e)}
-                                                        className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                                                        className="p-2.5 bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-600 rounded-xl transition-all"
                                                         title="Delete Discussion"
                                                     >
-                                                        <FaTrash />
+                                                        <FaTrash size={16} />
                                                     </button>
                                                 </div>
                                             )}
