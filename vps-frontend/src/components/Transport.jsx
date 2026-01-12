@@ -92,54 +92,54 @@ const Transport = () => {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="glass-panel p-8 rounded-3xl border border-white/20 shadow-xl overflow-hidden relative"
+                        className="glass-card mb-8"
+                        style={{ padding: '25px', maxWidth: '800px', margin: '0 auto' }}
                     >
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-amber-400"></div>
-                        <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">Create New Route</h2>
+                        <h2 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold', fontSize: '20px' }}>Create New Route</h2>
                         <form onSubmit={handleAddRoute} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 ml-1">Route Name</label>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Route Name</label>
                                 <input
                                     type="text" placeholder="e.g. Route 1 (North Campus)"
-                                    className="w-full p-4 bg-gray-50/50 dark:bg-gray-800/50 border-0 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none backdrop-blur-sm transition-all"
+                                    className="glass-input"
                                     value={newRoute.routeName} onChange={e => setNewRoute({ ...newRoute, routeName: e.target.value })} required
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 ml-1">Vehicle Number</label>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Vehicle Number</label>
                                 <input
                                     type="text" placeholder="e.g. KA-01-AB-1234"
-                                    className="w-full p-4 bg-gray-50/50 dark:bg-gray-800/50 border-0 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none backdrop-blur-sm transition-all"
+                                    className="glass-input"
                                     value={newRoute.vehicleNumber} onChange={e => setNewRoute({ ...newRoute, vehicleNumber: e.target.value })} required
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 ml-1">Driver Name</label>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Driver Name</label>
                                 <input
                                     type="text" placeholder="Driver Full Name"
-                                    className="w-full p-4 bg-gray-50/50 dark:bg-gray-800/50 border-0 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none backdrop-blur-sm transition-all"
+                                    className="glass-input"
                                     value={newRoute.driverName} onChange={e => setNewRoute({ ...newRoute, driverName: e.target.value })} required
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-500 ml-1">Contact Phone</label>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Contact Phone</label>
                                 <input
                                     type="tel" placeholder="Mobile Number"
-                                    className="w-full p-4 bg-gray-50/50 dark:bg-gray-800/50 border-0 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none backdrop-blur-sm transition-all"
+                                    className="glass-input"
                                     value={newRoute.driverPhone} onChange={e => setNewRoute({ ...newRoute, driverPhone: e.target.value })} required
                                 />
                             </div>
-                            <div className="col-span-full space-y-2">
-                                <label className="text-sm font-bold text-gray-500 ml-1">Coverage Areas</label>
+                            <div className="col-span-full">
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Coverage Areas</label>
                                 <textarea
                                     placeholder="List main stops and areas covered (comma separated)..."
-                                    className="w-full p-4 bg-gray-50/50 dark:bg-gray-800/50 border-0 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none backdrop-blur-sm transition-all h-24 resize-none"
+                                    className="glass-input resize-none h-24"
                                     value={newRoute.routeAreas} onChange={e => setNewRoute({ ...newRoute, routeAreas: e.target.value })}
                                 ></textarea>
                             </div>
                             <div className="col-span-full flex justify-end gap-3 pt-2">
-                                <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 text-gray-500 font-bold hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                                <button type="submit" className="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl shadow-lg hover:shadow-orange-500/25 transition-all">Save Route</button>
+                                <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-gray-500 hover:text-gray-800 transition-colors font-bold text-sm">Cancel</button>
+                                <button type="submit" className="glass-btn px-8">Save Route</button>
                             </div>
                         </form>
                     </motion.div>

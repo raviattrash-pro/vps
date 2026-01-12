@@ -105,52 +105,48 @@ const VisitorManagement = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Check-In Form Panel */}
                 <div className="lg:col-span-4">
-                    <div className="sticky top-6 bg-gradient-to-br from-purple-900 to-indigo-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
-                        {/* Decorative Circles */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
-                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500 opacity-20 rounded-full -ml-8 -mb-8 blur-xl"></div>
-
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 relative z-10">
-                            <FaIdBadge className="text-purple-300" /> Issue New Pass
+                    <div className="glass-card sticky top-6" style={{ padding: '25px', color: 'var(--text-primary)' }}>
+                        <h2 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold', fontSize: '20px' }} className="flex items-center gap-3">
+                            <FaIdBadge className="text-purple-500" /> Issue New Pass
                         </h2>
 
-                        <form onSubmit={handleCheckIn} className="space-y-5 relative z-10">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold text-purple-200 uppercase tracking-wider">Visitor Name</label>
+                        <form onSubmit={handleCheckIn} className="space-y-5">
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Visitor Name</label>
                                 <input
-                                    className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-purple-200/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                                    className="glass-input"
                                     value={newVisitor.name} onChange={e => setNewVisitor({ ...newVisitor, name: e.target.value })}
                                     placeholder="Full Name" required
                                 />
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold text-purple-200 uppercase tracking-wider">Contact</label>
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Contact</label>
                                 <input
-                                    className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-purple-200/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                                    className="glass-input"
                                     value={newVisitor.phone} onChange={e => setNewVisitor({ ...newVisitor, phone: e.target.value })}
                                     placeholder="Phone Number" required
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-purple-200 uppercase tracking-wider">Meeting With</label>
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Meeting With</label>
                                     <input
-                                        className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-purple-200/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                                        className="glass-input"
                                         value={newVisitor.personToMeet} onChange={e => setNewVisitor({ ...newVisitor, personToMeet: e.target.value })}
                                         placeholder="Staff Name" required
                                     />
                                 </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-purple-200 uppercase tracking-wider">Purpose</label>
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Purpose</label>
                                     <input
-                                        className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-purple-200/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                                        className="glass-input"
                                         value={newVisitor.purpose} onChange={e => setNewVisitor({ ...newVisitor, purpose: e.target.value })}
                                         placeholder="Reason" required
                                     />
                                 </div>
                             </div>
 
-                            <button type="submit" className="w-full py-4 bg-white text-purple-900 font-black rounded-xl hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2 mt-4">
+                            <button type="submit" className="glass-btn w-full flex justify-center items-center gap-2 mt-4">
                                 <FaSignInAlt /> GENERATE ENTRY PASS
                             </button>
                         </form>

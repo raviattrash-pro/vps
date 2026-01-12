@@ -125,20 +125,21 @@ const Inventory = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="glass-panel p-8 rounded-3xl border border-cyan-100 dark:border-cyan-900/30 shadow-xl mb-8 bg-gradient-to-br from-white to-cyan-50/50 dark:from-gray-800 dark:to-cyan-900/20">
-                            <h3 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">New Asset Registration</h3>
+                        <div className="glass-card mb-8" style={{ padding: '25px', maxWidth: '1000px', margin: '0 auto' }}>
+                            <h3 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold', fontSize: '20px' }}>New Asset Registration</h3>
                             <form onSubmit={handleAddAsset} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">Item Name</label>
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Item Name</label>
                                     <input
-                                        className="w-full p-3 bg-white dark:bg-black/20 border rounded-xl dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-cyan-500 outline-none"
+                                        className="glass-input"
                                         value={newAsset.itemName} onChange={e => setNewAsset({ ...newAsset, itemName: e.target.value })} required placeholder="e.g. Projector X1"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">Category</label>
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Category</label>
                                     <select
-                                        className="w-full p-3 bg-white dark:bg-black/20 border rounded-xl dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-cyan-500 outline-none"
+                                        className="glass-input"
+                                        style={{ appearance: 'none' }}
                                         value={newAsset.category} onChange={e => setNewAsset({ ...newAsset, category: e.target.value })}
                                     >
                                         <option value="Furniture">Furniture</option>
@@ -148,17 +149,18 @@ const Inventory = () => {
                                         <option value="Other">Other</option>
                                     </select>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">Quantity</label>
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Quantity</label>
                                     <input
-                                        type="number" className="w-full p-3 bg-white dark:bg-black/20 border rounded-xl dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-cyan-500 outline-none"
+                                        type="number" className="glass-input"
                                         value={newAsset.quantity} onChange={e => setNewAsset({ ...newAsset, quantity: parseInt(e.target.value) })} required min="1"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-500 uppercase">Status</label>
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Status</label>
                                     <select
-                                        className="w-full p-3 bg-white dark:bg-black/20 border rounded-xl dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-cyan-500 outline-none"
+                                        className="glass-input"
+                                        style={{ appearance: 'none' }}
                                         value={newAsset.status} onChange={e => setNewAsset({ ...newAsset, status: e.target.value })}
                                     >
                                         <option value="AVAILABLE">Available</option>
@@ -168,8 +170,8 @@ const Inventory = () => {
                                 </div>
 
                                 <div className="lg:col-span-4 flex justify-end gap-4 mt-2">
-                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-gray-500 hover:text-gray-700 font-bold">Cancel</button>
-                                    <button type="submit" className="px-8 py-2 bg-cyan-600 text-white rounded-xl font-bold shadow-lg hover:shadow-cyan-500/30">Save to Registry</button>
+                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-gray-500 hover:text-gray-700 font-bold text-sm">Cancel</button>
+                                    <button type="submit" className="glass-btn px-8">Save to Registry</button>
                                 </div>
                             </form>
                         </div>
@@ -226,11 +228,11 @@ const Inventory = () => {
                                     </td>
                                     <td className="p-6">
                                         <span className={`flex items-center gap-2 w-fit px-3 py-1 rounded-full text-xs font-bold border ${asset.status === 'AVAILABLE' ? 'bg-green-50 text-green-700 border-green-200' :
-                                                asset.status === 'DAMAGED' ? 'bg-red-50 text-red-700 border-red-200' :
-                                                    'bg-gray-50 text-gray-700 border-gray-200'
+                                            asset.status === 'DAMAGED' ? 'bg-red-50 text-red-700 border-red-200' :
+                                                'bg-gray-50 text-gray-700 border-gray-200'
                                             }`}>
                                             <span className={`w-2 h-2 rounded-full ${asset.status === 'AVAILABLE' ? 'bg-green-500' :
-                                                    asset.status === 'DAMAGED' ? 'bg-red-500' : 'bg-gray-500'
+                                                asset.status === 'DAMAGED' ? 'bg-red-500' : 'bg-gray-500'
                                                 }`}></span>
                                             {asset.status}
                                         </span>

@@ -129,39 +129,39 @@ const LeaveManagement = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="glass-panel p-8 rounded-3xl border border-teal-100 dark:border-teal-900/30 shadow-2xl mb-8 bg-gradient-to-br from-white to-teal-50/30 dark:from-gray-800 dark:to-teal-900/10">
-                            <h2 className="text-xl font-bold mb-6 text-teal-800 dark:text-teal-200 flex items-center gap-2">
+                        <div className="glass-card mb-8" style={{ padding: '25px', maxWidth: '800px', margin: '0 auto' }}>
+                            <h2 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold', fontSize: '20px' }} className="flex items-center gap-2">
                                 <FaCalendarAlt /> Application Details
                             </h2>
                             <form onSubmit={handleApply} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">From Date</label>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>From Date</label>
                                     <input
                                         type="date"
-                                        className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                                        className="glass-input"
                                         value={newLeave.startDate} onChange={e => setNewLeave({ ...newLeave, startDate: e.target.value })} required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">To Date</label>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>To Date</label>
                                     <input
                                         type="date"
-                                        className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                                        className="glass-input"
                                         value={newLeave.endDate} onChange={e => setNewLeave({ ...newLeave, endDate: e.target.value })} required
                                     />
                                 </div>
                                 <div className="col-span-full">
-                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">Reason for Leave</label>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Reason for Leave</label>
                                     <textarea
                                         rows="3"
-                                        className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all resize-none"
+                                        className="glass-input resize-none"
                                         value={newLeave.reason} onChange={e => setNewLeave({ ...newLeave, reason: e.target.value })}
                                         placeholder="Please provide a detailed reason..." required
                                     ></textarea>
                                 </div>
                                 <div className="col-span-full flex justify-end gap-3 pt-2">
-                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 text-gray-500 font-bold hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">Cancel</button>
-                                    <button type="submit" className="px-8 py-3 bg-teal-600 text-white font-bold rounded-xl shadow-lg hover:shadow-teal-600/30 transition-all transform hover:-translate-y-1">Submit Application</button>
+                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-gray-500 hover:text-gray-800 transition-colors font-bold text-sm">Cancel</button>
+                                    <button type="submit" className="glass-btn px-8 text-white font-bold rounded-xl shadow-lg hover:shadow-teal-600/30 transition-all transform hover:-translate-y-1">Submit Application</button>
                                 </div>
                             </form>
                         </div>
@@ -190,8 +190,8 @@ const LeaveManagement = () => {
                                 <div className="flex items-center gap-3 mb-2">
                                     <h3 className="text-xl font-bold dark:text-white">{leave.teacher?.name || 'Unknown Staff'}</h3>
                                     <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${leave.status === 'APPROVED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                                            leave.status === 'REJECTED' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                        leave.status === 'REJECTED' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                                            'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                                         }`}>
                                         {leave.status}
                                     </span>

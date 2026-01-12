@@ -67,16 +67,17 @@ const CertificateGenerator = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass-panel p-8 rounded-3xl border border-yellow-500/20 shadow-xl bg-gradient-to-br from-white to-amber-50/50 dark:from-gray-800 dark:to-amber-900/10"
+                className="glass-card"
+                style={{ padding: '25px', maxWidth: '900px', margin: '0 auto' }}
             >
                 <form onSubmit={handleGenerate} className="flex flex-col md:flex-row gap-6 items-end">
-                    <div className="flex-1 w-full space-y-2">
-                        <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider pl-1">Student ID (Admission No.)</label>
+                    <div className="flex-1 w-full">
+                        <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Student ID (Admission No.)</label>
                         <div className="relative">
                             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input
                                 type="number"
-                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none transition-all dark:text-white"
+                                className="glass-input pl-10"
                                 value={studentId}
                                 onChange={e => setStudentId(e.target.value)}
                                 placeholder="Search by ID..."
@@ -84,10 +85,10 @@ const CertificateGenerator = () => {
                             />
                         </div>
                     </div>
-                    <div className="flex-1 w-full space-y-2">
-                        <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider pl-1">Document Type</label>
+                    <div className="flex-1 w-full">
+                        <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Document Type</label>
                         <select
-                            className="w-full px-4 py-3 bg-white dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none transition-all dark:text-white appearance-none"
+                            className="glass-input appearance-none"
                             value={type}
                             onChange={e => setType(e.target.value)}
                         >
@@ -100,7 +101,7 @@ const CertificateGenerator = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-yellow-600 to-amber-600 text-white rounded-xl font-bold shadow-lg hover:shadow-yellow-500/30 transition-all flex items-center justify-center gap-2"
+                        className="glass-btn px-8 w-full md:w-auto flex items-center justify-center gap-2"
                     >
                         {loading ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div> : 'Generate Preview'}
                     </button>

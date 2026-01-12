@@ -98,32 +98,33 @@ const SchoolBlog = () => {
                         exit={{ opacity: 0, height: 0, scale: 0.95 }}
                         className="overflow-hidden"
                     >
-                        <div className="backdrop-blur-xl bg-white/60 dark:bg-gray-800/60 border border-white/50 dark:border-gray-700 p-8 rounded-3xl shadow-2xl mb-12 relative">
-                            <h2 className="text-2xl font-bold mb-6 font-serif text-gray-800 dark:text-white flex items-center gap-2">
-                                <span className="w-2 h-8 bg-red-500 rounded-full"></span>
+                        <div className="glass-card mb-12 relative" style={{ padding: '25px', maxWidth: '800px', margin: '0 auto 40px auto' }}>
+                            <h2 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold', fontSize: '20px' }}>
                                 Draft Your Masterpiece
                             </h2>
                             <form onSubmit={handlePublish} className="space-y-6">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Headline</label>
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Headline</label>
                                     <textarea
-                                        className="w-full text-4xl font-bold border-b-2 border-gray-200 dark:border-gray-600 focus:border-red-600 outline-none p-2 bg-transparent dark:text-white font-serif placeholder-gray-300/50 transition-colors resize-none overflow-hidden"
+                                        className="glass-input resize-none overflow-hidden"
                                         placeholder="An Epic Title..."
                                         rows="2"
                                         value={title} onChange={e => setTitle(e.target.value)} required
+                                        style={{ fontSize: '18px', fontWeight: 'bold' }}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Story Content</label>
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Story Content</label>
                                     <textarea
-                                        className="w-full h-80 p-6 border-none rounded-2xl bg-white/50 dark:bg-black/20 dark:text-gray-200 font-serif leading-relaxed text-lg resize-none focus:ring-4 focus:ring-red-500/10 outline-none shadow-inner"
+                                        className="glass-input resize-none"
+                                        style={{ height: '300px', fontFamily: 'serif', fontSize: '16px', lineHeight: '1.6' }}
                                         placeholder="Once upon a time in the corridors of VPS..."
                                         value={content} onChange={e => setContent(e.target.value)} required
                                     ></textarea>
                                 </div>
                                 <div className="flex justify-end gap-4">
-                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition-colors font-medium">Discard Draft</button>
-                                    <button type="submit" className="px-10 py-3 bg-gray-900 dark:bg-white dark:text-black text-white font-bold rounded-xl hover:shadow-xl hover:-translate-y-1 transition-all">Publish Now</button>
+                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-gray-500 hover:text-gray-800 transition-colors font-bold text-sm">Discard Draft</button>
+                                    <button type="submit" className="glass-btn px-8">Publish Now</button>
                                 </div>
                             </form>
                         </div>

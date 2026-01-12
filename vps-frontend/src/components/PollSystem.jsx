@@ -104,33 +104,54 @@ const PollSystem = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="glass-panel p-8 rounded-3xl border border-teal-100 dark:border-teal-900/30 shadow-xl mb-8 bg-gradient-to-br from-white to-teal-50/50 dark:from-gray-800 dark:to-teal-900/20">
-                            <h2 className="text-xl font-bold mb-6 text-teal-800 dark:text-teal-200">Create a New Poll</h2>
-                            <form onSubmit={createPoll} className="space-y-5">
-                                <textarea
-                                    className="w-full text-xl font-bold p-4 bg-white dark:bg-black/20 border-2 border-teal-100 dark:border-teal-900 rounded-2xl focus:border-teal-500 outline-none transition-colors resize-none h-32"
-                                    placeholder="What's your question?"
-                                    value={question} onChange={e => setQuestion(e.target.value)} required
-                                />
-                                <div className="space-y-3">
-                                    {options.map((opt, idx) => (
-                                        <div key={idx} className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-sm">{idx + 1}</div>
+                        <div className="glass-card mb-8" style={{ padding: '25px', maxWidth: '800px', margin: '0 auto 30px auto' }}>
+                            <h3 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold' }}>Create a New Poll</h3>
+                            <form onSubmit={createPoll} className="space-y-6">
+                                <div>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Question</label>
+                                    <textarea
+                                        className="glass-input resize-none h-32"
+                                        placeholder="What's your question?"
+                                        value={question} onChange={e => setQuestion(e.target.value)} required
+                                    />
+                                </div>
+                                <div className="space-y-4">
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Options</label>
+                                    {options.map((option, index) => (
+                                        <div key={index} className="flex gap-3">
                                             <input
-                                                className="flex-1 p-3 bg-white/80 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-teal-500/20 outline-none"
-                                                placeholder={`Option ${idx + 1}`}
-                                                value={opt} onChange={e => {
-                                                    const newOpts = [...options];
-                                                    newOpts[idx] = e.target.value;
-                                                    setOptions(newOpts);
-                                                }} required
+                                                className="glass-input"
+                                                placeholder={`Option ${index + 1}`}
+                                                value={option}
+                                                onChange={e => handleOptionChange(index, e.target.value)}
+                                                required
                                             />
+                                            {options.length > 2 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeOption(index)}
+                                                    className="p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
                                 <div className="flex gap-4 pt-2">
-                                    <button type="button" onClick={() => setOptions([...options, ''])} className="px-4 py-2 text-sm text-teal-600 font-bold hover:bg-teal-50 rounded-lg transition-colors">+ Add Option</button>
-                                    <button type="submit" className="flex-1 py-3 bg-teal-600 text-white font-bold rounded-xl shadow-lg hover:shadow-teal-600/30">Launch Poll</button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setOptions([...options, ''])}
+                                        className="px-6 py-3 border-2 border-teal-500 text-teal-600 font-bold rounded-xl hover:bg-teal-50 transition-colors flex items-center gap-2"
+                                    >
+                                        <FaPlus /> Add Option
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 glass-btn flex justify-center items-center gap-2"
+                                    >
+                                        Launch Poll
+                                    </button>
                                 </div>
                             </form>
                         </div>
