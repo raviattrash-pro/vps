@@ -74,6 +74,7 @@ const TimeTable = () => {
         }
     };
 
+
     const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
     const periods = [
         '08:00 - 09:00', '09:00 - 10:00', '10:00 - 11:00',
@@ -81,177 +82,239 @@ const TimeTable = () => {
         '11:30 - 12:30', '12:30 - 01:30', '01:30 - 02:30'
     ];
 
-    // Helper to get color based on subject (simple hash)
-    const getSubjectColor = (subject) => {
-        if (!subject) return 'bg-gray-50 dark:bg-gray-800';
-        const colors = [
-            'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border-blue-200 dark:border-blue-800',
-            'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 border-green-200 dark:border-green-800',
-            'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 border-purple-200 dark:border-purple-800',
-            'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200 border-orange-200 dark:border-orange-800',
-            'bg-pink-100 text-pink-800 dark:bg-pink-900/40 dark:text-pink-200 border-pink-200 dark:border-pink-800',
-            'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-200 border-teal-200 dark:border-teal-800',
+    // Helper to get color based on subject (Diamonds)
+    const getSubjectStyle = (subject) => {
+        if (!subject) return 'bg-white/5 dark:bg-white/5 border-white/10';
+        const styles = [
+            'bg-gradient-to-br from-blue-400/20 to-cyan-300/20 border-blue-200/50 shadow-[0_0_15px_rgba(59,130,246,0.2)]',
+            'bg-gradient-to-br from-emerald-400/20 to-green-300/20 border-emerald-200/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]',
+            'bg-gradient-to-br from-purple-400/20 to-fuchsia-300/20 border-purple-200/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]',
+            'bg-gradient-to-br from-amber-400/20 to-orange-300/20 border-amber-200/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]',
+            'bg-gradient-to-br from-rose-400/20 to-pink-300/20 border-rose-200/50 shadow-[0_0_15px_rgba(244,63,94,0.2)]',
         ];
         let hash = 0;
         for (let i = 0; i < subject.length; i++) hash = subject.charCodeAt(i) + ((hash << 5) - hash);
-        return colors[Math.abs(hash) % colors.length];
+        return styles[Math.abs(hash) % styles.length];
     };
 
     return (
-        <div className="p-4 md:p-8 max-w-[95%] mx-auto space-y-6">
-            <header className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="p-4 md:p-8 min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-gray-900">
+            {/* Diamond Background Pattern */}
+            <div className="fixed inset-0 pointer-events-none opacity-30 dark:opacity-10" style={{
+                backgroundImage: `radial-gradient(#4f46e5 1px, transparent 1px), radial-gradient(#4f46e5 1px, transparent 1px)`,
+                backgroundSize: '40px 40px',
+                backgroundPosition: '0 0, 20px 20px'
+            }}></div>
+
+            <header className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
                 <div>
-                    <h1 className="text-3xl font-black flex items-center gap-3 text-gray-800 dark:text-white">
-                        <FaCalendarAlt className="text-indigo-600" /> Class Schedule
+                    <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 flex items-center gap-4 filter drop-shadow-sm">
+                        <FaCalendarAlt className="text-indigo-500" />
+                        Timetable
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">Weekly Academic Planner</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium text-lg ml-1">Weekly Academic Schedule</p>
                 </div>
 
                 {user.role !== 'STUDENT' && (
-                    <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-gray-800 p-2 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <input
-                            placeholder="Class"
-                            className="w-16 p-2 bg-transparent text-center font-bold outline-none border-b-2 border-indigo-100 focus:border-indigo-500 transition-colors"
-                            value={targetClass} onChange={e => setTargetClass(e.target.value)}
-                        />
-                        <input
-                            placeholder="Sec"
-                            className="w-12 p-2 bg-transparent text-center font-bold outline-none border-b-2 border-indigo-100 focus:border-indigo-500 transition-colors"
-                            value={targetSection} onChange={e => setTargetSection(e.target.value)}
-                        />
-                        <button
+                    <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md p-2 rounded-2xl shadow-xl border border-white/50 dark:border-gray-700">
+                        <div className="flex items-center gap-2 px-4 border-r border-gray-300 dark:border-gray-600">
+                            <span className="text-xs font-bold text-gray-400 uppercase">Class</span>
+                            <input
+                                className="w-12 bg-transparent text-xl font-black text-gray-700 dark:text-white outline-none text-center"
+                                value={targetClass} onChange={e => setTargetClass(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex items-center gap-2 px-4">
+                            <span className="text-xs font-bold text-gray-400 uppercase">Sec</span>
+                            <input
+                                className="w-12 bg-transparent text-xl font-black text-gray-700 dark:text-white outline-none text-center"
+                                value={targetSection} onChange={e => setTargetSection(e.target.value)}
+                            />
+                        </div>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => setShowForm(!showForm)}
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 flex items-center gap-2"
+                            className="ml-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold shadow-lg hover:shadow-indigo-500/30 flex items-center gap-2"
                         >
-                            <FaPlus /> Add
-                        </button>
+                            <FaPlus /> Add Period
+                        </motion.button>
                     </div>
                 )}
             </header>
 
-            {/* Timetable Grid */}
-            <div className="overflow-x-auto pb-4 custom-scrollbar">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="min-w-[1000px] bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
-                >
-                    <div className="grid grid-cols-8 divide-x divide-gray-200 dark:divide-gray-700">
-                        {/* Header Row */}
-                        <div className="p-4 font-black text-gray-400 uppercase tracking-widest text-xs bg-gray-50 dark:bg-gray-900/50 flex items-center justify-center">Day / Time</div>
+            <div className="relative z-10 overflow-x-auto pb-8 custom-scrollbar">
+                <div className="min-w-[1200px]">
+                    {/* Header Row */}
+                    <div className="grid grid-cols-8 gap-4 mb-6">
+                        <div className="flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-2xl bg-gray-900 text-white flex items-center justify-center font-black text-xl shadow-lg transform rotate-3">
+                                <FaCalendarAlt />
+                            </div>
+                        </div>
                         {periods.map(time => (
-                            <div key={time} className="p-4 font-bold text-gray-600 dark:text-gray-300 text-center text-xs bg-gray-50 dark:bg-gray-900/50 flex items-center justify-center">
-                                {time}
+                            <div key={time} className="flex flex-col items-center justify-center">
+                                <div className="px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 mb-2">
+                                    <span className="text-xs font-bold text-gray-500">{time}</span>
+                                </div>
+                                <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
                             </div>
                         ))}
+                    </div>
 
-                        {/* Data Rows */}
-                        {days.map(day => (
-                            <React.Fragment key={day}>
-                                <div className="p-4 font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/10 flex items-center justify-center border-t border-gray-100 dark:border-gray-700">
-                                    {day.substring(0, 3)}
+                    {/* Days Rows */}
+                    {days.map(day => (
+                        <div key={day} className="grid grid-cols-8 gap-4 mb-4 group">
+                            {/* Day Label */}
+                            <div className="flex items-center justify-center">
+                                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-6 py-8 rounded-2xl shadow-sm border border-white/50 dark:border-gray-700 w-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                                    <span className="writing-vertical-lr text-xl font-black text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 transition-colors uppercase tracking-widest rotate-180">
+                                        {day.substring(0, 3)}
+                                    </span>
                                 </div>
-                                {periods.map(time => {
-                                    const entry = timetable.find(t => t.dayOfWeek === day && t.periodTime === time);
+                            </div>
 
-                                    // Handle Break Time specifically if modeled or just visual
-                                    if (time === '11:00 - 11:30') {
-                                        return day === 'MONDAY' ? ( // Clean way to render it just once visually or for valid grid structure render empty but styled
-                                            <div key={`${day}-${time}`} className="bg-gray-100 dark:bg-gray-800 flex items-center justify-center border-t border-gray-100 dark:border-gray-700">
-                                                <span className="text-[10px] font-bold text-gray-400 -rotate-90">BREAK</span>
+                            {periods.map((time, index) => {
+                                const entry = timetable.find(t => t.dayOfWeek === day && t.periodTime === time);
+
+                                if (time === '11:00 - 11:30') {
+                                    return index === 3 && day === 'MONDAY' ? (
+                                        <div key={`${day}-${time}`} className="row-span-6 flex flex-col items-center justify-center opacity-30">
+                                            <div className="h-full w-[2px] bg-dashed border-l-2 border-gray-400 absolute"></div>
+                                            <span className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-[10px] font-bold rotate-90 mt-20 z-10">BREAK</span>
+                                        </div>
+                                    ) : <div key={`${day}-${time}`}></div>;
+                                }
+
+                                return (
+                                    <motion.div
+                                        key={`${day}-${time}`}
+                                        className="relative min-h-[140px]"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: index * 0.05 }}
+                                    >
+                                        {entry ? (
+                                            <div className={`
+                                                relative h-full p-1 rounded-2xl bg-gradient-to-br transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl group/card
+                                                ${getSubjectStyle(entry.subject)}
+                                                backdrop-blur-xl border-t border-l border-white/30
+                                             `}>
+                                                <div className="absolute inset-0 bg-white/10 dark:bg-black/10 rounded-2xl"></div>
+                                                <div className="relative z-10 h-full p-4 flex flex-col justify-between">
+                                                    <div>
+                                                        <div className="text-xs font-bold opacity-60 uppercase tracking-wider mb-1 flex justify-between">
+                                                            <span>{entry.roomNumber ? `R-${entry.roomNumber}` : 'N/A'}</span>
+                                                            {user.role === 'ADMIN' && (
+                                                                <button onClick={() => handleDelete(entry.id)} className="hover:text-red-500"><FaTrash /></button>
+                                                            )}
+                                                        </div>
+                                                        <h4 className="text-lg font-black leading-tight drop-shadow-sm mb-1">{entry.subject}</h4>
+                                                        <p className="text-xs font-semibold opacity-80">{entry.teacherName}</p>
+                                                    </div>
+                                                    <div className="flex justify-end">
+                                                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold shadow-inner">
+                                                            {index + 1}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Shine Effect */}
+                                                <div className="absolute -top-[100%] -left-[100%] w-[200%] h-[200%] bg-gradient-to-br from-transparent via-white/20 to-transparent transform rotate-45 transition-transform duration-1000 group-hover/card:translate-x-full group-hover/card:translate-y-full pointer-events-none"></div>
                                             </div>
                                         ) : (
-                                            <div key={`${day}-${time}`} className="bg-gray-100 dark:bg-gray-800 flex items-center justify-center border-t border-gray-100 dark:border-gray-700">
-                                                <span className="text-[10px] font-bold text-gray-400 -rotate-90"></span>
+                                            <div className="h-full rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                {user.role === 'ADMIN' && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setNewEntry({ ...newEntry, dayOfWeek: day, periodTime: time });
+                                                            setShowForm(true);
+                                                        }}
+                                                        className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-indigo-600 hover:bg-white shadow-sm transition-all"
+                                                    >
+                                                        <FaPlus />
+                                                    </button>
+                                                )}
                                             </div>
-                                        );
-                                    }
-
-                                    return (
-                                        <div key={`${day}-${time}`} className="min-h-[100px] p-2 border-t border-gray-100 dark:border-gray-700 relative group">
-                                            {entry ? (
-                                                <motion.div
-                                                    whileHover={{ scale: 1.05 }}
-                                                    className={`h-full w-full rounded-xl p-3 flex flex-col justify-between border ${getSubjectColor(entry.subject)} shadow-sm`}
-                                                >
-                                                    <div>
-                                                        <div className="font-black text-sm leading-tight">{entry.subject}</div>
-                                                        <div className="text-[10px] font-bold opacity-80 mt-1">{entry.teacherName}</div>
-                                                    </div>
-                                                    <div className="text-[10px] font-mono opacity-70 bg-white/30 rounded px-1 w-max">
-                                                        R-{entry.roomNumber}
-                                                    </div>
-
-                                                    {user.role === 'ADMIN' && (
-                                                        <button
-                                                            onClick={() => handleDelete(entry.id)}
-                                                            className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1.5 bg-red-500 text-white rounded-full shadow-md hover:bg-red-600 transition-all"
-                                                        >
-                                                            <FaTrash className="text-[10px]" />
-                                                        </button>
-                                                    )}
-                                                </motion.div>
-                                            ) : (
-                                                <div className="h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    {user.role === 'ADMIN' && (
-                                                        <button
-                                                            onClick={() => {
-                                                                setNewEntry({ ...newEntry, dayOfWeek: day, periodTime: time });
-                                                                setShowForm(true);
-                                                            }}
-                                                            className="text-gray-300 hover:text-indigo-500 text-2xl"
-                                                        >
-                                                            +
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                </motion.div>
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Modal Form for Adding */}
-            {showForm && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md shadow-2xl"
-                    >
-                        <h2 className="text-xl font-bold mb-4 dark:text-white">Add Schedule Entry</h2>
-                        <form onSubmit={handleAdd} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="dark:text-white font-mono text-sm">{newEntry.dayOfWeek}</div>
-                                <div className="dark:text-white font-mono text-sm">{newEntry.periodTime}</div>
-                            </div>
-                            <input
-                                placeholder="Subject"
-                                className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg outline-none border focus:border-indigo-500 transition-colors"
-                                value={newEntry.subject} onChange={e => setNewEntry({ ...newEntry, subject: e.target.value })} required
-                            />
-                            <input
-                                placeholder="Teacher Name"
-                                className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg outline-none border focus:border-indigo-500 transition-colors"
-                                value={newEntry.teacherName} onChange={e => setNewEntry({ ...newEntry, teacherName: e.target.value })}
-                            />
-                            <input
-                                placeholder="Room Number"
-                                className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg outline-none border focus:border-indigo-500 transition-colors"
-                                value={newEntry.roomNumber} onChange={e => setNewEntry({ ...newEntry, roomNumber: e.target.value })}
-                            />
-                            <div className="flex justify-end gap-3 pt-4">
-                                <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 text-gray-500 font-bold">Cancel</button>
-                                <button type="submit" className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold">Save</button>
-                            </div>
-                        </form>
-                    </motion.div>
-                </div>
-            )}
+            <AnimatePresence>
+                {showForm && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 50 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 50 }}
+                            className="bg-white dark:bg-gray-900 rounded-3xl p-8 w-full max-w-md shadow-2xl border border-white/20"
+                        >
+                            <h2 className="text-2xl font-black mb-6 dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">
+                                New Schedule Entry
+                            </h2>
+                            <form onSubmit={handleAdd} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl">
+                                    <div className="text-center">
+                                        <div className="text-xs font-bold text-gray-400 uppercase">Day</div>
+                                        <div className="dark:text-white font-black">{newEntry.dayOfWeek}</div>
+                                    </div>
+                                    <div className="text-center border-l dark:border-gray-700">
+                                        <div className="text-xs font-bold text-gray-400 uppercase">Time</div>
+                                        <div className="dark:text-white font-black text-sm">{newEntry.periodTime}</div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 ml-2">Subject</label>
+                                    <input
+                                        placeholder="e.g. Mathematics"
+                                        className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-xl outline-none border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 transition-all font-bold dark:text-white"
+                                        value={newEntry.subject} onChange={e => setNewEntry({ ...newEntry, subject: e.target.value })} required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 ml-2">Teacher</label>
+                                    <input
+                                        placeholder="e.g. Mr. Sharma"
+                                        className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-xl outline-none border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 transition-all font-bold dark:text-white"
+                                        value={newEntry.teacherName} onChange={e => setNewEntry({ ...newEntry, teacherName: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 ml-2">Room No.</label>
+                                    <input
+                                        placeholder="e.g. 101"
+                                        className="w-full p-4 bg-gray-50 dark:bg-gray-800 rounded-xl outline-none border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 transition-all font-bold dark:text-white"
+                                        value={newEntry.roomNumber} onChange={e => setNewEntry({ ...newEntry, roomNumber: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="flex gap-4 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowForm(false)}
+                                        className="flex-1 py-3 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl font-bold transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-bold shadow-lg transition-all transform hover:scale-105"
+                                    >
+                                        Add Entry
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

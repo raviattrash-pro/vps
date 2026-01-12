@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { API_BASE_URL } from '../config';
-import { FaPaperPlane, FaReply, FaUserGraduate, FaChalkboardTeacher, FaComments, FaCheckCircle, FaSearch } from 'react-icons/fa';
+import { FaPaperPlane, FaReply, FaUserGraduate, FaChalkboardTeacher, FaComments, FaCheckCircle, FaSearch, FaTrash, FaEdit, FaTimes, FaSave } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AskDoubt = () => {
@@ -11,6 +11,9 @@ const AskDoubt = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [newQuestion, setNewQuestion] = useState({ subject: 'General', question: '' });
     const [replyData, setReplyData] = useState({ doubtId: null, message: '' });
+
+    // Edit State
+    const [editingDoubt, setEditingDoubt] = useState(null);
 
     const subjects = ['Maths', 'Science', 'English', 'History', 'Physics', 'Chemistry', 'Biology', 'General'];
 
@@ -80,13 +83,60 @@ const AskDoubt = () => {
         }
     };
 
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            const payload = {
+                subject: editingDoubt.subject,
+                question: editingDoubt.question
+            };
+
+            const response = await fetch(`${API_BASE_URL}/api/doubts/${editingDoubt.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                setEditingDoubt(null);
+                fetchDoubts();
+                alert("Discussion updated successfully!");
+            }
+        } catch (error) {
+            console.error("Error updating doubt", error);
+            alert("Failed to update discussion.");
+        }
+    };
+
+    const handleDelete = async (id, e) => {
+        e.stopPropagation();
+        if (!window.confirm("Are you sure you want to delete this discussion?")) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/doubts/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                setDoubts(doubts.filter(d => d.id !== id));
+            } else {
+                alert("Failed to delete discussion.");
+            }
+        } catch (error) {
+            console.error("Error deleting doubt", error);
+            alert("Error deleting discussion.");
+        }
+    };
+
+    const canEdit = (doubt) => user && (user.role === 'ADMIN' || (doubt.student && doubt.student.id === user.id));
+
     const filteredDoubts = doubts.filter(d =>
         d.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
         d.subject.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
+        <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 min-h-screen">
             <header className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h1 className="text-4xl font-black flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-300">
@@ -182,12 +232,33 @@ const AskDoubt = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className={`px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase flex items-center gap-1 ${doubt.status === 'RESOLVED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'}`}>
-                                            {doubt.status === 'RESOLVED' && <FaCheckCircle />} {doubt.status || 'OPEN'}
+
+                                        <div className="flex items-center gap-3">
+                                            <div className={`px-3 py-1 rounded-full text-[10px] font-black tracking-wider uppercase flex items-center gap-1 ${doubt.status === 'RESOLVED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'}`}>
+                                                {doubt.status === 'RESOLVED' && <FaCheckCircle />} {doubt.status || 'OPEN'}
+                                            </div>
+                                            {canEdit(doubt) && (
+                                                <div className="flex gap-1 ml-2">
+                                                    <button
+                                                        onClick={() => setEditingDoubt({ ...doubt })}
+                                                        className="p-1.5 text-gray-400 hover:text-emerald-500 transition-colors"
+                                                        title="Edit Discussion"
+                                                    >
+                                                        <FaEdit />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => handleDelete(doubt.id, e)}
+                                                        className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                                                        title="Delete Discussion"
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
-                                    <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 ml-13 pl-13 my-2 leading-relaxed">
+                                    <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 ml-13 pl-13 my-2 leading-relaxed whitespace-pre-line">
                                         {doubt.question}
                                     </h3>
 
@@ -238,6 +309,68 @@ const AskDoubt = () => {
                     </AnimatePresence>
                 )}
             </div>
+
+            {/* Edit Modal */}
+            <AnimatePresence>
+                {editingDoubt && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg relative p-8"
+                        >
+                            <button
+                                onClick={() => setEditingDoubt(null)}
+                                className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
+                            >
+                                <FaTimes size={20} />
+                            </button>
+
+                            <h3 className="text-xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-2">
+                                <FaEdit className="text-indigo-500" /> Edit Discussion
+                            </h3>
+
+                            <form onSubmit={handleUpdate} className="space-y-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase ml-1 block mb-1">Subject</label>
+                                    <select
+                                        className="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                                        value={editingDoubt.subject}
+                                        onChange={(e) => setEditingDoubt({ ...editingDoubt, subject: e.target.value })}
+                                    >
+                                        {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase ml-1 block mb-1">Question</label>
+                                    <textarea
+                                        className="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 min-h-[120px]"
+                                        value={editingDoubt.question}
+                                        onChange={(e) => setEditingDoubt({ ...editingDoubt, question: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="flex justify-end gap-3 mt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setEditingDoubt(null)}
+                                        className="px-6 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="bg-indigo-600 text-white px-8 py-2 rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                                    >
+                                        <FaSave /> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

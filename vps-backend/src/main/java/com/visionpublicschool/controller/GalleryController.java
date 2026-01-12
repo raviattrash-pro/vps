@@ -52,4 +52,19 @@ public class GalleryController {
     public void deleteImage(@PathVariable Long id) {
         galleryImageRepository.deleteById(id);
     }
+
+    @PutMapping("/{id}")
+    public GalleryImage updateImage(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam("category") String category,
+            @RequestParam("description") String description) {
+
+        return galleryImageRepository.findById(id).map(image -> {
+            image.setTitle(title);
+            image.setCategory(category);
+            image.setDescription(description);
+            return galleryImageRepository.save(image);
+        }).orElseThrow(() -> new RuntimeException("Image not found"));
+    }
 }

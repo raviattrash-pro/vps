@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../AuthContext';
 import { API_BASE_URL } from '../config';
-import { FaPenNib, FaHeart, FaUserCircle } from 'react-icons/fa';
+import { FaPenNib, FaHeart, FaUserCircle, FaTrash, FaEdit, FaDownload, FaSave, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const SchoolBlog = () => {
     const { user } = useAuth();
@@ -12,6 +14,9 @@ const SchoolBlog = () => {
     // New Post
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+
+    // Edit Post
+    const [editingPost, setEditingPost] = useState(null);
 
     useEffect(() => {
         fetchPosts();
@@ -55,6 +60,74 @@ const SchoolBlog = () => {
         }
     };
 
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            const payload = {
+                title: editingPost.title,
+                content: editingPost.content
+            };
+
+            const response = await fetch(`${API_BASE_URL}/api/blog/${editingPost.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                setEditingPost(null);
+                fetchPosts();
+                alert("Post updated successfully!");
+            }
+        } catch (error) {
+            console.error("Error updating post", error);
+            alert("Failed to update post.");
+        }
+    };
+
+    const handleDelete = async (id, e) => {
+        e.stopPropagation();
+        if (!window.confirm("Are you sure you want to delete this chronicle?")) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/blog/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                setPosts(posts.filter(p => p.id !== id));
+            } else {
+                alert("Failed to delete post.");
+            }
+        } catch (error) {
+            console.error("Error deleting post", error);
+            alert("Error deleting post.");
+        }
+    };
+
+    const handleDownload = (post) => {
+        const element = document.createElement("div");
+        element.innerHTML = `
+            <div style="padding: 40px; font-family: 'Times New Roman', serif; color: #333; background: #fffbeeb0;">
+                <h1 style="font-size: 32px; color: #d32f2f; margin-bottom: 10px;">${post.title}</h1>
+                <p style="font-size: 14px; color: #666; font-style: italic; margin-bottom: 20px;">By ${post.author?.name} | Class ${post.author?.className}</p>
+                <div style="font-size: 16px; line-height: 1.6;">${post.content.replace(/\n/g, '<br/>')}</div>
+                <p style="margin-top: 40px; font-size: 12px; color: #999; text-align: center;">Vision Public School Chronicle</p>
+            </div>
+        `;
+        document.body.appendChild(element);
+
+        html2canvas(element).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`${post.title.replace(/\s+/g, '_')}_Chronicle.pdf`);
+            document.body.removeChild(element);
+        });
+    };
+
     const handleLike = async (id) => {
         try {
             await fetch(`${API_BASE_URL}/api/blog/${id}/like`, { method: 'POST' });
@@ -64,8 +137,10 @@ const SchoolBlog = () => {
         }
     };
 
+    const canEdit = (post) => user && (user.role === 'ADMIN' || (post.author && post.author.id === user.id));
+
     return (
-        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-10">
+        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-10 min-h-screen">
             <header className="relative flex flex-col md:flex-row justify-between items-center pb-8 border-b-0">
                 {/* Decorative Background Blob */}
                 <div className="absolute top-[-50px] left-[-50px] w-64 h-64 bg-red-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -144,7 +219,7 @@ const SchoolBlog = () => {
                         {/* Connecting Line */}
                         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-800 -z-10 group-last:hidden"></div>
 
-                        <div className="backdrop-blur-md bg-white/40 dark:bg-gray-900/40 border border-white/60 dark:border-gray-800 p-8 rounded-3xl shadow-lg hover:shadow-2xl hover:bg-white/80 dark:hover:bg-gray-900/80 transition-all duration-500 group-hover:-translate-y-2">
+                        <div className="backdrop-blur-md bg-white/40 dark:bg-gray-900/40 border border-white/60 dark:border-gray-800 p-8 rounded-3xl shadow-lg hover:shadow-2xl hover:bg-white/80 dark:hover:bg-gray-900/80 transition-all duration-500 group-hover:-translate-y-2 relative">
                             <div className="flex flex-col md:flex-row gap-6">
                                 {/* Author Avatar */}
                                 <div className="flex-shrink-0">
@@ -154,21 +229,52 @@ const SchoolBlog = () => {
                                 </div>
 
                                 <div className="flex-grow space-y-4">
-                                    <div className="flex flex-wrap items-center gap-3 text-xs font-bold tracking-wider text-gray-500 dark:text-gray-400 uppercase">
-                                        <span className="text-red-600 dark:text-red-400">By {post.author?.name}</span>
-                                        <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                        <span>Class {post.author?.className}</span>
-                                        <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                        <span>{new Date(post.publishDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                    <div className="flex flex-wrap items-center justify-between">
+                                        <div className="flex flex-wrap items-center gap-3 text-xs font-bold tracking-wider text-gray-500 dark:text-gray-400 uppercase">
+                                            <span className="text-red-600 dark:text-red-400">By {post.author?.name}</span>
+                                            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                            <span>Class {post.author?.className}</span>
+                                            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                            <span>{new Date(post.publishDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                        </div>
+
+                                        {/* Action Buttons */}
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleDownload(post)}
+                                                className="p-2 text-gray-400 hover:text-blue-500 transition-colors"
+                                                title="Download PDF"
+                                            >
+                                                <FaDownload />
+                                            </button>
+                                            {canEdit(post) && (
+                                                <>
+                                                    <button
+                                                        onClick={() => setEditingPost({ ...post })}
+                                                        className="p-2 text-gray-400 hover:text-emerald-500 transition-colors"
+                                                        title="Edit Post"
+                                                    >
+                                                        <FaEdit />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => handleDelete(post.id, e)}
+                                                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                                        title="Delete Post"
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 dark:text-white leading-tight cursor-pointer group-hover:text-red-700 transition-colors">
                                         {post.title}
                                     </h2>
 
-                                    <p className="text-gray-700 dark:text-gray-300 text-lg md:text-xl font-serif leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all duration-500 opacity-90">
+                                    <div className="text-gray-700 dark:text-gray-300 text-lg md:text-xl font-serif leading-relaxed opacity-90 whitespace-pre-line">
                                         {post.content}
-                                    </p>
+                                    </div>
 
                                     <div className="pt-6 flex items-center justify-between border-t border-gray-100 dark:border-gray-800/50">
                                         <motion.button
@@ -184,10 +290,6 @@ const SchoolBlog = () => {
                                             </motion.div>
                                             <span className={`font-bold ${post.likes > 0 ? "text-red-600" : "text-gray-500"}`}>{post.likes}</span>
                                         </motion.button>
-
-                                        <button className="text-sm font-bold text-gray-900 dark:text-white border-b-2 border-black dark:border-white hover:border-red-500 hover:text-red-600 transition-all pb-0.5">
-                                            Read Full Chronicle
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -195,6 +297,70 @@ const SchoolBlog = () => {
                     </motion.article>
                 ))}
             </div>
+
+            {/* Edit Modal */}
+            <AnimatePresence>
+                {editingPost && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="glass-card w-full max-w-2xl relative bg-white dark:bg-gray-900"
+                            style={{ padding: '30px' }}
+                        >
+                            <button
+                                onClick={() => setEditingPost(null)}
+                                className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
+                            >
+                                <FaTimes size={20} />
+                            </button>
+
+                            <h3 className="text-2xl font-serif font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-2">
+                                <FaEdit className="text-red-500" /> Edit Chronicle
+                            </h3>
+
+                            <form onSubmit={handleUpdate} className="space-y-6">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase ml-1 block mb-1">Headline</label>
+                                    <textarea
+                                        className="glass-input resize-none overflow-hidden w-full font-serif font-bold text-xl"
+                                        rows="2"
+                                        value={editingPost.title}
+                                        onChange={e => setEditingPost({ ...editingPost, title: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase ml-1 block mb-1">Story Content</label>
+                                    <textarea
+                                        className="glass-input resize-none w-full font-serif text-lg leading-relaxed"
+                                        style={{ height: '300px' }}
+                                        value={editingPost.content}
+                                        onChange={e => setEditingPost({ ...editingPost, content: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="flex justify-end gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setEditingPost(null)}
+                                        className="px-6 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="bg-red-600 text-white px-8 py-2 rounded-lg font-bold shadow-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                                    >
+                                        <FaSave /> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

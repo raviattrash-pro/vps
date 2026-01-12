@@ -46,4 +46,18 @@ public class BlogController {
         post.setLikes(post.getLikes() + 1);
         return blogPostRepository.save(post);
     }
+
+    @PutMapping("/{id}")
+    public BlogPost updatePost(@PathVariable Long id, @RequestBody BlogPost postDetails) {
+        return blogPostRepository.findById(id).map(post -> {
+            post.setTitle(postDetails.getTitle());
+            post.setContent(postDetails.getContent());
+            return blogPostRepository.save(post);
+        }).orElseThrow(() -> new RuntimeException("Post not found"));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletePost(@PathVariable Long id) {
+        blogPostRepository.deleteById(id);
+    }
 }

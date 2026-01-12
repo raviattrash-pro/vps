@@ -54,4 +54,18 @@ public class DoubtController {
         doubt.getReplies().add(reply);
         return doubtRepository.save(doubt);
     }
+
+    @PutMapping("/{id}")
+    public Doubt updateDoubt(@PathVariable Long id, @RequestBody Doubt doubtDetails) {
+        return doubtRepository.findById(id).map(doubt -> {
+            doubt.setSubject(doubtDetails.getSubject());
+            doubt.setQuestion(doubtDetails.getQuestion());
+            return doubtRepository.save(doubt);
+        }).orElseThrow(() -> new RuntimeException("Doubt not found"));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteDoubt(@PathVariable Long id) {
+        doubtRepository.deleteById(id);
+    }
 }

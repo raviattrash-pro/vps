@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { API_BASE_URL } from '../config';
-import { FaBoxes, FaLaptop, FaFlask, FaChair, FaPlus, FaTrash, FaSearch, FaDumbbell, FaExclamationTriangle, FaCheckCircle, FaClipboardList } from 'react-icons/fa';
+import { FaBoxes, FaLaptop, FaFlask, FaChair, FaPlus, FaTrash, FaSearch, FaDumbbell, FaExclamationTriangle, FaCheckCircle, FaClipboardList, FaEdit } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Inventory = () => {
@@ -10,6 +10,7 @@ const Inventory = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [editingId, setEditingId] = useState(null);
 
     const [newAsset, setNewAsset] = useState({
         itemName: '', category: 'Furniture', quantity: 1, purchaseDate: '', status: 'AVAILABLE'
@@ -36,8 +37,11 @@ const Inventory = () => {
     const handleAddAsset = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${API_BASE_URL}/api/assets`, {
-                method: 'POST',
+            const url = editingId ? `${API_BASE_URL}/api/assets/${editingId}` : `${API_BASE_URL}/api/assets`;
+            const method = editingId ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newAsset)
             });
@@ -45,11 +49,24 @@ const Inventory = () => {
             if (response.ok) {
                 setShowForm(false);
                 setNewAsset({ itemName: '', category: 'Furniture', quantity: 1, purchaseDate: '', status: 'AVAILABLE' });
+                setEditingId(null);
                 fetchAssets();
             }
         } catch (error) {
-            console.error("Error adding asset", error);
+            console.error("Error saving asset", error);
         }
+    };
+
+    const handleEdit = (asset) => {
+        setNewAsset({
+            itemName: asset.itemName,
+            category: asset.category,
+            quantity: asset.quantity,
+            purchaseDate: asset.purchaseDate || '',
+            status: asset.status
+        });
+        setEditingId(asset.id);
+        setShowForm(true);
     };
 
     const handleDelete = async (id) => {
@@ -103,7 +120,7 @@ const Inventory = () => {
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => setShowForm(!showForm)}
+                        onClick={() => { setShowForm(!showForm); setEditingId(null); setNewAsset({ itemName: '', category: 'Furniture', quantity: 1, purchaseDate: '', status: 'AVAILABLE' }); }}
                         className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl font-bold shadow-lg hover:shadow-cyan-500/30 flex items-center gap-2"
                     >
                         <FaPlus /> Registry Entry
@@ -126,7 +143,7 @@ const Inventory = () => {
                         className="overflow-hidden"
                     >
                         <div className="glass-card mb-8" style={{ padding: '25px', maxWidth: '1000px', margin: '0 auto' }}>
-                            <h3 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold', fontSize: '20px' }}>New Asset Registration</h3>
+                            <h3 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold', fontSize: '20px' }}>{editingId ? 'Edit Asset' : 'New Asset Registration'}</h3>
                             <form onSubmit={handleAddAsset} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div>
                                     <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Item Name</label>
@@ -170,8 +187,8 @@ const Inventory = () => {
                                 </div>
 
                                 <div className="lg:col-span-4 flex justify-end gap-4 mt-2">
-                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-gray-500 hover:text-gray-700 font-bold text-sm">Cancel</button>
-                                    <button type="submit" className="glass-btn px-8">Save to Registry</button>
+                                    <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setNewAsset({ itemName: '', category: 'Furniture', quantity: 1, purchaseDate: '', status: 'AVAILABLE' }); }} className="px-6 py-2 text-gray-500 hover:text-gray-700 font-bold text-sm">Cancel</button>
+                                    <button type="submit" className="glass-btn px-8">{editingId ? 'Update Asset' : 'Save to Registry'}</button>
                                 </div>
                             </form>
                         </div>
@@ -239,13 +256,22 @@ const Inventory = () => {
                                     </td>
                                     <td className="p-6 text-right">
                                         {user.role === 'ADMIN' && (
-                                            <button
-                                                onClick={() => handleDelete(asset.id)}
-                                                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                                title="Delete Asset"
-                                            >
-                                                <FaTrash />
-                                            </button>
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleEdit(asset)}
+                                                    className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                                    title="Edit Asset"
+                                                >
+                                                    <FaEdit />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(asset.id)}
+                                                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                                    title="Delete Asset"
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            </div>
                                         )}
                                     </td>
                                 </motion.tr>
