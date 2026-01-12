@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaHome, FaChalkboardTeacher, FaBook, FaCalendarAlt, FaUserCog, FaFileAlt, FaVideo, FaMoneyBillWave, FaSignOutAlt, FaSun, FaMoon, FaHeartbeat, FaComments, FaCalendarCheck, FaUserShield } from 'react-icons/fa';
+import { FaHome, FaChalkboardTeacher, FaBook, FaCalendarAlt, FaUserCog, FaFileAlt, FaVideo, FaMoneyBillWave, FaSignOutAlt, FaSun, FaMoon, FaHeartbeat, FaComments, FaCalendarCheck, FaUserShield, FaCertificate, FaBus, FaBoxes, FaImages, FaChartBar, FaPoll, FaPenNib } from 'react-icons/fa';
 import { useAuth } from '../AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -16,6 +16,13 @@ const navItems = [
     { path: '/forum', label: 'Discussion', icon: <FaComments />, allowedRoles: ['ADMIN', 'STUDENT', 'TEACHER'] },
     { path: '/leaves', label: 'Leaves', icon: <FaCalendarCheck />, allowedRoles: ['ADMIN', 'TEACHER'] },
     { path: '/visitors', label: 'Visitors', icon: <FaUserShield />, allowedRoles: ['ADMIN'] },
+    { path: '/certificates', label: 'Certificates', icon: <FaCertificate />, allowedRoles: ['ADMIN', 'CLERK'] },
+    { path: '/transport', label: 'Transport', icon: <FaBus />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
+    { path: '/inventory', label: 'Inventory', icon: <FaBoxes />, allowedRoles: ['ADMIN'] },
+    { path: '/gallery', label: 'Gallery', icon: <FaImages />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
+    { path: '/analytics', label: 'Analytics', icon: <FaChartBar />, allowedRoles: ['ADMIN', 'TEACHER'] },
+    { path: '/polls', label: 'Polls', icon: <FaPoll />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
+    { path: '/blog', label: 'Blog', icon: <FaPenNib />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { path: '/calendar', label: 'Calendar', icon: <FaCalendarAlt />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { path: '/timetable', label: 'Time Table', icon: <FaChalkboardTeacher />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     // { path: '/admin', label: 'Admin', icon: <FaUserCog />, allowedRoles: ['ADMIN'] }, 
