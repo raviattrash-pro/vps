@@ -2,7 +2,7 @@
 import React from 'react';
 import { API_BASE_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
-import { FaUserCircle, FaCalendarCheck, FaBook, FaClipboardList, FaQuestionCircle, FaFileAlt, FaVideo, FaRupeeSign, FaChartBar, FaClock } from 'react-icons/fa';
+import { FaUserCircle, FaCalendarCheck, FaBook, FaClipboardList, FaFileAlt, FaVideo, FaRupeeSign, FaChartBar, FaImages, FaPoll, FaPenNib, FaBus, FaComments, FaChalkboardTeacher, FaHeartbeat, FaUserShield, FaCertificate, FaBoxes } from 'react-icons/fa';
 import { MdAssignment, MdMenuBook, MdQuiz } from 'react-icons/md';
 
 import { useAuth } from '../AuthContext';
@@ -94,8 +94,26 @@ const Dashboard = () => {
                     { title: 'Question Bank', sub: 'Practice', icon: <MdQuiz />, path: '/question', color: '#7209b7' },
                     { title: 'Results', sub: 'View Marks', icon: <FaFileAlt />, path: '/marks', color: '#ffb703' },
                     { title: 'Live Class', sub: 'Join Now', icon: <FaVideo />, path: '/live', color: '#fb8500' },
-                    { title: 'Reports', sub: 'Analytics', icon: <FaChartBar />, path: '/reports', color: '#3a0ca3' },
-                    ...(user?.role === 'ADMIN' ? [{ title: 'Admin Panel', sub: 'Management', icon: <FaUserCircle />, path: '/admin', color: '#2b2d42' }] : [])
+                    { title: 'Gallery', sub: 'Events & Photos', icon: <FaImages />, path: '/gallery', color: '#d90429' },
+                    { title: 'Polls', sub: 'Vote Now', icon: <FaPoll />, path: '/polls', color: '#00afb9' },
+                    { title: 'School Blog', sub: 'Creative Corner', icon: <FaPenNib />, path: '/blog', color: '#f07167' },
+                    { title: 'Transport', sub: 'Bus Routes', icon: <FaBus />, path: '/transport', color: '#fca311' },
+                    { title: 'Forum', sub: 'Ask Doubts', icon: <FaComments />, path: '/forum', color: '#8d99ae' },
+                    { title: 'Time Table', sub: 'Schedule', icon: <FaChalkboardTeacher />, path: '/timetable', color: '#6d6875' },
+                    { title: 'Health Card', sub: 'Medical Profile', icon: <FaHeartbeat />, path: '/health', color: '#ef233c' },
+                    // Admin & Teacher Only
+                    ...(['ADMIN', 'TEACHER'].includes(user?.role) ? [
+                        { title: 'Leaves', sub: 'Manage Leaves', icon: <FaCalendarCheck />, path: '/leaves', color: '#2a9d8f' },
+                        { title: 'Analytics', sub: 'Performance', icon: <FaChartBar />, path: '/analytics', color: '#3a0ca3' },
+                    ] : []),
+                    // Admin Only
+                    ...(user?.role === 'ADMIN' ? [
+                        { title: 'Admin Panel', sub: 'Management', icon: <FaUserCircle />, path: '/admin', color: '#2b2d42' },
+                        { title: 'Visitors', sub: 'Gate Pass', icon: <FaUserShield />, path: '/visitors', color: '#9b2226' },
+                        { title: 'Certificates', sub: 'Generate', icon: <FaCertificate />, path: '/certificates', color: '#e07a5f' },
+                        { title: 'Inventory', sub: 'Assets', icon: <FaBoxes />, path: '/inventory', color: '#555b6e' },
+                        { title: 'Reports', sub: 'Analytics', icon: <FaChartBar />, path: '/reports', color: '#3f37c9' },
+                    ] : [])
                 ].map((item, idx) => (
                     <div key={idx} className="menu-card glass-card" onClick={() => navigate(item.path)} style={{
                         padding: '25px',

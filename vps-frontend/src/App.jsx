@@ -21,6 +21,18 @@ import Reports from './components/Reports';
 import Payment from './components/Payment';
 import ActiveUsers from './components/ActiveUsers';
 import SchoolCalendar from './components/SchoolCalendar';
+import TimeTable from './components/TimeTable';
+import HealthProfile from './components/HealthProfile';
+import AskDoubt from './components/AskDoubt';
+import LeaveManagement from './components/LeaveManagement';
+import VisitorManagement from './components/VisitorManagement';
+import CertificateGenerator from './components/CertificateGenerator';
+import Transport from './components/Transport';
+import Inventory from './components/Inventory';
+import Gallery from './components/Gallery';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
+import PollSystem from './components/PollSystem';
+import SchoolBlog from './components/SchoolBlog';
 import { useAuth } from './AuthContext';
 
 const PrivateRoute = ({ children }) => {
@@ -105,6 +117,18 @@ const AnimatedRoutes = () => {
         <Route path="/admin/active-users" element={<PrivateRoute><PageTransition><ActiveUsers /></PageTransition></PrivateRoute>} />
         <Route path="/calendar" element={<PrivateRoute><PageTransition><SchoolCalendar /></PageTransition></PrivateRoute>} />
         <Route path="/coming-soon" element={<PrivateRoute><PageTransition><ComingSoon /></PageTransition></PrivateRoute>} />
+        <Route path="/timetable" element={<PrivateRoute><PageTransition><TimeTable /></PageTransition></PrivateRoute>} />
+        <Route path="/health" element={<PrivateRoute><PageTransition><HealthProfile /></PageTransition></PrivateRoute>} />
+        <Route path="/forum" element={<PrivateRoute><PageTransition><AskDoubt /></PageTransition></PrivateRoute>} />
+        <Route path="/leaves" element={<PrivateRoute><PageTransition><LeaveManagement /></PageTransition></PrivateRoute>} />
+        <Route path="/visitors" element={<PrivateRoute><PageTransition><VisitorManagement /></PageTransition></PrivateRoute>} />
+        <Route path="/certificates" element={<PrivateRoute><PageTransition><CertificateGenerator /></PageTransition></PrivateRoute>} />
+        <Route path="/transport" element={<PrivateRoute><PageTransition><Transport /></PageTransition></PrivateRoute>} />
+        <Route path="/inventory" element={<PrivateRoute><PageTransition><Inventory /></PageTransition></PrivateRoute>} />
+        <Route path="/gallery" element={<PrivateRoute><PageTransition><Gallery /></PageTransition></PrivateRoute>} />
+        <Route path="/analytics" element={<PrivateRoute><PageTransition><AnalyticsDashboard /></PageTransition></PrivateRoute>} />
+        <Route path="/polls" element={<PrivateRoute><PageTransition><PollSystem /></PageTransition></PrivateRoute>} />
+        <Route path="/blog" element={<PrivateRoute><PageTransition><SchoolBlog /></PageTransition></PrivateRoute>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
