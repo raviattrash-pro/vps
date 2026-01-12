@@ -35,8 +35,8 @@ const AnalyticsDashboard = () => {
         average: parseFloat(avg.toFixed(1))
     }));
 
-<<<<
-            // Calculate insights
+
+    // Calculate insights
     const sortedData = [...chartData].sort((a, b) => b.average - a.average);
     const topSubject = sortedData[0];
     const lowSubject = sortedData[sortedData.length - 1];
@@ -207,5 +207,5 @@ const AnalyticsDashboard = () => {
         </div>
     );
 };
->>>>
+
 export default AnalyticsDashboard;
