@@ -137,14 +137,14 @@ const AskDoubt = () => {
 
     return (
         <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 min-h-screen">
-            <header className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <header className="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div>
                     <h1 className="text-4xl font-black flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-300">
                         <FaComments className="text-indigo-600 dark:text-indigo-400" /> Ask a Doubt
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 font-medium">Collaborative Learning Forum</p>
                 </div>
-                <div className="relative w-full md:w-auto">
+                <div className="relative w-full md:w-auto mt-4 md:mt-0">
                     <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                         type="text"

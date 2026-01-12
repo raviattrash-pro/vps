@@ -273,12 +273,22 @@ const HealthProfile = () => {
                                             </a>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700">
-                                        <div className="bg-blue-100 p-3 rounded-full text-blue-600 text-xl"><FaUserMd /></div>
-                                        <div>
-                                            <div className="text-xs font-bold text-gray-400 uppercase">Family Doctor</div>
-                                            <div className="text-lg font-bold dark:text-white mt-1">{healthData.doctorName}</div>
-                                            <a href={`tel:${healthData.doctorContact}`} className="text-lg font-semibold text-blue-600 hover:underline block mt-0.5">
+                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 min-w-0">
+                                        <div className="bg-red-100 p-3 rounded-full text-red-600 text-lg font-bold shrink-0 w-12 h-12 flex items-center justify-center">SOS</div>
+                                        <div className="min-w-0">
+                                            <div className="text-xs font-bold text-gray-400 uppercase truncate">Primary Contact</div>
+                                            <div className="text-lg font-bold dark:text-white mt-1 truncate">{healthData.emergencyContactName}</div>
+                                            <a href={`tel:${healthData.emergencyContactNumber}`} className="text-lg font-black text-red-600 hover:underline block mt-0.5 truncate">
+                                                {healthData.emergencyContactNumber}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 min-w-0">
+                                        <div className="bg-blue-100 p-3 rounded-full text-blue-600 text-lg font-bold shrink-0 w-12 h-12 flex items-center justify-center"><FaUserMd /></div>
+                                        <div className="min-w-0">
+                                            <div className="text-xs font-bold text-gray-400 uppercase truncate">Family Doctor</div>
+                                            <div className="text-lg font-bold dark:text-white mt-1 truncate">{healthData.doctorName}</div>
+                                            <a href={`tel:${healthData.doctorContact}`} className="text-lg font-semibold text-blue-600 hover:underline block mt-0.5 truncate">
                                                 {healthData.doctorContact}
                                             </a>
                                         </div>

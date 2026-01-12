@@ -157,10 +157,10 @@ const TimeTable = () => {
                         </div>
                         {periods.map(time => (
                             <div key={time} className="flex flex-col items-center justify-center">
-                                <div className="px-4 py-2 bg-white dark:bg-gray-900 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 mb-2">
-                                    <span className="text-xs font-bold text-gray-500">{time}</span>
+                                <div className="px-3 py-2 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-2 whitespace-nowrap">
+                                    <span className="text-[10px] font-bold text-gray-500">{time}</span>
                                 </div>
-                                <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
                             </div>
                         ))}
                     </div>

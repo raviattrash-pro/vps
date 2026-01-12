@@ -89,14 +89,14 @@ const VisitorManagement = () => {
     return (
         <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8">
             {/* Header */}
-            <header className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <header className="flex flex-col xl:flex-row justify-between items-center gap-6 bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <div>
                     <h1 className="text-3xl font-black flex items-center gap-3 text-purple-600 dark:text-purple-400">
                         <FaUserShield /> Security Command Center
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 font-medium">Digital Gate Pass System & Visitor Logs</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4 justify-center md:justify-end w-full md:w-auto">
                     <StatCard label="On Campus" value={activeVisitors.length} icon={FaSignInAlt} color="green" />
                     <StatCard label="Total Today" value={visitors.filter(v => new Date(v.checkInTime).toDateString() === new Date().toDateString()).length} icon={FaHistory} color="purple" />
                 </div>
@@ -156,7 +156,7 @@ const VisitorManagement = () => {
                 {/* Main Content Area */}
                 <div className="lg:col-span-8 space-y-6">
                     {/* Controls */}
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex-wrap">
                         <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-xl">
                             <button
                                 onClick={() => setViewMode('active')}
