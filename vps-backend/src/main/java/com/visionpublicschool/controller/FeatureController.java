@@ -474,17 +474,44 @@ public class FeatureController {
 
     // Live Class Endpoints
     @GetMapping("/live-session")
-    public LiveSession getActiveLiveSession() {
+    public LiveSession getActiveLiveSession(
+            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) String className,
+            @RequestParam(required = false) String section) {
+
+        if (studentId != null) {
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+            return liveSessionRepository.findTopByClassNameAndSectionAndIsActiveTrueOrderByStartTimeDesc(
+                    student.getClassName(), student.getSection());
+        }
+
+        if (className != null && section != null) {
+            return liveSessionRepository.findTopByClassNameAndSectionAndIsActiveTrueOrderByStartTimeDesc(
+                    className, section);
+        }
+
         return liveSessionRepository.findTopByIsActiveTrueOrderByStartTimeDesc();
     }
 
     @PostMapping("/live-session")
     public LiveSession startLiveSession(@RequestBody LiveSession session) {
-        // Deactivate previous sessions to ensure only one is active (optional logic)
-        List<LiveSession> active = liveSessionRepository.findAll();
-        for (LiveSession s : active) {
-            s.setActive(false);
-            liveSessionRepository.save(s);
+        // Deactivate previous sessions ONLY for this class/section
+        if (session.getClassName() != null && session.getSection() != null) {
+            List<LiveSession> active = liveSessionRepository.findByClassNameAndSectionAndIsActiveTrue(
+                    session.getClassName(), session.getSection());
+            for (LiveSession s : active) {
+                s.setActive(false);
+                liveSessionRepository.save(s);
+            }
+        } else {
+            // Fallback for global? Or just deactivate all if no class specified?
+            // For now, let's assume class/section is required. If not provided, maybe
+            // deactivate all for safety?
+            // Or better, if not provided, we just save it (global).
+            // But let's strictly handle class/section based on requirements.
+            // If user provides none, maybe they are old client?
+            // Let's stick to the plan: deactivate only for same class/section.
         }
 
         session.setStartTime(LocalDateTime.now());

@@ -10,6 +10,8 @@ const LiveClass = () => {
     const [link, setLink] = useState('');
     const [isLive, setIsLive] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [targetClass, setTargetClass] = useState('10');
+    const [targetSection, setTargetSection] = useState('A');
 
     const canGoLive = user && (user.role === 'ADMIN' || user.role === 'TEACHER');
 
@@ -17,11 +19,20 @@ const LiveClass = () => {
         fetchSession();
         const interval = setInterval(fetchSession, 5000);
         return () => clearInterval(interval);
-    }, []);
+    }, [targetClass, targetSection]);
 
     const fetchSession = async () => {
+        if (!user) return;
         try {
-            const res = await fetch(`${API_BASE_URL}/api/live-session`);
+            let url = `${API_BASE_URL}/api/live-session`;
+            // If student, pass studentID to filter for their class
+            if (user.role !== 'ADMIN' && user.role !== 'TEACHER') {
+                url += `?studentId=${user.id}`;
+            } else {
+                // If Teacher/Admin, filter by the selected class/section
+                url += `?className=${targetClass}&section=${targetSection}`;
+            }
+            const res = await fetch(url);
             if (res.status === 200) {
                 const data = await res.json();
                 if (data && data.meetingLink) {
@@ -44,7 +55,12 @@ const LiveClass = () => {
             await fetch(`${API_BASE_URL}/api/live-session`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ meetingLink: link, message: 'Class Started' })
+                body: JSON.stringify({
+                    meetingLink: link,
+                    message: 'Class Started',
+                    className: targetClass,
+                    section: targetSection
+                })
             });
             setIsLive(true);
             alert('You are now Live!');
@@ -92,7 +108,37 @@ const LiveClass = () => {
                                 <FaVideo size={40} color="#d32f2f" />
                             </div>
                             <h2 style={{ color: 'var(--primary)', marginBottom: '10px' }}>Start a Live Session</h2>
-                            <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>Share your Zoom, Google Meet, or Team link below to start the class.</p>
+                            <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>Share your Zoom, Google Meet, or Team link below to start the class.</p>
+
+                            <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ display: 'block', textAlign: 'left', marginBottom: '5px', color: 'var(--text-muted)', fontWeight: 'bold' }}>Class</label>
+                                    <select
+                                        className="glass-input"
+                                        value={targetClass}
+                                        onChange={(e) => setTargetClass(e.target.value)}
+                                        style={{ width: '100%', padding: '10px' }}
+                                    >
+                                        <option value="9">Class 9</option>
+                                        <option value="10">Class 10</option>
+                                        <option value="11">Class 11</option>
+                                        <option value="12">Class 12</option>
+                                    </select>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ display: 'block', textAlign: 'left', marginBottom: '5px', color: 'var(--text-muted)', fontWeight: 'bold' }}>Section</label>
+                                    <select
+                                        className="glass-input"
+                                        value={targetSection}
+                                        onChange={(e) => setTargetSection(e.target.value)}
+                                        style={{ width: '100%', padding: '10px' }}
+                                    >
+                                        <option value="A">Section A</option>
+                                        <option value="B">Section B</option>
+                                        <option value="C">Section C</option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <input
                                 className="glass-input"

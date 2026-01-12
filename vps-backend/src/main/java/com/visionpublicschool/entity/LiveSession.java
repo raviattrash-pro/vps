@@ -17,6 +17,25 @@ public class LiveSession {
     private LocalDateTime startTime;
     private boolean isActive;
 
+    private String className;
+    private String section;
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
