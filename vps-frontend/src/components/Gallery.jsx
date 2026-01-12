@@ -143,20 +143,26 @@ const Gallery = () => {
                 <div className="glass-card mb-8" style={{ padding: '25px', maxWidth: '800px', margin: '0 auto 40px auto' }}>
                     <div className="flex justify-between items-center mb-6">
                         <h3 style={{ color: 'var(--primary)', fontSize: '18px', fontWeight: 'bold' }}>Upload New Memory</h3>
-                        <div className="flex bg-gray-100 dark:bg-gray-700/50 p-1 rounded-lg">
+                        <div className="flex gap-3">
                             <button
                                 type="button"
                                 onClick={() => setUploadMode('url')}
-                                className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${uploadMode === 'url' ? 'bg-white dark:bg-gray-800 text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                className={`px-5 py-2 rounded-xl text-sm font-bold transition-all border-2 flex items-center gap-2
+                                    ${uploadMode === 'url'
+                                        ? 'bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/20 dark:border-blue-400 dark:text-blue-300'
+                                        : 'bg-transparent border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-500 dark:border-gray-700 dark:text-gray-400'}`}
                             >
-                                Link
+                                <FaLink /> Link
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setUploadMode('file')}
-                                className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${uploadMode === 'file' ? 'bg-white dark:bg-gray-800 text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                className={`px-5 py-2 rounded-xl text-sm font-bold transition-all border-2 flex items-center gap-2
+                                    ${uploadMode === 'file'
+                                        ? 'bg-emerald-50 border-emerald-500 text-emerald-600 dark:bg-emerald-900/20 dark:border-emerald-400 dark:text-emerald-300'
+                                        : 'bg-transparent border-gray-200 text-gray-500 hover:border-emerald-300 hover:text-emerald-500 dark:border-gray-700 dark:text-gray-400'}`}
                             >
-                                File
+                                <FaCloudUploadAlt /> File
                             </button>
                         </div>
                     </div>
