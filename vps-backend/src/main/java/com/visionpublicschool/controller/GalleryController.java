@@ -24,7 +24,7 @@ public class GalleryController {
         return galleryImageRepository.findAllByOrderByUploadDateDesc();
     }
 
-    @PostMapping
+    @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     public GalleryImage addImage(
             @RequestParam(value = "file", required = false) org.springframework.web.multipart.MultipartFile file,
             @RequestParam(value = "imageUrl", required = false) String imageUrl,
