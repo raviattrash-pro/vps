@@ -115,7 +115,7 @@ const LeaveManagement = () => {
             </header>
 
             {/* Stats Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
                 <StatCard icon={FaHourglassHalf} label="Pending Reviews" value={pendingCount} color="yellow" />
                 <StatCard icon={FaCheckCircle} label="Approved Leaves" value={approvedCount} color="green" />
                 <StatCard icon={FaTimesCircle} label="Rejected Requests" value={rejectedCount} color="red" />

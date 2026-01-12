@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { API_BASE_URL } from '../config';
-import { FaPoll, FaCheck, FaPlus, FaFireAlt } from 'react-icons/fa';
+import { FaPoll, FaCheck, FaPlus, FaFireAlt, FaTrash } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 

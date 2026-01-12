@@ -144,9 +144,12 @@ const TimeTable = () => {
             </header>
 
             <div className="relative z-10 overflow-x-auto pb-8 custom-scrollbar">
-                <div className="min-w-[1200px]">
+                <div className="min-w-[1200px] p-8 bg-white dark:bg-gray-800 rounded-[3rem] shadow-2xl border-4 border-white/50 dark:border-gray-700 relative overflow-hidden" id="timetable-canvas">
+                    {/* Canvas Texture/Watermark */}
+                    <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+
                     {/* Header Row */}
-                    <div className="grid grid-cols-8 gap-4 mb-6">
+                    <div className="grid grid-cols-8 gap-4 mb-6 relative z-10">
                         <div className="flex items-center justify-center">
                             <div className="w-16 h-16 rounded-2xl bg-gray-900 text-white flex items-center justify-center font-black text-xl shadow-lg transform rotate-3">
                                 <FaCalendarAlt />
@@ -154,7 +157,7 @@ const TimeTable = () => {
                         </div>
                         {periods.map(time => (
                             <div key={time} className="flex flex-col items-center justify-center">
-                                <div className="px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 mb-2">
+                                <div className="px-4 py-2 bg-white dark:bg-gray-900 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 mb-2">
                                     <span className="text-xs font-bold text-gray-500">{time}</span>
                                 </div>
                                 <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
@@ -164,11 +167,11 @@ const TimeTable = () => {
 
                     {/* Days Rows */}
                     {days.map(day => (
-                        <div key={day} className="grid grid-cols-8 gap-4 mb-4 group">
+                        <div key={day} className="grid grid-cols-8 gap-4 mb-4 group relative z-10">
                             {/* Day Label */}
                             <div className="flex items-center justify-center">
-                                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-6 py-8 rounded-2xl shadow-sm border border-white/50 dark:border-gray-700 w-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                                    <span className="writing-vertical-lr text-xl font-black text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 transition-colors uppercase tracking-widest rotate-180">
+                                <div className="bg-gray-50 dark:bg-gray-900/50 px-6 py-8 rounded-2xl border border-gray-100 dark:border-gray-700 w-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                                    <span className="text-xl font-black text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 transition-colors uppercase tracking-widest transform -rotate-90">
                                         {day.substring(0, 3)}
                                     </span>
                                 </div>

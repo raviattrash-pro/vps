@@ -36,6 +36,18 @@ const CertificateGenerator = () => {
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
+        documentTitle: `Certificate_${generatedCert?.student?.name || 'Student'}_${new Date().toISOString().split('T')[0]}`,
+        pageStyle: `
+        @page {
+            size: landscape;
+            margin: 0;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+            }
+        }
+      `
     });
 
     const handleGenerate = async (e) => {

@@ -51,11 +51,11 @@ const AnalyticsDashboard = () => {
         if (className) {
             fetchRankings();
         }
-    }, [className]);
+    }, [className, section]);
 
     const fetchRankings = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/analytics/rankings?className=${className}`);
+            const response = await fetch(`${API_BASE_URL}/api/analytics/rankings?className=${className}&section=${section}`);
             if (response.ok) {
                 const data = await response.json();
                 setRankings(data);

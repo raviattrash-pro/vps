@@ -201,33 +201,33 @@ const VisitorManagement = () => {
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.9 }}
                                         transition={{ duration: 0.2, delay: idx * 0.05 }}
-                                        className={`relative overflow-hidden p-6 rounded-[2rem] border ${viewMode === 'active' ? 'bg-white dark:bg-gray-800 border-green-500 dark:border-green-600 shadow-xl' : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-80 hover:opacity-100'}`}
+                                        className={`relative p-6 rounded-[2rem] border ${viewMode === 'active' ? 'bg-white dark:bg-gray-800 border-green-500 dark:border-green-600 shadow-xl' : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-80 hover:opacity-100'}`}
                                     >
                                         {/* Status Badge */}
-                                        <div className={`absolute top-0 right-0 px-4 py-2 rounded-bl-2xl font-bold text-xs uppercase tracking-wider ${viewMode === 'active' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
+                                        <div className={`absolute -top-3 -right-3 px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md ${viewMode === 'active' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
                                             {viewMode === 'active' ? 'ON SITE' : 'CHECKED OUT'}
                                         </div>
 
                                         <div className="flex items-start gap-4 mb-4">
-                                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900 dark:to-indigo-900 flex items-center justify-center text-2xl text-purple-600 dark:text-purple-300">
+                                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900 dark:to-indigo-900 flex items-center justify-center text-2xl text-purple-600 dark:text-purple-300 shadow-sm">
                                                 <FaUserTie />
                                             </div>
-                                            <div>
-                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">{visitor.name}</h3>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight truncate">{visitor.name}</h3>
                                                 <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mt-1">
                                                     <FaPhone className="text-xs" /> {visitor.phone}
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="space-y-3 mb-6 bg-gray-50 dark:bg-gray-700/30 p-4 rounded-xl">
+                                        <div className="space-y-3 mb-6 bg-gray-50 dark:bg-gray-700/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-gray-500 dark:text-gray-400">Meeting</span>
-                                                <span className="font-bold text-gray-800 dark:text-gray-200">{visitor.personToMeet}</span>
+                                                <span className="font-bold text-gray-800 dark:text-gray-200 truncate ml-2 text-right">{visitor.personToMeet}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-gray-500 dark:text-gray-400">Purpose</span>
-                                                <span className="font-bold text-gray-800 dark:text-gray-200">{visitor.purpose}</span>
+                                                <span className="font-bold text-gray-800 dark:text-gray-200 truncate ml-2 text-right">{visitor.purpose}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-gray-500 dark:text-gray-400">In Time</span>
@@ -245,13 +245,13 @@ const VisitorManagement = () => {
                                             <div className="flex gap-3">
                                                 <button
                                                     onClick={() => handleCheckOut(visitor.id)}
-                                                    className="flex-1 py-3 rounded-xl bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 font-bold flex items-center justify-center gap-2 transition-colors border border-red-100 dark:border-red-900/50"
+                                                    className="flex-1 py-3 px-4 rounded-xl bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 font-bold flex items-center justify-center gap-2 transition-colors border border-red-100 dark:border-red-900/50"
                                                 >
                                                     <FaSignOutAlt /> Checkout
                                                 </button>
                                                 <button
                                                     onClick={() => window.print()}
-                                                    className="px-4 py-3 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 font-bold flex items-center justify-center gap-2 transition-colors"
+                                                    className="px-5 py-3 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 font-bold flex items-center justify-center gap-2 transition-colors"
                                                     title="Download/Print Pass"
                                                 >
                                                     <FaIdBadge />

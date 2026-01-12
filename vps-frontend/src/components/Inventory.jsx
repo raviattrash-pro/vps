@@ -128,85 +128,26 @@ const Inventory = () => {
                 )}
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-                <StatCard label="Total Inventory Count" value={totalItems} icon={FaClipboardList} color="blue" />
-                <StatCard label="Low Stock Alerts" value={lowStock} icon={FaExclamationTriangle} color="orange" />
-                <StatCard label="Damaged / Repairs" value={damaged} icon={FaTrash} color="red" />
+            {/* Combined Stats and Search Row */}
+            <div className="flex flex-col xl:flex-row gap-6 mb-8 items-stretch">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <StatCard label="Total Count" value={totalItems} icon={FaClipboardList} color="blue" />
+                    <StatCard label="Low Stock" value={lowStock} icon={FaExclamationTriangle} color="orange" />
+                    <StatCard label="Damaged" value={damaged} icon={FaTrash} color="red" />
+                </div>
+                <div className="xl:w-1/3 relative">
+                    <div className="h-full bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-1 flex items-center">
+                        <FaSearch className="absolute left-6 text-gray-400" />
+                        <input
+                            className="w-full h-full pl-12 pr-6 bg-transparent outline-none text-lg"
+                            placeholder="Search items..."
+                            value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                </div>
             </div>
 
-            <AnimatePresence>
-                {showForm && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden"
-                    >
-                        <div className="glass-card mb-8" style={{ padding: '25px', maxWidth: '1000px', margin: '0 auto' }}>
-                            <h3 style={{ marginBottom: '20px', color: 'var(--primary)', fontWeight: 'bold', fontSize: '20px' }}>{editingId ? 'Edit Asset' : 'New Asset Registration'}</h3>
-                            <form onSubmit={handleAddAsset} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Item Name</label>
-                                    <input
-                                        className="glass-input"
-                                        value={newAsset.itemName} onChange={e => setNewAsset({ ...newAsset, itemName: e.target.value })} required placeholder="e.g. Projector X1"
-                                    />
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Category</label>
-                                    <select
-                                        className="glass-input"
-                                        style={{ appearance: 'none' }}
-                                        value={newAsset.category} onChange={e => setNewAsset({ ...newAsset, category: e.target.value })}
-                                    >
-                                        <option value="Furniture">Furniture</option>
-                                        <option value="IT">IT / Electronics</option>
-                                        <option value="Lab">Lab Equipment</option>
-                                        <option value="Sports">Sports</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Quantity</label>
-                                    <input
-                                        type="number" className="glass-input"
-                                        value={newAsset.quantity} onChange={e => setNewAsset({ ...newAsset, quantity: parseInt(e.target.value) })} required min="1"
-                                    />
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Status</label>
-                                    <select
-                                        className="glass-input"
-                                        style={{ appearance: 'none' }}
-                                        value={newAsset.status} onChange={e => setNewAsset({ ...newAsset, status: e.target.value })}
-                                    >
-                                        <option value="AVAILABLE">Available</option>
-                                        <option value="DAMAGED">Damaged</option>
-                                        <option value="LOST">Lost / Missing</option>
-                                    </select>
-                                </div>
-
-                                <div className="lg:col-span-4 flex justify-end gap-4 mt-2">
-                                    <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setNewAsset({ itemName: '', category: 'Furniture', quantity: 1, purchaseDate: '', status: 'AVAILABLE' }); }} className="px-6 py-2 text-gray-500 hover:text-gray-700 font-bold text-sm">Cancel</button>
-                                    <button type="submit" className="glass-btn px-8">{editingId ? 'Update Asset' : 'Save to Registry'}</button>
-                                </div>
-                            </form>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Search */}
-            <div className="relative max-w-2xl mx-auto mb-12">
-                <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                    className="w-full pl-14 pr-6 py-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg focus:ring-4 focus:ring-cyan-500/20 outline-none text-lg transition-all"
-                    placeholder="Search inventory items..."
-                    value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                />
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden mt-8">
                 <table className="w-full text-left">
                     <thead className="bg-gray-50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
                         <tr>

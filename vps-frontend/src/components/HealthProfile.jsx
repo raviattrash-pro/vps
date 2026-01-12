@@ -215,8 +215,8 @@ const HealthProfile = () => {
                     {!isEditing && healthData ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Vitals Card */}
-                            <div className="glass-panel p-6 rounded-2xl relative overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800">
-                                <div className="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
+                            <div className="glass-panel p-6 rounded-2xl relative shadow-lg border border-gray-100 dark:border-gray-800">
+                                <div className="absolute top-0 left-0 w-2 h-full bg-green-500 rounded-l-2xl"></div>
                                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white">
                                     Physical Vitals
                                 </h2>
@@ -237,8 +237,8 @@ const HealthProfile = () => {
                             </div>
 
                             {/* Medical Info */}
-                            <div className="glass-panel p-6 rounded-2xl relative overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800">
-                                <div className="absolute top-0 left-0 w-2 h-full bg-yellow-500"></div>
+                            <div className="glass-panel p-6 rounded-2xl relative shadow-lg border border-gray-100 dark:border-gray-800">
+                                <div className="absolute top-0 left-0 w-2 h-full bg-yellow-500 rounded-l-2xl"></div>
                                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white">
                                     <FaPills className="text-yellow-500" /> Allergies & Meds
                                 </h2>
