@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { API_BASE_URL } from '../config';
-import { FaUserShield, FaSignInAlt, FaSignOutAlt, FaHistory, FaCheckCircle, FaSearch } from 'react-icons/fa';
+import { FaUserShield, FaSignInAlt, FaSignOutAlt, FaHistory, FaCheckCircle, FaSearch, FaIdBadge, FaClock, FaPhone, FaUserTie } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const VisitorManagement = () => {
@@ -9,13 +9,10 @@ const VisitorManagement = () => {
     const [visitors, setVisitors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [showHistory, setShowHistory] = useState(false);
+    const [viewMode, setViewMode] = useState('active'); // active, history
 
     const [newVisitor, setNewVisitor] = useState({
-        name: '',
-        phone: '',
-        purpose: '',
-        personToMeet: ''
+        name: '', phone: '', purpose: '', personToMeet: ''
     });
 
     useEffect(() => {
@@ -27,13 +24,17 @@ const VisitorManagement = () => {
             const response = await fetch(`${API_BASE_URL}/api/visitors`);
             if (response.ok) {
                 const data = await response.json();
-                setVisitors(data);
+                setVisitors(dataSorted(data));
             }
         } catch (error) {
             console.error("Error fetching visitors", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const dataSorted = (data) => {
+        return data.sort((a, b) => new Date(b.checkInTime) - new Date(a.checkInTime));
     };
 
     const handleCheckIn = async (e) => {
@@ -59,167 +60,207 @@ const VisitorManagement = () => {
             const response = await fetch(`${API_BASE_URL}/api/visitors/${id}/checkout`, {
                 method: 'PUT'
             });
-            if (response.ok) {
-                fetchVisitors();
-            }
+            if (response.ok) fetchVisitors();
         } catch (error) {
             console.error("Error checking out visitor", error);
         }
     };
 
-    // Filter visitors
-    const activeVisitors = visitors.filter(v => v.status === 'IN' && (v.name.toLowerCase().includes(searchTerm.toLowerCase()) || v.phone.includes(searchTerm)));
-    const historyVisitors = visitors.filter(v => v.status === 'OUT' && (v.name.toLowerCase().includes(searchTerm.toLowerCase()) || v.phone.includes(searchTerm)));
+    const activeVisitors = visitors.filter(v => v.status === 'IN');
+    const historyVisitors = visitors.filter(v => v.status === 'OUT');
+
+    const filteredList = (viewMode === 'active' ? activeVisitors : historyVisitors).filter(v =>
+        v.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        v.phone.includes(searchTerm)
+    );
+
+    const StatCard = ({ label, value, icon: Icon, color }) => (
+        <div className={`p-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4`}>
+            <div className={`p-3 rounded-full bg-${color}-100 text-${color}-600 dark:bg-${color}-900/30 dark:text-${color}-400 text-xl`}>
+                <Icon />
+            </div>
+            <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{label}</p>
+                <h3 className="text-2xl font-black text-gray-800 dark:text-white">{value}</h3>
+            </div>
+        </div>
+    );
 
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-8">
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8">
+            {/* Header */}
+            <header className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-3 text-purple-700 dark:text-purple-400">
-                        <FaUserShield /> Visitor Management
+                    <h1 className="text-3xl font-black flex items-center gap-3 text-purple-600 dark:text-purple-400">
+                        <FaUserShield /> Security Command Center
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400">Gate Pass & Security Log</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">Digital Gate Pass System & Visitor Logs</p>
                 </div>
-                <div className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
-                    <button
-                        onClick={() => setShowHistory(false)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${!showHistory ? 'bg-white dark:bg-gray-700 shadow text-purple-700 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
-                    >
-                        Active Visitors
-                    </button>
-                    <button
-                        onClick={() => setShowHistory(true)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showHistory ? 'bg-white dark:bg-gray-700 shadow text-purple-700 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
-                    >
-                        History
-                    </button>
+                <div className="flex gap-4">
+                    <StatCard label="On Campus" value={activeVisitors.length} icon={FaSignInAlt} color="green" />
+                    <StatCard label="Total Today" value={visitors.filter(v => new Date(v.checkInTime).toDateString() === new Date().toDateString()).length} icon={FaHistory} color="purple" />
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Check-In Form */}
-                <div className="lg:col-span-1">
-                    <div className="glass-panel p-6 rounded-2xl border-t-4 border-purple-600 sticky top-6">
-                        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 dark:text-white">
-                            <FaSignInAlt className="text-purple-600" /> New Entry
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Check-In Form Panel */}
+                <div className="lg:col-span-4">
+                    <div className="sticky top-6 bg-gradient-to-br from-purple-900 to-indigo-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+                        {/* Decorative Circles */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
+                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500 opacity-20 rounded-full -ml-8 -mb-8 blur-xl"></div>
+
+                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 relative z-10">
+                            <FaIdBadge className="text-purple-300" /> Issue New Pass
                         </h2>
-                        <form onSubmit={handleCheckIn} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Visitor Name</label>
+
+                        <form onSubmit={handleCheckIn} className="space-y-5 relative z-10">
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-purple-200 uppercase tracking-wider">Visitor Name</label>
                                 <input
-                                    type="text"
-                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    value={newVisitor.name}
-                                    onChange={e => setNewVisitor({ ...newVisitor, name: e.target.value })}
-                                    required
+                                    className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-purple-200/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                                    value={newVisitor.name} onChange={e => setNewVisitor({ ...newVisitor, name: e.target.value })}
+                                    placeholder="Full Name" required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-purple-200 uppercase tracking-wider">Contact</label>
                                 <input
-                                    type="text"
-                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    value={newVisitor.phone}
-                                    onChange={e => setNewVisitor({ ...newVisitor, phone: e.target.value })}
-                                    required
+                                    className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-purple-200/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                                    value={newVisitor.phone} onChange={e => setNewVisitor({ ...newVisitor, phone: e.target.value })}
+                                    placeholder="Phone Number" required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Purpose of Visit</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    value={newVisitor.purpose}
-                                    onChange={e => setNewVisitor({ ...newVisitor, purpose: e.target.value })}
-                                    required
-                                />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-purple-200 uppercase tracking-wider">Meeting With</label>
+                                    <input
+                                        className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-purple-200/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                                        value={newVisitor.personToMeet} onChange={e => setNewVisitor({ ...newVisitor, personToMeet: e.target.value })}
+                                        placeholder="Staff Name" required
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-purple-200 uppercase tracking-wider">Purpose</label>
+                                    <input
+                                        className="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-purple-200/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all"
+                                        value={newVisitor.purpose} onChange={e => setNewVisitor({ ...newVisitor, purpose: e.target.value })}
+                                        placeholder="Reason" required
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meeting With</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    value={newVisitor.personToMeet}
-                                    onChange={e => setNewVisitor({ ...newVisitor, personToMeet: e.target.value })}
-                                    placeholder="e.g. Principal, Class Teacher..."
-                                    required
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-bold shadow-lg mt-4"
-                            >
-                                Generate Pass
+
+                            <button type="submit" className="w-full py-4 bg-white text-purple-900 font-black rounded-xl hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2 mt-4">
+                                <FaSignInAlt /> GENERATE ENTRY PASS
                             </button>
                         </form>
                     </div>
                 </div>
 
-                {/* Visitors List */}
-                <div className="lg:col-span-2 space-y-4">
-                    {/* Search Bar */}
-                    <div className="relative mb-4">
-                        <FaSearch className="absolute left-3 top-3 text-gray-400" />
-                        <input
-                            type="text"
-                            className="w-full pl-10 pr-4 py-2 border rounded-xl bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none"
-                            placeholder="Search visitor by name or phone..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                {/* Main Content Area */}
+                <div className="lg:col-span-8 space-y-6">
+                    {/* Controls */}
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-xl">
+                            <button
+                                onClick={() => setViewMode('active')}
+                                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'active' ? 'bg-white dark:bg-gray-600 shadow text-purple-600 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
+                            >
+                                Active Passes
+                            </button>
+                            <button
+                                onClick={() => setViewMode('history')}
+                                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'history' ? 'bg-white dark:bg-gray-600 shadow text-purple-600 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'}`}
+                            >
+                                Visitor Log
+                            </button>
+                        </div>
+                        <div className="relative w-full md:w-auto">
+                            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input
+                                className="pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl w-full md:w-64 focus:ring-2 focus:ring-purple-500 outline-none transition-all dark:text-white"
+                                placeholder="Search records..."
+                                value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
 
-                    <h2 className="text-lg font-bold text-gray-700 dark:text-gray-200 mb-2">
-                        {showHistory ? 'Visitor History' : 'Currently On Campus'}
-                    </h2>
-
-                    <div className="space-y-3">
-                        {loading && <p>Loading records...</p>}
-
-                        {(showHistory ? historyVisitors : activeVisitors).length === 0 && !loading && (
-                            <div className="text-center py-10 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-dashed border-2 border-gray-200 dark:border-gray-700">
-                                <p className="text-gray-400">No {showHistory ? 'past' : 'active'} visitors found.</p>
-                            </div>
-                        )}
-
-                        <AnimatePresence>
-                            {(showHistory ? historyVisitors : activeVisitors).map(visitor => (
+                    {/* Cards Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <AnimatePresence mode='popLayout'>
+                            {filteredList.length === 0 ? (
                                 <motion.div
-                                    key={visitor.id}
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    className={`bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border-l-4 ${visitor.status === 'IN' ? 'border-green-500' : 'border-gray-400'} flex justify-between items-center`}
+                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                    className="col-span-full py-16 text-center text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700"
                                 >
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <h3 className="font-bold text-lg dark:text-white">{visitor.name}</h3>
-                                            <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">{visitor.phone}</span>
-                                        </div>
-                                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                            Meeting: <span className="font-medium text-gray-800 dark:text-gray-200">{visitor.personToMeet}</span> • {visitor.purpose}
-                                        </div>
-                                        <div className="text-xs text-gray-400 mt-2">
-                                            In: {new Date(visitor.checkInTime).toLocaleString()}
-                                            {visitor.checkOutTime && ` • Out: ${new Date(visitor.checkOutTime).toLocaleString()}`}
-                                        </div>
-                                    </div>
-
-                                    {visitor.status === 'IN' && (
-                                        <button
-                                            onClick={() => handleCheckOut(visitor.id)}
-                                            className="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg font-semibold flex items-center gap-2"
-                                        >
-                                            <FaSignOutAlt /> Check Out
-                                        </button>
-                                    )}
-                                    {visitor.status === 'OUT' && (
-                                        <div className="text-gray-400 text-2xl">
-                                            <FaCheckCircle />
-                                        </div>
-                                    )}
+                                    <FaUserShield className="text-6xl mx-auto mb-4 opacity-20" />
+                                    <p>No records found for current filter.</p>
                                 </motion.div>
-                            ))}
+                            ) : (
+                                filteredList.map((visitor, idx) => (
+                                    <motion.div
+                                        key={visitor.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        transition={{ duration: 0.2, delay: idx * 0.05 }}
+                                        className={`relative overflow-hidden p-6 rounded-[2rem] border ${viewMode === 'active' ? 'bg-white dark:bg-gray-800 border-green-500 dark:border-green-600 shadow-xl' : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-80 hover:opacity-100'}`}
+                                    >
+                                        {/* Status Badge */}
+                                        <div className={`absolute top-0 right-0 px-4 py-2 rounded-bl-2xl font-bold text-xs uppercase tracking-wider ${viewMode === 'active' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
+                                            {viewMode === 'active' ? 'ON SITE' : 'CHECKED OUT'}
+                                        </div>
+
+                                        <div className="flex items-start gap-4 mb-4">
+                                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900 dark:to-indigo-900 flex items-center justify-center text-2xl text-purple-600 dark:text-purple-300">
+                                                <FaUserTie />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">{visitor.name}</h3>
+                                                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mt-1">
+                                                    <FaPhone className="text-xs" /> {visitor.phone}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3 mb-6 bg-gray-50 dark:bg-gray-700/30 p-4 rounded-xl">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500 dark:text-gray-400">Meeting</span>
+                                                <span className="font-bold text-gray-800 dark:text-gray-200">{visitor.personToMeet}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500 dark:text-gray-400">Purpose</span>
+                                                <span className="font-bold text-gray-800 dark:text-gray-200">{visitor.purpose}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500 dark:text-gray-400">In Time</span>
+                                                <span className="font-mono text-gray-800 dark:text-gray-200">{new Date(visitor.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                            </div>
+                                            {visitor.checkOutTime && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-gray-500 dark:text-gray-400">Out Time</span>
+                                                    <span className="font-mono text-gray-800 dark:text-gray-200">{new Date(visitor.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {viewMode === 'active' && (
+                                            <button
+                                                onClick={() => handleCheckOut(visitor.id)}
+                                                className="w-full py-3 rounded-xl bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 font-bold flex items-center justify-center gap-2 transition-colors border border-red-100 dark:border-red-900/50"
+                                            >
+                                                <FaSignOutAlt /> Mark as Checkout
+                                            </button>
+                                        )}
+                                        {viewMode === 'history' && (
+                                            <div className="text-center text-xs text-green-600 dark:text-green-400 font-bold flex items-center justify-center gap-1">
+                                                <FaCheckCircle /> Visit Completed
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                ))
+                            )}
                         </AnimatePresence>
                     </div>
                 </div>

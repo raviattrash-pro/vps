@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { API_BASE_URL } from '../config';
-import { FaCalendarCheck, FaHourglassHalf, FaCheckCircle, FaTimesCircle, FaPlus } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { FaCalendarCheck, FaHourglassHalf, FaCheckCircle, FaTimesCircle, FaPlus, FaCalendarAlt, FaUserClock, FaPlaneDeparture } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const LeaveManagement = () => {
     const { user } = useAuth();
@@ -12,9 +12,7 @@ const LeaveManagement = () => {
 
     // New Leave Form Data
     const [newLeave, setNewLeave] = useState({
-        startDate: '',
-        endDate: '',
-        reason: ''
+        startDate: '', endDate: '', reason: ''
     });
 
     useEffect(() => {
@@ -43,11 +41,7 @@ const LeaveManagement = () => {
     const handleApply = async (e) => {
         e.preventDefault();
         try {
-            const payload = {
-                ...newLeave,
-                teacher: { id: user.id }
-            };
-
+            const payload = { ...newLeave, teacher: { id: user.id } };
             const response = await fetch(`${API_BASE_URL}/api/leaves`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -69,137 +63,181 @@ const LeaveManagement = () => {
             const response = await fetch(`${API_BASE_URL}/api/leaves/${id}/status?status=${status}`, {
                 method: 'PUT'
             });
-            if (response.ok) {
-                fetchLeaves();
-            }
+            if (response.ok) fetchLeaves();
         } catch (error) {
             console.error("Error updating status", error);
         }
     };
 
+    // Derived Stats
+    const pendingCount = leaves.filter(l => l.status === 'PENDING').length;
+    const approvedCount = leaves.filter(l => l.status === 'APPROVED').length;
+    const rejectedCount = leaves.filter(l => l.status === 'REJECTED').length;
+
+    const StatCard = ({ icon: Icon, label, value, color }) => (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg p-6 rounded-3xl shadow-lg border border-${color}-200 dark:border-${color}-900 flex items-center gap-4`}
+        >
+            <div className={`p-4 rounded-2xl bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400 text-2xl`}>
+                <Icon />
+            </div>
+            <div>
+                <p className="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-wide">{label}</p>
+                <h3 className="text-3xl font-black text-gray-800 dark:text-white">{value}</h3>
+            </div>
+        </motion.div>
+    );
+
     return (
-        <div className="p-6 max-w-5xl mx-auto space-y-8">
-            <header className="flex justify-between items-center">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-10">
+            <header className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-3 text-teal-600 dark:text-teal-400">
-                        <FaCalendarCheck /> Leave Management
+                    <h1 className="text-4xl font-black flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-500 dark:from-teal-400 dark:to-emerald-300">
+                        <FaPlaneDeparture className="text-teal-600 dark:text-teal-400" />
+                        {user.role === 'ADMIN' ? 'Leave Requests' : 'My Leave Dashboard'}
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400">
-                        {user.role === 'ADMIN' ? 'Review Staff Leave Requests' : 'Apply and Track Leaves'}
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                        {user.role === 'ADMIN' ? 'Manage and review staff time-off requests.' : 'Plan your schedule and track applications.'}
                     </p>
                 </div>
                 {user.role === 'TEACHER' && (
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setShowForm(!showForm)}
-                        className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors flex items-center gap-2"
+                        className="px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-2xl font-bold shadow-xl shadow-teal-500/20 flex items-center gap-2"
                     >
-                        <FaPlus /> Apply for Leave
-                    </button>
+                        <FaPlus /> Apply New Leave
+                    </motion.button>
                 )}
             </header>
 
-            {/* Application Form */}
-            {showForm && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass-panel p-6 rounded-2xl border-t-4 border-teal-500">
-                    <h2 className="text-lg font-bold mb-4 dark:text-white">New Leave Application</h2>
-                    <form onSubmit={handleApply} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Date</label>
-                            <input
-                                type="date"
-                                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                value={newLeave.startDate}
-                                onChange={e => setNewLeave({ ...newLeave, startDate: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Date</label>
-                            <input
-                                type="date"
-                                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                value={newLeave.endDate}
-                                onChange={e => setNewLeave({ ...newLeave, endDate: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="col-span-full">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Reason</label>
-                            <textarea
-                                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                value={newLeave.reason}
-                                onChange={e => setNewLeave({ ...newLeave, reason: e.target.value })}
-                                placeholder="E.g., Sick leave, Personal work..."
-                                required
-                            ></textarea>
-                        </div>
-                        <div className="col-span-full flex justify-end gap-2">
-                            <button
-                                type="button"
-                                onClick={() => setShowForm(false)}
-                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg dark:text-gray-300 dark:hover:bg-gray-700"
-                            >
-                                Cancel
-                            </button>
-                            <button type="submit" className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">
-                                Submit Request
-                            </button>
-                        </div>
-                    </form>
-                </motion.div>
-            )}
+            {/* Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StatCard icon={FaHourglassHalf} label="Pending Reviews" value={pendingCount} color="yellow" />
+                <StatCard icon={FaCheckCircle} label="Approved Leaves" value={approvedCount} color="green" />
+                <StatCard icon={FaTimesCircle} label="Rejected Requests" value={rejectedCount} color="red" />
+            </div>
 
-            {/* Leave List */}
-            <div className="space-y-4">
-                {leaves.map(leave => (
-                    <div key={leave.id} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="font-bold text-lg dark:text-white">{leave.teacher?.name || 'Unknown Staff'}</span>
-                                <span className={`px-2 py-0.5 rounded text-xs font-bold ${leave.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
-                                        leave.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                                            'bg-yellow-100 text-yellow-700'
-                                    }`}>
-                                    {leave.status}
-                                </span>
-                            </div>
-                            <div className="text-gray-600 dark:text-gray-400 text-sm">
-                                {leave.startDate} <span className="mx-1">to</span> {leave.endDate}
-                            </div>
-                            <p className="mt-2 text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 p-2 rounded block">
-                                "{leave.reason}"
-                            </p>
+            <AnimatePresence>
+                {showForm && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden"
+                    >
+                        <div className="glass-panel p-8 rounded-3xl border border-teal-100 dark:border-teal-900/30 shadow-2xl mb-8 bg-gradient-to-br from-white to-teal-50/30 dark:from-gray-800 dark:to-teal-900/10">
+                            <h2 className="text-xl font-bold mb-6 text-teal-800 dark:text-teal-200 flex items-center gap-2">
+                                <FaCalendarAlt /> Application Details
+                            </h2>
+                            <form onSubmit={handleApply} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">From Date</label>
+                                    <input
+                                        type="date"
+                                        className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                                        value={newLeave.startDate} onChange={e => setNewLeave({ ...newLeave, startDate: e.target.value })} required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">To Date</label>
+                                    <input
+                                        type="date"
+                                        className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                                        value={newLeave.endDate} onChange={e => setNewLeave({ ...newLeave, endDate: e.target.value })} required
+                                    />
+                                </div>
+                                <div className="col-span-full">
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 ml-1">Reason for Leave</label>
+                                    <textarea
+                                        rows="3"
+                                        className="w-full p-4 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all resize-none"
+                                        value={newLeave.reason} onChange={e => setNewLeave({ ...newLeave, reason: e.target.value })}
+                                        placeholder="Please provide a detailed reason..." required
+                                    ></textarea>
+                                </div>
+                                <div className="col-span-full flex justify-end gap-3 pt-2">
+                                    <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 text-gray-500 font-bold hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">Cancel</button>
+                                    <button type="submit" className="px-8 py-3 bg-teal-600 text-white font-bold rounded-xl shadow-lg hover:shadow-teal-600/30 transition-all transform hover:-translate-y-1">Submit Application</button>
+                                </div>
+                            </form>
                         </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                        {/* Admin Actions */}
-                        {user.role === 'ADMIN' && leave.status === 'PENDING' && (
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => handleStatusUpdate(leave.id, 'APPROVED')}
-                                    className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded-lg flex items-center gap-1 text-sm font-semibold"
-                                >
-                                    <FaCheckCircle /> Approve
-                                </button>
-                                <button
-                                    onClick={() => handleStatusUpdate(leave.id, 'REJECTED')}
-                                    className="px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg flex items-center gap-1 text-sm font-semibold"
-                                >
-                                    <FaTimesCircle /> Reject
-                                </button>
-                            </div>
-                        )}
-
-                        {/* Status Icon for Teacher */}
-                        {user.role !== 'ADMIN' && (
-                            <div className="text-2xl opacity-50">
-                                {leave.status === 'APPROVED' ? <FaCheckCircle className="text-green-500" /> :
-                                    leave.status === 'REJECTED' ? <FaTimesCircle className="text-red-500" /> :
-                                        <FaHourglassHalf className="text-yellow-500" />}
-                            </div>
-                        )}
+            <div className="grid grid-cols-1 gap-6">
+                {loading ? (
+                    <div className="text-center py-12 text-gray-400">Loading leave records...</div>
+                ) : leaves.length === 0 ? (
+                    <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border border-dashed border-gray-200 dark:border-gray-700">
+                        <FaUserClock className="text-6xl text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500 font-medium">No leave records found</p>
                     </div>
-                ))}
-                {leaves.length === 0 && <p className="text-gray-400 text-center py-8">No leave records found.</p>}
+                ) : (
+                    leaves.map((leave, index) => (
+                        <motion.div
+                            key={leave.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:shadow-lg transition-all duration-300"
+                        >
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <h3 className="text-xl font-bold dark:text-white">{leave.teacher?.name || 'Unknown Staff'}</h3>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${leave.status === 'APPROVED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                                            leave.status === 'REJECTED' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                        }`}>
+                                        {leave.status}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-medium text-sm mb-3">
+                                    <FaCalendarAlt className="opacity-70" />
+                                    <span>{new Date(leave.startDate).toLocaleDateString()}</span>
+                                    <span className="text-gray-300 dark:text-gray-600">•</span>
+                                    <span>{new Date(leave.endDate).toLocaleDateString()}</span>
+                                </div>
+                                <p className="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-2xl text-gray-700 dark:text-gray-300 italic border-l-4 border-gray-200 dark:border-gray-600">
+                                    "{leave.reason}"
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                {user.role === 'ADMIN' && leave.status === 'PENDING' ? (
+                                    <>
+                                        <motion.button
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => handleStatusUpdate(leave.id, 'APPROVED')}
+                                            className="px-6 py-2.5 bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-500/30 flex items-center gap-2"
+                                        >
+                                            <FaCheckCircle /> Approve
+                                        </motion.button>
+                                        <motion.button
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => handleStatusUpdate(leave.id, 'REJECTED')}
+                                            className="px-6 py-2.5 bg-white text-red-500 border-2 border-red-100 hover:border-red-500 rounded-xl font-bold transition-colors flex items-center gap-2"
+                                        >
+                                            <FaTimesCircle /> Reject
+                                        </motion.button>
+                                    </>
+                                ) : (
+                                    <div className="text-3xl opacity-20">
+                                        {leave.status === 'APPROVED' && <FaCheckCircle className="text-green-500" />}
+                                        {leave.status === 'REJECTED' && <FaTimesCircle className="text-red-500" />}
+                                        {leave.status === 'PENDING' && <FaHourglassHalf className="text-yellow-500" />}
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    ))
+                )}
             </div>
         </div>
     );
