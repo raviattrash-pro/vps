@@ -6,6 +6,7 @@ import { FaUserCircle, FaCalendarCheck, FaBook, FaClipboardList, FaFileAlt, FaVi
 import { MdAssignment, MdMenuBook, MdQuiz } from 'react-icons/md';
 
 import { useAuth } from '../AuthContext';
+import InstallPWA from './InstallPWA';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard">
             {/* Header Section */}
-            <header className="header" style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <header className="header" style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
                 <div>
                     <h1 style={{ color: 'var(--primary)', fontSize: '32px', fontWeight: '800', letterSpacing: '-1px' }}>
                         Good Morning, {user?.name?.split(' ')[0]}
@@ -22,15 +23,19 @@ const Dashboard = () => {
                     <p style={{ color: 'var(--text-muted)', fontSize: '16px', marginTop: '5px' }}>Let's make today productive!</p>
                 </div>
 
-                <div style={{ position: 'relative' }}>
-                    {user?.profilePhoto ? (
-                        <img src={`${user.profilePhoto?.startsWith('http') ? user.profilePhoto : `${API_BASE_URL}${user.profilePhoto}`}`} alt="Profile" style={{ width: '70px', height: '70px', borderRadius: '25px', objectFit: 'cover', border: '4px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }} />
-                    ) : (
-                        <div style={{ width: '70px', height: '70px', background: 'var(--primary)', borderRadius: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '28px', border: '4px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}>
-                            {user?.name?.charAt(0)}
-                        </div>
-                    )}
-                    <span style={{ position: 'absolute', bottom: '0', right: '-5px', width: '20px', height: '20px', background: '#4caf50', borderRadius: '50%', border: '3px solid white' }}></span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <InstallPWA />
+
+                    <div style={{ position: 'relative' }}>
+                        {user?.profilePhoto ? (
+                            <img src={`${user.profilePhoto?.startsWith('http') ? user.profilePhoto : `${API_BASE_URL}${user.profilePhoto}`}`} alt="Profile" style={{ width: '70px', height: '70px', borderRadius: '25px', objectFit: 'cover', border: '4px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }} />
+                        ) : (
+                            <div style={{ width: '70px', height: '70px', background: 'var(--primary)', borderRadius: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '28px', border: '4px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}>
+                                {user?.name?.charAt(0)}
+                            </div>
+                        )}
+                        <span style={{ position: 'absolute', bottom: '0', right: '-5px', width: '20px', height: '20px', background: '#4caf50', borderRadius: '50%', border: '3px solid white' }}></span>
+                    </div>
                 </div>
             </header>
 
