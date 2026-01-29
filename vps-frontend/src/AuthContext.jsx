@@ -22,8 +22,12 @@ export const AuthProvider = ({ children }) => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setUser(data);
-                localStorage.setItem('vps_user', JSON.stringify(data));
+                // data = { token, user }
+                setUser(data.user);
+                localStorage.setItem('vps_user', JSON.stringify(data.user));
+                if (data.token) {
+                    localStorage.setItem('vps_token', data.token);
+                }
                 return true;
             } else {
                 return false;
@@ -37,6 +41,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setUser(null);
         localStorage.removeItem('vps_user');
+        localStorage.removeItem('vps_token');
     };
 
     return (

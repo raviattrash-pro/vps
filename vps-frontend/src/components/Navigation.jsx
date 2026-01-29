@@ -6,7 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 
 // Navigation Items Configuration
 const navItems = [
-    { path: '/', label: 'Home', icon: <FaHome />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT', 'ACCOUNTANT'] },
+    { path: '/dashboard', label: 'Dashboard', icon: <FaHome />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT', 'ACCOUNTANT'] },
     { path: '/attendance', label: 'Attendance', icon: <FaCalendarAlt />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { path: '/marks', label: 'Marks', icon: <FaFileAlt />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { path: '/live', label: 'Live', icon: <FaVideo />, allowedRoles: ['ADMIN', 'TEACHER', 'STUDENT'] },

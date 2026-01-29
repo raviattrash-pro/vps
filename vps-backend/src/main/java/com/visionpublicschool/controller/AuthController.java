@@ -21,8 +21,11 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private com.visionpublicschool.util.JwtUtil jwtUtil;
+
     @PostMapping("/login")
-    public Student login(@RequestBody Map<String, String> credentials) {
+    public java.util.Map<String, Object> login(@RequestBody Map<String, String> credentials) {
         String admissionNo = credentials.get("admissionNo");
         String password = credentials.get("password");
 
@@ -42,6 +45,12 @@ public class AuthController {
         }
 
         student.setLastLogin(java.time.LocalDateTime.now());
-        return studentRepository.save(student);
+        studentRepository.save(student);
+
+        String token = jwtUtil.generateToken(admissionNo);
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+        response.put("token", token);
+        response.put("user", student);
+        return response;
     }
 }

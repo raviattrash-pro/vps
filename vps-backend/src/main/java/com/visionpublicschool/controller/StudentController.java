@@ -26,7 +26,25 @@ public class StudentController {
 
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
-        student.setPassword(passwordEncoder.encode(student.getPassword()));
+        if (student.getPassword() == null || student.getPassword().isEmpty()) {
+            student.setPassword(passwordEncoder.encode("1234"));
+        } else {
+            student.setPassword(passwordEncoder.encode(student.getPassword()));
+        }
+        if (student.getRole() == null) {
+            student.setRole("STUDENT");
+        }
         return studentRepository.save(student);
+    }
+
+    @PostMapping("/{id}/change-password")
+    public org.springframework.http.ResponseEntity<?> changePassword(@PathVariable Long id,
+            @RequestBody java.util.Map<String, String> payload) {
+        Student student = studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Student not found"));
+        String newPassword = payload.get("password");
+        student.setPassword(passwordEncoder.encode(newPassword));
+        student.setPasswordChanged(true);
+        studentRepository.save(student);
+        return org.springframework.http.ResponseEntity.ok("Password changed successfully");
     }
 }

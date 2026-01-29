@@ -17,7 +17,7 @@ const Login = () => {
         e.preventDefault();
         const success = await login(admissionNo, password);
         if (success) {
-            navigate('/');
+            navigate('/dashboard');
         } else {
             setError('Invalid credentials');
         }

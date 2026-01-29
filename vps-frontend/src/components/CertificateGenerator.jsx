@@ -33,18 +33,27 @@ const CertificateGenerator = () => {
         }
     };
 
+    // Print Handling
     const componentRef = useRef();
+
     const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
+        contentRef: componentRef,
         documentTitle: `Certificate_${generatedCert?.student?.name || 'Student'}_${new Date().toISOString().split('T')[0]}`,
         pageStyle: `
         @page {
-            size: landscape;
-            margin: 0;
+            size: A4 landscape;
+            margin: 10mm;
         }
         @media print {
             body {
                 -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                margin: 0;
+                padding: 0;
+            }
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
       `
@@ -78,16 +87,307 @@ const CertificateGenerator = () => {
         }
     };
 
-    // Ornamental SVG Corner
+    // Enhanced Ornamental SVG Corners with intricate designs
     const CornerOrnament = ({ className }) => (
-        <svg className={`absolute text-yellow-600 w-24 h-24 ${className}`} viewBox="0 0 100 100" fill="currentColor">
-            <path d="M0 0 L40 0 C20 0 20 20 0 40 Z M0 0 L0 40 C0 20 20 20 40 0 Z" />
-            <path d="M5 5 L35 5 C20 5 20 20 5 35 Z" opacity="0.5" />
+        <svg className={`absolute w-32 h-32 ${className}`} viewBox="0 0 120 120" fill="none">
+            {/* Outer ornate border */}
+            <path d="M0 0 L45 0 C35 0 30 5 25 10 C20 15 15 20 10 25 C5 30 0 35 0 45 Z"
+                fill="url(#goldGradient)" opacity="0.9" />
+            {/* Inner decorative layer */}
+            <path d="M5 5 L40 5 C32 5 28 8 24 12 C20 16 16 20 12 24 C8 28 5 32 5 40 Z"
+                fill="#D4AF37" opacity="0.7" />
+            {/* Filigree details */}
+            <circle cx="15" cy="15" r="3" fill="#8B6914" opacity="0.8" />
+            <circle cx="25" cy="8" r="2" fill="#FFD700" opacity="0.6" />
+            <circle cx="8" cy="25" r="2" fill="#FFD700" opacity="0.6" />
+            {/* Decorative curves */}
+            <path d="M0 20 Q10 15 20 0" stroke="#8B6914" strokeWidth="1" opacity="0.5" />
+            <path d="M0 30 Q15 20 30 0" stroke="#D4AF37" strokeWidth="0.5" opacity="0.4" />
+            {/* Gradient definition */}
+            <defs>
+                <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FFD700" />
+                    <stop offset="50%" stopColor="#D4AF37" />
+                    <stop offset="100%" stopColor="#B8860B" />
+                </linearGradient>
+            </defs>
         </svg>
     );
 
+    // Decorative Divider
+    const DecorativeDivider = () => (
+        <svg className="w-48 h-4 mx-auto" viewBox="0 0 200 20" fill="none">
+            <path d="M0 10 Q50 5 100 10 Q150 15 200 10" stroke="url(#dividerGradient)" strokeWidth="2" />
+            <circle cx="100" cy="10" r="4" fill="#D4AF37" />
+            <circle cx="40" cy="10" r="2" fill="#B8860B" />
+            <circle cx="160" cy="10" r="2" fill="#B8860B" />
+            <defs>
+                <linearGradient id="dividerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.3" />
+                    <stop offset="50%" stopColor="#FFD700" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.3" />
+                </linearGradient>
+            </defs>
+        </svg>
+    );
+
+    // Enhanced Certificate Component
+    const CertificateContent = ({ forPrint = false }) => (
+        <div
+            className="relative bg-white text-black overflow-hidden"
+            style={{
+                width: forPrint ? '277mm' : '900px',
+                height: forPrint ? '190mm' : '637px',
+                fontFamily: '"Georgia", serif',
+                background: 'linear-gradient(135deg, #ffffff 0%, #fefaf6 100%)'
+            }}
+        >
+            {/* Ornate outer border with gradient */}
+            <div
+                className="absolute inset-3 pointer-events-none z-20"
+                style={{
+                    border: '6px double',
+                    borderImage: 'linear-gradient(135deg, #B8860B, #FFD700, #D4AF37, #B8860B) 1',
+                    boxShadow: 'inset 0 0 20px rgba(184, 134, 11, 0.1)'
+                }}
+            />
+
+            {/* Inner elegant border */}
+            <div
+                className="absolute pointer-events-none z-20"
+                style={{
+                    top: '18px',
+                    left: '18px',
+                    right: '18px',
+                    bottom: '18px',
+                    border: '2px solid #D4AF37',
+                    opacity: 0.5
+                }}
+            />
+
+            {/* Corner ornaments */}
+            <CornerOrnament className="top-0 left-0" />
+            <CornerOrnament className="top-0 right-0 transform scale-x-[-1]" />
+            <CornerOrnament className="bottom-0 left-0 transform scale-y-[-1]" />
+            <CornerOrnament className="bottom-0 right-0 transform scale-x-[-1] scale-y-[-1]" />
+
+            {/* Subtle background pattern */}
+            <div
+                className="absolute inset-0 opacity-[0.02] pointer-events-none select-none z-0"
+                style={{
+                    backgroundImage: `repeating-linear-gradient(
+                        45deg,
+                        transparent,
+                        transparent 10px,
+                        #D4AF37 10px,
+                        #D4AF37 11px
+                    )`
+                }}
+            />
+
+            {/* Authenticity Watermark */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none select-none z-0">
+                <div
+                    className="rounded-full flex items-center justify-center font-black"
+                    style={{
+                        width: '400px',
+                        height: '400px',
+                        border: '25px solid #B8860B',
+                        fontSize: '120px',
+                        transform: 'rotate(-20deg)',
+                        color: '#8B6914'
+                    }}
+                >
+                    VPS
+                </div>
+            </div>
+
+            {/* Main content */}
+            <div className="relative z-10 flex flex-col h-full px-20 py-12 justify-between text-center">
+                {/* Header */}
+                <header className="space-y-3">
+                    <div
+                        className="w-20 h-20 text-white text-3xl font-black rounded-full flex items-center justify-center mx-auto mb-4 font-sans shadow-lg"
+                        style={{
+                            background: 'linear-gradient(135deg, #B8860B 0%, #FFD700 50%, #D4AF37 100%)'
+                        }}
+                    >
+                        VPS
+                    </div>
+                    <h1
+                        className="font-bold uppercase mb-2"
+                        style={{
+                            fontSize: '3.5rem',
+                            letterSpacing: '0.3em',
+                            background: 'linear-gradient(135deg, #8B6914 0%, #B8860B 50%, #D4AF37 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            fontFamily: '"Times New Roman", serif',
+                            textShadow: '2px 2px 4px rgba(184, 134, 11, 0.1)'
+                        }}
+                    >
+                        Vision Public School
+                    </h1>
+                    <p
+                        className="font-semibold tracking-wide"
+                        style={{
+                            color: '#6B5D4F',
+                            fontSize: '0.95rem',
+                            letterSpacing: '0.1em'
+                        }}
+                    >
+                        Excellence in Education • Established 2000
+                    </p>
+                    <div className="mt-6">
+                        <DecorativeDivider />
+                    </div>
+                </header>
+
+                {/* Content */}
+                <main className="py-6 space-y-6">
+                    <h2
+                        className="italic font-serif mb-8"
+                        style={{
+                            fontSize: '2.8rem',
+                            color: '#1e3a8a',
+                            fontWeight: '600',
+                            textShadow: '1px 1px 2px rgba(30, 58, 138, 0.1)'
+                        }}
+                    >
+                        {generatedCert?.type === 'STUDY' ? 'Certificate of Bonafide' :
+                            generatedCert?.type === 'CHARACTER' ? 'Certificate of Character' :
+                                generatedCert?.type === 'TRANSFER' ? 'Transfer Certificate' : 'Certificate of Merit'}
+                    </h2>
+
+                    <div className="px-12 space-y-4" style={{ lineHeight: '2.2' }}>
+                        <p className="text-gray-800" style={{ fontSize: '1.25rem' }}>
+                            This is to certify that{' '}
+                            <span
+                                className="font-bold italic font-serif px-3 py-1 mx-2"
+                                style={{
+                                    fontSize: '1.75rem',
+                                    borderBottom: '3px double #B8860B',
+                                    color: '#1e3a8a',
+                                    display: 'inline-block'
+                                }}
+                            >
+                                {generatedCert?.student?.name || '.....................'}
+                            </span>
+                        </p>
+                        <p className="text-gray-800" style={{ fontSize: '1.25rem' }}>
+                            is a bona fide student of this institution, currently studying in{' '}
+                            <span
+                                className="font-bold px-2"
+                                style={{
+                                    fontSize: '1.5rem',
+                                    color: '#1e3a8a'
+                                }}
+                            >
+                                Class {generatedCert?.student?.className || '...'}
+                            </span>
+                        </p>
+                        <p
+                            className="text-gray-600 italic mt-4"
+                            style={{
+                                fontSize: '1rem',
+                                lineHeight: '1.8',
+                                borderLeft: '3px solid #D4AF37',
+                                paddingLeft: '20px',
+                                marginTop: '1.5rem'
+                            }}
+                        >
+                            {generatedCert?.type === 'CHARACTER' && "This student demonstrates exemplary behavior, high moral character, and outstanding conduct in all academic and co-curricular activities."}
+                            {generatedCert?.type === 'STUDY' && "This student is a dedicated and sincere pupil, currently enrolled and actively participating in this academic session."}
+                            {generatedCert?.type === 'TRANSFER' && "This student bears an excellent moral character, has fulfilled all academic requirements, and has cleared all institutional dues."}
+                            {generatedCert?.type === 'MERIT' && "This award is presented in recognition of exceptional academic performance, outstanding achievements, and unwavering dedication to excellence."}
+                        </p>
+                    </div>
+                </main>
+
+                {/* Footer */}
+                <footer className="flex justify-between items-end px-8">
+                    <div className="text-center">
+                        <p className="font-bold text-lg mb-2" style={{ color: '#1e3a8a' }}>
+                            {generatedCert?.issueDate ? new Date(generatedCert.issueDate).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            }) : 'Date'}
+                        </p>
+                        <div className="w-36 h-0.5 bg-gradient-to-r from-transparent via-gray-800 to-transparent" />
+                        <p
+                            className="text-xs uppercase mt-2 tracking-widest font-semibold"
+                            style={{ color: '#6B5D4F' }}
+                        >
+                            Date of Issue
+                        </p>
+                    </div>
+
+                    <div className="text-center relative">
+                        {/* Enhanced Gold Seal with 3D effect */}
+                        <div
+                            className="rounded-full flex items-center justify-center shadow-2xl relative"
+                            style={{
+                                width: '100px',
+                                height: '100px',
+                                background: 'radial-gradient(circle at 30% 30%, #FFD700, #D4AF37, #B8860B)',
+                                border: '5px double #8B6914',
+                                boxShadow: '0 4px 15px rgba(184, 134, 11, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.4)'
+                            }}
+                        >
+                            <FaStamp
+                                className="opacity-90"
+                                style={{
+                                    fontSize: '3rem',
+                                    color: '#8B6914',
+                                    filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.2))'
+                                }}
+                            />
+                        </div>
+                        <div
+                            className="text-xs font-bold mt-2 tracking-wider"
+                            style={{ color: '#6B5D4F' }}
+                        >
+                            OFFICIAL SEAL
+                        </div>
+                    </div>
+
+                    <div className="text-center">
+                        <div
+                            className="mb-2"
+                            style={{
+                                fontFamily: 'cursive',
+                                fontSize: '2rem',
+                                color: '#1e3a8a',
+                                fontWeight: '600'
+                            }}
+                        >
+                            Principal Sign
+                        </div>
+                        <div className="w-44 h-0.5 bg-gradient-to-r from-transparent via-gray-800 to-transparent" />
+                        <p
+                            className="text-xs uppercase mt-2 tracking-widest font-semibold"
+                            style={{ color: '#6B5D4F' }}
+                        >
+                            Principal Signature
+                        </p>
+                    </div>
+                </footer>
+
+                {/* Certificate Number at bottom */}
+                <div
+                    className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-xs font-mono tracking-wider"
+                    style={{ color: '#999', opacity: 0.7 }}
+                >
+                    Certificate No: {generatedCert?.certificateNumber || 'XXXX-XXXX'}
+                </div>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-10">
+        <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-10 min-h-screen">
             <header className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h1 className="text-4xl font-black flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-amber-500 dark:from-yellow-400 dark:to-amber-300">
@@ -101,20 +401,20 @@ const CertificateGenerator = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-card"
-                style={{ padding: '25px', maxWidth: '900px', margin: '0 auto' }}
+                style={{ padding: '30px', maxWidth: '100%', margin: '0 auto' }}
             >
                 <form onSubmit={handleGenerate} className="flex flex-col md:flex-row gap-6 items-end">
                     <div className="flex-1 w-full relative">
-                        <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Student Name</label>
+                        <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>Student Name</label>
                         <div className="relative">
                             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
-                                className="glass-input pl-10"
+                                className="glass-input pl-10 w-full"
                                 value={searchTerm}
                                 onChange={e => {
                                     setSearchTerm(e.target.value);
-                                    setStudentId(''); // Reset ID on new search
+                                    setStudentId('');
                                     setShowDropdown(true);
                                 }}
                                 onFocus={() => setShowDropdown(true)}
@@ -129,7 +429,7 @@ const CertificateGenerator = () => {
                                         key={student.id}
                                         onClick={() => {
                                             setStudentId(student.id);
-                                            setSearchTerm(student.name); // Show name in input
+                                            setSearchTerm(student.name);
                                             setShowDropdown(false);
                                         }}
                                         className="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-3 border-b border-gray-50 dark:border-gray-700 last:border-0"
@@ -145,12 +445,12 @@ const CertificateGenerator = () => {
                                 ))}
                             </div>
                         )}
-                        {studentId && <div className="text-xs text-green-500 font-bold mt-1 ml-2">✓ Student Selected (ID: {studentId})</div>}
+                        {studentId && <div className="text-xs text-green-500 font-bold mt-2 ml-2 flex items-center gap-1">✅ Student Selected (ID: {studentId})</div>}
                     </div>
                     <div className="flex-1 w-full">
-                        <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '5px' }}>Document Type</label>
+                        <label style={{ fontSize: '12px', fontWeight: 'bold', marginLeft: '10px', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>Document Type</label>
                         <select
-                            className="glass-input appearance-none"
+                            className="glass-input appearance-none w-full"
                             value={type}
                             onChange={e => setType(e.target.value)}
                         >
@@ -163,114 +463,56 @@ const CertificateGenerator = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="glass-btn px-8 w-full md:w-auto flex items-center justify-center gap-2"
+                        className="glass-btn px-8 py-3 w-full md:w-auto flex items-center justify-center gap-2 font-bold whitespace-nowrap"
                     >
                         {loading ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div> : 'Generate Preview'}
                     </button>
                 </form>
             </motion.div>
 
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
                 {generatedCert && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="space-y-6"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 30 }}
+                        className="space-y-6 flex flex-col items-center"
                     >
-                        <div className="flex flex-col md:flex-row justify-between items-center bg-gray-900 text-white p-6 rounded-2xl shadow-lg">
+                        {/* Header */}
+                        <div
+                            className="glass-card p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-l-4 border-yellow-500 w-full"
+                            style={{ maxWidth: '900px' }}
+                        >
                             <div>
-                                <h3 className="font-bold text-lg mb-1">Preview Ready</h3>
-                                <p className="text-gray-400 text-sm">Certificate #{generatedCert.certificateNumber}</p>
+                                <h3 className="font-black text-xl text-gray-800 dark:text-white mb-1 flex items-center gap-2">
+                                    <span className="text-yellow-500">★</span> Certificate Ready
+                                </h3>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm font-mono">Ref: {generatedCert.certificateNumber}</p>
                             </div>
                             <button
                                 onClick={handlePrint}
-                                className="mt-4 md:mt-0 px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors flex items-center gap-2"
+                                className="px-8 py-3 bg-gradient-to-r from-gray-900 to-gray-800 hover:from-black hover:to-gray-900 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-3 transform hover:scale-105"
                             >
                                 <FaPrint /> Print Official Copy
                             </button>
                         </div>
 
-                        {/* Certificate Preview Area */}
-                        <div className="overflow-auto p-8 bg-gray-200 dark:bg-black/50 rounded-3xl flex justify-center backdrop-blur-sm">
-                            <div
-                                ref={componentRef}
-                                className="w-[800px] h-[600px] bg-[#fff] text-black relative shadow-2xl overflow-hidden print:w-[100%] print:h-[100%] print:shadow-none"
-                                style={{ fontFamily: '"Georgia", serif' }}
-                            >
-                                {/* Border Frame */}
-                                <div className="absolute inset-4 border-4 border-double border-yellow-700 pointer-events-none z-20"></div>
-                                <CornerOrnament className="top-0 left-0" />
-                                <CornerOrnament className="top-0 right-0 transform scale-x-[-1]" />
-                                <CornerOrnament className="bottom-0 left-0 transform scale-y-[-1]" />
-                                <CornerOrnament className="bottom-0 right-0 transform scale-x-[-1] scale-y-[-1]" />
-
-                                {/* Authenticity Watermark */}
-                                <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none z-0">
-                                    <div className="w-96 h-96 rounded-full border-[20px] border-black flex items-center justify-center text-9xl font-black rotate-[-20deg]">
-                                        VPS
-                                    </div>
-                                </div>
-
-                                <div className="relative z-10 flex flex-col h-full p-16 justify-between text-center">
-                                    {/* Header */}
-                                    <header>
-                                        <div className="w-16 h-16 bg-yellow-600 text-white text-2xl font-black rounded-full flex items-center justify-center mx-auto mb-4 font-sans">VPS</div>
-                                        <h1 className="text-5xl font-bold text-yellow-800 uppercase tracking-widest mb-2" style={{ fontFamily: '"Times New Roman", serif' }}>
-                                            Vision Public School
-                                        </h1>
-                                        <p className="text-gray-600 font-medium tracking-wide">Excellence in Education • Est. 2000</p>
-                                        <div className="w-24 h-1 bg-yellow-600 mx-auto mt-6"></div>
-                                    </header>
-
-                                    {/* Content */}
-                                    <main className="py-4">
-                                        <h2 className="text-4xl italic text-blue-900 mb-8 font-serif">
-                                            {generatedCert.type === 'STUDY' ? 'Bonafide Certificate' :
-                                                generatedCert.type === 'CHARACTER' ? 'Character Certificate' :
-                                                    generatedCert.type === 'TRANSFER' ? 'Transfer Certificate' : 'Certificate of Merit'}
-                                        </h2>
-
-                                        <p className="text-xl leading-loose px-8 text-gray-800">
-                                            This is to certify that <span className="font-bold text-2xl border-b-2 border-dashed border-gray-400 px-2 italic font-serif">{generatedCert.student ? generatedCert.student.name : '...................'}</span>
-                                            <br />
-                                            is a bona fide student of this institution, currently studying in
-                                            <span className="font-bold text-2xl px-2">Class {generatedCert.student ? generatedCert.student.className : '...'}</span>.
-                                            <br />
-                                            <span className="text-base text-gray-600 mt-2 block">
-                                                {generatedCert.type === 'CHARACTER' && "He/She shows exemplary behavior and high moral character."}
-                                                {generatedCert.type === 'STUDY' && "He/She is a dedicated pupil and is currently enrolled for this academic session."}
-                                            </span>
-                                        </p>
-                                    </main>
-
-                                    {/* Footer */}
-                                    <footer className="flex justify-between items-end px-4">
-                                        <div className="text-center">
-                                            <p className="font-bold text-lg">{new Date(generatedCert.issueDate).toLocaleDateString()}</p>
-                                            <div className="w-32 h-px bg-black mt-2"></div>
-                                            <p className="text-xs uppercase mt-1 tracking-widest text-gray-500">Date of Issue</p>
-                                        </div>
-
-                                        <div className="text-center relative">
-                                            {/* Gold Seal */}
-                                            <div className="w-24 h-24 bg-yellow-500 rounded-full flex items-center justify-center text-yellow-900 shadow-lg border-4 border-yellow-300 border-dotted">
-                                                <FaStamp className="text-5xl opacity-80" />
-                                            </div>
-                                        </div>
-
-                                        <div className="text-center">
-                                            <div className="font-cursive text-3xl mb-1 text-blue-900" style={{ fontFamily: 'cursive' }}>Principal Sign</div>
-                                            <div className="w-40 h-px bg-black mt-2"></div>
-                                            <p className="text-xs uppercase mt-1 tracking-widest text-gray-500">Principal Signature</p>
-                                        </div>
-                                    </footer>
-                                </div>
-                            </div>
+                        {/* Certificate Preview */}
+                        <div className="w-full overflow-x-auto p-4 md:p-8 bg-gradient-to-br from-gray-100/80 via-amber-50/30 to-gray-100/80 dark:from-black/20 dark:via-yellow-900/5 dark:to-black/20 rounded-3xl border-2 border-gray-200 dark:border-gray-800 shadow-2xl flex justify-center">
+                            <CertificateContent forPrint={false} />
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* HIDDEN PRINTABLE CERTIFICATE */}
+            <div style={{ display: 'none' }}>
+                {generatedCert && (
+                    <div ref={componentRef}>
+                        <CertificateContent forPrint={true} />
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

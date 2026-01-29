@@ -15,6 +15,7 @@ import StudyMaterial from './components/StudyMaterial';
 import Question from './components/Question';
 import ComingSoon from './components/ComingSoon';
 import AdminDashboard from './components/AdminDashboard';
+import AdminAdmissionForm from './components/AdminAdmissionForm';
 import LiveClass from './components/LiveClass';
 import MarkSheet from './components/MarkSheet';
 import Reports from './components/Reports';
@@ -78,6 +79,10 @@ const Layout = ({ children }) => {
   );
 };
 
+import LandingPage from './components/LandingPage';
+
+// ...
+
 const AnimatedRoutes = () => {
   const location = useLocation();
 
@@ -85,7 +90,8 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
-        <Route path="/" element={
+        <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+        <Route path="/dashboard" element={
           <PrivateRoute><PageTransition><Dashboard /></PageTransition></PrivateRoute>
         } />
         <Route path="/attendance" element={
@@ -114,6 +120,7 @@ const AnimatedRoutes = () => {
         <Route path="/reports" element={<PrivateRoute><PageTransition><Reports /></PageTransition></PrivateRoute>} />
         <Route path="/payment" element={<PrivateRoute><PageTransition><Payment /></PageTransition></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute><PageTransition><AdminDashboard /></PageTransition></PrivateRoute>} />
+        <Route path="/admin/admission" element={<PrivateRoute><PageTransition><AdminAdmissionForm /></PageTransition></PrivateRoute>} />
         <Route path="/admin/active-users" element={<PrivateRoute><PageTransition><ActiveUsers /></PageTransition></PrivateRoute>} />
         <Route path="/calendar" element={<PrivateRoute><PageTransition><SchoolCalendar /></PageTransition></PrivateRoute>} />
         <Route path="/coming-soon" element={<PrivateRoute><PageTransition><ComingSoon /></PageTransition></PrivateRoute>} />

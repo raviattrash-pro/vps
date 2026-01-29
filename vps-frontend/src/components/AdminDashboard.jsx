@@ -191,6 +191,13 @@ const AdminDashboard = () => {
                 </button>
                 <button
                     className="glass-btn"
+                    onClick={() => navigate('/admin/admission')}
+                    style={{ background: 'linear-gradient(to right, #4f46e5, #7c3aed)', color: 'white', fontWeight: 'bold', marginRight: '10px' }}
+                >
+                    <FaUserPlus /> New Admission
+                </button>
+                <button
+                    className="glass-btn"
                     onClick={handleExport}
                     data-tooltip-id="my-tooltip"
                     data-tooltip-content="Download User List as Excel"

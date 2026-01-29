@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { API_BASE_URL } from '../config';
 
-import { FaArrowLeft, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus, FaTrash, FaPrint } from 'react-icons/fa';
+import { useReactToPrint } from 'react-to-print';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
 const MarkSheet = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
+
+    console.log("MarkSheet: Render. User:", user);
+
+    // Case-insensitive role check
+    const isAdminOrTeacher = user && (
+        String(user.role || '').toUpperCase() === 'ADMIN' ||
+        String(user.role || '').toUpperCase() === 'TEACHER'
+    );
 
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
@@ -23,21 +32,59 @@ const MarkSheet = () => {
 
     const [savedMarksheets, setSavedMarksheets] = useState([]);
 
-    const isAdminOrTeacher = user && (user.role === 'ADMIN' || user.role === 'TEACHER');
+    // Print Logic
+    const printRef = useRef(null);
+    const [printableMarksheet, setPrintableMarksheet] = useState(null);
+
+    const handlePrint = useReactToPrint({
+        contentRef: printRef,
+        documentTitle: `Report_Card_${selectedStudent?.name || 'Student'}`
+    });
+
+    const triggerPrint = (ms) => {
+        setPrintableMarksheet(ms);
+        // Small timeout to allow state update and re-render of print component
+        setTimeout(() => {
+            handlePrint();
+        }, 100);
+    };
+
+    // View Components
+
+    // Functions definitions start here
+
+
+    // const isAdminOrTeacher = user && (user.role === 'ADMIN' || user.role === 'TEACHER');
 
     useEffect(() => {
+        console.log("MarkSheet: User changed:", user);
         if (isAdminOrTeacher) {
+            console.log("MarkSheet: Fetching students as Admin/Teacher");
             fetchStudents();
         } else if (user && user.role === 'STUDENT') {
-            // If student, just fetch their own marksheets
             fetchStudentMarksheets(user.id);
+        } else {
+            console.log("MarkSheet: User not authorized or not logged in yet");
         }
     }, [user]);
 
     const fetchStudents = async () => {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/students`);
+            const token = localStorage.getItem('vps_token');
+            console.log("MarkSheet: Fetching students with token:", token ? "Present" : "Missing");
+            const res = await fetch(`${API_BASE_URL}/api/students`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            console.log("MarkSheet: API Response Status:", res.status);
+
+            if (!res.ok) {
+                const text = await res.text();
+                console.error("MarkSheet: API Error:", text);
+                return;
+            }
+
             const data = await res.json();
+            console.log("MarkSheet: Fetched Students Data:", data);
             setStudents(data);
 
             if (user.role === 'TEACHER' && user.className) {
@@ -56,9 +103,10 @@ const MarkSheet = () => {
                 }
             } else {
                 const uniqueClasses = [...new Set(data.map(s => s.className))].sort();
+                console.log("MarkSheet: Unique Classes extracted:", uniqueClasses);
                 setClasses(uniqueClasses);
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("MarkSheet: Fetch Error:", e); }
     };
 
     const handleClassSelect = (cls) => {
@@ -69,7 +117,10 @@ const MarkSheet = () => {
 
     const fetchStudentMarksheets = async (studentId) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/marksheets?studentId=${studentId}`);
+            const token = localStorage.getItem('vps_token');
+            const res = await fetch(`${API_BASE_URL}/api/marksheets?studentId=${studentId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (!res.ok) {
                 console.error("Failed to fetch marksheets");
                 setSavedMarksheets([]);
@@ -155,9 +206,14 @@ const MarkSheet = () => {
 
             const method = editingMarksheetId ? 'PUT' : 'POST';
 
+            const token = localStorage.getItem('vps_token');
+
             await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     student: { id: selectedStudent.id },
                     examType: marksheetData.examType,
@@ -192,7 +248,11 @@ const MarkSheet = () => {
             // Optimistic update FIRST: Remove from UI immediately to feel responsive
             setSavedMarksheets(prev => prev.filter(m => m.id !== id));
 
-            const res = await fetch(`${API_BASE_URL}/api/marksheets/${id}`, { method: 'DELETE' });
+            const token = localStorage.getItem('vps_token');
+            const res = await fetch(`${API_BASE_URL}/api/marksheets/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             console.log("Delete response status:", res.status);
 
             if (res.ok) {
@@ -317,6 +377,9 @@ const MarkSheet = () => {
                                 </div>
                                 <div style={{ marginTop: '5px', fontSize: '14px', color: 'var(--text-muted)' }}>
                                     Total Score: <b>{ms.totalObtained}</b> / {ms.totalMax}
+                                    <button onClick={() => triggerPrint(ms)} className="glass-btn" style={{ marginLeft: '10px', padding: '5px 15px', fontSize: '12px' }}>
+                                        <FaPrint /> Print Card
+                                    </button>
                                 </div>
 
                                 {isAdminOrTeacher && (
@@ -406,8 +469,188 @@ const MarkSheet = () => {
                 </div>
             )
             }
+
+            {/* HIDDEN PRINTABLE REPORT CARD */}
+            <div style={{ display: 'none' }}>
+                <div ref={printRef} style={{
+                    padding: '40px',
+                    fontFamily: '"Times New Roman", Times, serif',
+                    border: '2px solid black',
+                    margin: '20px',
+                    pageBreakInside: 'avoid'
+                }}>
+
+                    {/* Header */}
+                    <div style={{ textAlign: 'center', borderBottom: '2px solid black', paddingBottom: '20px', marginBottom: '20px', pageBreakAfter: 'avoid' }}>
+                        <div style={{ width: '80px', height: '80px', margin: '0 auto', background: '#f0f0f0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>LOGO</div>
+                        <h1 style={{ fontSize: '32px', color: '#880000', margin: '10px 0 5px', textTransform: 'uppercase' }}>Vision Public School</h1>
+                        <p style={{ fontSize: '14px', margin: 0 }}>Complete Address, No 1. 222222, 111111</p>
+                        <p style={{ fontSize: '14px', margin: 0 }}>Phone: 123-456-7890 | Website: www.yourschool.com</p>
+                        <h2 style={{ fontSize: '24px', marginTop: '20px', textDecoration: 'underline', textTransform: 'uppercase' }}>Report Card</h2>
+                        <h3 style={{ fontSize: '18px', fontWeight: 'normal' }}>(Issued by School as per directives of Central Board of Secondary Education)</h3>
+                    </div>
+
+                    {/* Student Details */}
+                    {printableMarksheet && selectedStudent && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', border: '1px solid black', padding: '15px', marginBottom: '20px', pageBreakInside: 'avoid' }}>
+                            <div style={{ flex: 1, lineHeight: '1.8' }}>
+                                <p><strong>Student Name:</strong> {selectedStudent.name}</p>
+                                <p><strong>Father's Name:</strong> {selectedStudent.fatherName || '________________'}</p>
+                                <p><strong>Mother's Name:</strong> {selectedStudent.motherName || '________________'}</p>
+                                <p><strong>Date of Birth:</strong> {selectedStudent.dob || ''}</p>
+                                <p><strong>Residential Address:</strong> {selectedStudent.address || '____________________________________'}</p>
+                            </div>
+                            <div style={{ flex: 1, lineHeight: '1.8' }}>
+                                <p><strong>Admission No:</strong> {selectedStudent.admissionNo}</p>
+                                <p><strong>Class/Section:</strong> {selectedStudent.className} - {selectedStudent.section}</p>
+                                <p><strong>Roll No:</strong> {selectedStudent.rollNo || '____'}</p>
+                                <p><strong>Session:</strong> 2025 - 2026</p>
+                            </div>
+                            <div style={{ width: '120px', height: '140px', border: '1px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                {selectedStudent.profilePhoto ? (
+                                    <img
+                                        src={selectedStudent.profilePhoto.startsWith('http') ? selectedStudent.profilePhoto : `${API_BASE_URL}${selectedStudent.profilePhoto}`}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        alt="Student"
+                                    />
+                                ) : "PHOTO"}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Scholastic Area */}
+                    <div style={{ marginBottom: '20px', pageBreakInside: 'avoid' }}>
+                        <h3 style={{ background: '#eee', padding: '5px', border: '1px solid black', borderBottom: 'none', margin: 0 }}>Part-1 : Scholastic Area</h3>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', textAlign: 'center' }}>
+                            <thead>
+                                <tr style={{ background: '#f9f9f9' }}>
+                                    <th style={{ border: '1px solid black', padding: '10px' }}>Subject Code</th>
+                                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Subject Name</th>
+                                    <th style={{ border: '1px solid black', padding: '10px' }}>Max Marks</th>
+                                    <th style={{ border: '1px solid black', padding: '10px' }}>Marks Obtained</th>
+                                    <th style={{ border: '1px solid black', padding: '10px' }}>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {printableMarksheet?.subjects?.map((sub, i) => {
+                                    const percentage = (sub.marksObtained / sub.maxMarks) * 100;
+                                    return (
+                                        <tr key={i}>
+                                            <td style={{ border: '1px solid black', padding: '8px' }}>{100 + i}</td>
+                                            <td style={{ border: '1px solid black', padding: '8px', textAlign: 'left', fontWeight: 'bold' }}>{sub.subjectName}</td>
+                                            <td style={{ border: '1px solid black', padding: '8px' }}>{sub.maxMarks}</td>
+                                            <td style={{ border: '1px solid black', padding: '8px' }}>{sub.marksObtained}</td>
+                                            <td style={{ border: '1px solid black', padding: '8px' }}>{getGrade(percentage)}</td>
+                                        </tr>
+                                    );
+                                })}
+                                <tr style={{ fontWeight: 'bold', background: '#eee' }}>
+                                    <td colSpan="2" style={{ border: '1px solid black', padding: '8px', textAlign: 'right' }}>GRAND TOTAL</td>
+                                    <td style={{ border: '1px solid black', padding: '8px' }}>{printableMarksheet?.totalMax}</td>
+                                    <td style={{ border: '1px solid black', padding: '8px' }}>{printableMarksheet?.totalObtained}</td>
+                                    <td style={{ border: '1px solid black', padding: '8px' }}>{printableMarksheet?.percentage}%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Co-Scholastic Area */}
+                    <div style={{ marginBottom: '20px', pageBreakInside: 'avoid' }}>
+                        <h3 style={{ background: '#eee', padding: '5px', border: '1px solid black', borderBottom: 'none', margin: 0 }}>Part-2 : Co-Scholastic Activities</h3>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black' }}>
+                            <thead>
+                                <tr style={{ background: '#f9f9f9', textAlign: 'center' }}>
+                                    <th style={{ border: '1px solid black', padding: '8px' }}>Activity</th>
+                                    <th style={{ border: '1px solid black', padding: '8px' }}>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style={{ border: '1px solid black', padding: '8px' }}>Work Education</td>
+                                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center' }}>A</td>
+                                </tr>
+                                <tr>
+                                    <td style={{ border: '1px solid black', padding: '8px' }}>Health & Physical Education</td>
+                                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center' }}>A</td>
+                                </tr>
+                                <tr>
+                                    <td style={{ border: '1px solid black', padding: '8px' }}>Discipline</td>
+                                    <td style={{ border: '1px solid black', padding: '8px', textAlign: 'center' }}>A</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Remarks & Signatures */}
+                    <div style={{ marginTop: '20px', pageBreakInside: 'avoid' }}>
+                        <div style={{ border: '1px solid black', padding: '10px', marginBottom: '40px' }}>
+                            <strong>Class Teacher's Remarks:</strong> Excellent performance. Keep it up!
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '60px', padding: '0 20px' }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ borderBottom: '1px solid black', width: '150px', marginBottom: '5px' }}></div>
+                                <p>Signature of Class Teacher</p>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ borderBottom: '1px solid black', width: '150px', marginBottom: '5px' }}></div>
+                                <p>Signature of Principal</p>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ borderBottom: '1px solid black', width: '150px', marginBottom: '5px' }}></div>
+                                <p>Signature of Parent</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ textAlign: 'center', marginTop: '40px', fontSize: '12px' }}>
+                        <p><strong>Result Date:</strong> {new Date().toLocaleDateString()}</p>
+                    </div>
+
+                </div>
+            </div>
+
         </div >
     );
 };
 
-export default MarkSheet;
+
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null, errorInfo: null };
+    }
+
+    static getDerivedStateFromError(error) {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error("MarkSheet Error Boundary Caught:", error, errorInfo);
+        this.setState({ error, errorInfo });
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div style={{ padding: '20px', color: 'red', margin: '20px', border: '1px solid red', borderRadius: '5px' }}>
+                    <h2>Something went wrong in MarkSheet.</h2>
+                    <p>Please check the console for more details.</p>
+                    <details style={{ whiteSpace: 'pre-wrap', marginTop: '10px' }}>
+                        {this.state.error && this.state.error.toString()}
+                        <br />
+                        {this.state.errorInfo && this.state.errorInfo.componentStack}
+                    </details>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
+const WrappedMarkSheet = () => (
+    <ErrorBoundary>
+        <MarkSheet />
+    </ErrorBoundary>
+);
+
+export default WrappedMarkSheet;
