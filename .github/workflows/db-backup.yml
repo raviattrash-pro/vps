@@ -1,4 +1,4 @@
-name: Daily MySQL Sync
+name: Aiven to TiDB Cloud Sync
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch: 
 
 jobs:
-  backup-and-restore:
+  backup-and-sync:
     runs-on: ubuntu-latest
     steps:
       - name: Install MySQL Client
@@ -14,32 +14,37 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mysql-client
 
-      - name: Dump and Sync
+      - name: 1. Dump from Aiven
         env:
           S_HOST: ${{ secrets.SOURCE_HOST }}
           S_PORT: ${{ secrets.SOURCE_PORT }}
           S_USER: ${{ secrets.SOURCE_USER }}
           S_PASS: ${{ secrets.SOURCE_PASS }}
           S_DB: ${{ secrets.SOURCE_DB }}
-          # If you don't have a second DB yet, we will just 'test' the dump first
+        run: |
+          # Use --column-statistics=0 for compatibility between different MySQL versions
+          mysqldump -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" \
+            --column-statistics=0 \
+            --set-gtid-purged=OFF \
+            --no-tablespaces \
+            --databases "$S_DB" > backup.sql
+          echo "Dump from Aiven complete."
+
+      - name: 2. Save Downloadable Artifact (Option 1)
+        uses: actions/upload-artifact@v4
+        with:
+          name: aiven-backup-${{ github.run_id }}
+          path: backup.sql
+          retention-days: 5
+
+      - name: 3. Sync to TiDB Cloud (Option 2)
+        env:
           T_HOST: ${{ secrets.TARGET_HOST }}
+          T_PORT: ${{ secrets.TARGET_PORT }}
           T_USER: ${{ secrets.TARGET_USER }}
           T_PASS: ${{ secrets.TARGET_PASS }}
           T_DB: ${{ secrets.TARGET_DB }}
         run: |
-          # 1. Export from Aiven Primary
-          # We use --column-statistics=0 for compatibility
-          mysqldump -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" \
-            --column-statistics=0 \
-            --set-gtid-purged=OFF \
-            --databases "$S_DB" > backup.sql
-          
-          echo "Backup successful! File 'backup.sql' created."
-
-          # 2. Import into Secondary DB (Optional: only if TARGET secrets are set)
-          if [ ! -z "$T_HOST" ]; then
-            mysql -h "$T_HOST" -u "$T_USER" -p"$T_PASS" "$T_DB" < backup.sql
-            echo "Sync to Target DB successful!"
-          else
-            echo "No Target DB defined, skipping sync."
-          fi
+          # TiDB Cloud requires SSL by default
+          mysql -h "$T_HOST" -P "$T_PORT" -u "$T_USER" -p"$T_PASS" --ssl-mode=REQUIRED "$T_DB" < backup.sql
+          echo "Sync to TiDB Cloud complete!"
