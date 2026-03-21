@@ -1,0 +1,40 @@
+name: Daily MySQL Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every night at midnight UTC
+  workflow_dispatch: # Allows you to click a button to run it manually
+
+jobs:
+  backup-and-restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install MySQL Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
+
+      - name: Dump and Sync
+        env:
+          # Source Credentials
+          S_HOST: ${{ secrets.SOURCE_HOST }}
+          S_USER: ${{ secrets.SOURCE_USER }}
+          S_PASS: ${{ secrets.SOURCE_PASS }}
+          S_DB: ${{ secrets.SOURCE_DB }}
+          S_PORT: ${{ secrets.SOURCE_PORT }}
+          # Target Credentials
+          T_HOST: ${{ secrets.TARGET_HOST }}
+          T_USER: ${{ secrets.TARGET_USER }}
+          T_PASS: ${{ secrets.TARGET_PASS }}
+          T_DB: ${{ secrets.TARGET_DB }}
+        run: |
+          # 1. Export from Aiven Primary
+          # We use --set-gtid-purged=OFF because Aiven (and most clouds) don't allow GTID access
+          mysqldump -h $S_HOST -P $S_PORT -u $S_USER -p$S_PASS \
+            --column-statistics=0 \
+            --set-gtid-purged=OFF \
+            --databases $S_DB > backup.sql
+
+          # 2. Import into Secondary DB
+          # Note: This will overwrite existing tables in the target DB
+          mysql -h $T_HOST -u $T_USER -p$T_PASS $T_DB < backup.sql

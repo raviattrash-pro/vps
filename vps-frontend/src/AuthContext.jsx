@@ -8,8 +8,13 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const storedUser = localStorage.getItem('vps_user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+        if (storedUser && storedUser !== 'undefined' && storedUser !== 'null') {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (error) {
+                console.error('Failed to parse stored user data:', error);
+                localStorage.removeItem('vps_user');
+            }
         }
     }, []);
 
