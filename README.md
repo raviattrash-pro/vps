@@ -110,6 +110,7 @@ It includes:
 - Render for backend hosting
 - Cloudflare Worker for API routing and backend failover
 - Cloudinary for media uploads
+- UptimeRobot for external uptime monitoring of frontend, Worker, and backend URLs
 
 ---
 
@@ -128,6 +129,11 @@ flowchart LR
     R1 --> C["Cloudinary"]
     R2 --> C
     R3 --> C
+    M["UptimeRobot"] -. monitors .-> V
+    M -. monitors .-> W
+    M -. monitors .-> R1
+    M -. monitors .-> R2
+    M -. monitors .-> R3
 ```
 
 ### HLD Notes
@@ -205,6 +211,7 @@ Vercel frontend -> Cloudflare Worker -> Render backend pool -> shared database
 - The frontend now normalizes trailing slashes automatically.
 - Vercel uses SPA rewrites so routes like `/admin` work on refresh.
 - The Worker is responsible for retrying healthy Render nodes when one backend is down.
+- Important public URLs are monitored through UptimeRobot.
 
 ---
 
@@ -284,6 +291,27 @@ Typical Worker responsibilities:
 - returning `x-backend-used` for easy debugging
 
 If you add more Render services later, update only the backend pool inside the Worker config and redeploy the Worker.
+
+---
+
+## Monitoring
+
+Production URLs are monitored in UptimeRobot:
+
+- Vercel frontend
+- Cloudflare Worker API entrypoint
+- Render backend service URLs
+
+Monitoring dashboard:
+
+- [UptimeRobot Dashboard](https://dashboard.uptimerobot.com/monitors)
+
+Recommended checks:
+
+- homepage availability
+- `/api/auth/login` reachability through Worker
+- direct backend health endpoint such as `/healthz`
+- response-time alerting for slow backend nodes
 
 ---
 

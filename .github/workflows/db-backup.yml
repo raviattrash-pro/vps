@@ -3,18 +3,23 @@ name: Aiven to TiDB Cloud Sync
 on:
   schedule:
     - cron: '0 0 * * *'
-  workflow_dispatch: 
+  workflow_dispatch:
+
+concurrency:
+  group: db-backup-sync
+  cancel-in-progress: false
 
 jobs:
   backup-and-sync:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Install MySQL Client
+      - name: Install MySQL client and zip tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y mysql-client
+          sudo apt-get install -y mysql-client zip
 
-      - name: 1. Dump from Aiven
+      - name: Dump SQL from Aiven
         env:
           S_HOST: ${{ secrets.SOURCE_HOST }}
           S_PORT: ${{ secrets.SOURCE_PORT }}
@@ -22,22 +27,65 @@ jobs:
           S_PASS: ${{ secrets.SOURCE_PASS }}
           S_DB: ${{ secrets.SOURCE_DB }}
         run: |
-          # Use --column-statistics=0 for compatibility between different MySQL versions
-          mysqldump -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" \
+          mysqldump \
+            -h "$S_HOST" \
+            -P "$S_PORT" \
+            -u "$S_USER" \
+            -p"$S_PASS" \
+            --single-transaction \
+            --quick \
             --column-statistics=0 \
             --set-gtid-purged=OFF \
             --no-tablespaces \
-            --databases "$S_DB" > backup.sql
-          echo "Dump from Aiven complete."
+            "$S_DB" > backup.sql
 
-      - name: 2. Save Downloadable Artifact (Option 1)
+          test -s backup.sql
+          gzip -f backup.sql
+          echo "SQL dump from Aiven complete."
+
+      - name: Export CSV files from Aiven
+        env:
+          S_HOST: ${{ secrets.SOURCE_HOST }}
+          S_PORT: ${{ secrets.SOURCE_PORT }}
+          S_USER: ${{ secrets.SOURCE_USER }}
+          S_PASS: ${{ secrets.SOURCE_PASS }}
+          S_DB: ${{ secrets.SOURCE_DB }}
+        run: |
+          mkdir -p csv
+
+          mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" -Nse \
+            "SELECT table_name FROM information_schema.tables WHERE table_schema='$S_DB' ORDER BY table_name;" \
+            > tables.txt
+
+          while read -r table; do
+            [ -n "$table" ] || continue
+            echo "Exporting $table to CSV..."
+
+            mysql -h "$S_HOST" -P "$S_PORT" -u "$S_USER" -p"$S_PASS" \
+              --batch --raw --silent \
+              -e "SELECT * FROM \`$S_DB\`.\`$table\`" \
+              | awk 'BEGIN { OFS="," } { gsub(/"/, "\"\"", $0); print }' \
+              | sed 's/\t/,/g' > "csv/${table}.csv"
+          done < tables.txt
+
+          zip -r backup-csv.zip csv
+          echo "CSV export complete."
+
+      - name: Upload SQL backup artifact
         uses: actions/upload-artifact@v4
         with:
-          name: aiven-backup-${{ github.run_id }}
-          path: backup.sql
+          name: aiven-sql-backup-${{ github.run_id }}
+          path: backup.sql.gz
           retention-days: 5
 
-      - name: 3. Sync to TiDB Cloud (Option 2)
+      - name: Upload CSV backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aiven-csv-backup-${{ github.run_id }}
+          path: backup-csv.zip
+          retention-days: 5
+
+      - name: Sync SQL backup to TiDB Cloud
         env:
           T_HOST: ${{ secrets.TARGET_HOST }}
           T_PORT: ${{ secrets.TARGET_PORT }}
@@ -45,6 +93,12 @@ jobs:
           T_PASS: ${{ secrets.TARGET_PASS }}
           T_DB: ${{ secrets.TARGET_DB }}
         run: |
-          # TiDB Cloud requires SSL by default
-          mysql -h "$T_HOST" -P "$T_PORT" -u "$T_USER" -p"$T_PASS" --ssl-mode=REQUIRED "$T_DB" < backup.sql
+          gunzip -c backup.sql.gz | mysql \
+            -h "$T_HOST" \
+            -P "$T_PORT" \
+            -u "$T_USER" \
+            -p"$T_PASS" \
+            --ssl-mode=REQUIRED \
+            "$T_DB"
+
           echo "Sync to TiDB Cloud complete!"
