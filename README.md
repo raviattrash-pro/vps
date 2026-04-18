@@ -129,6 +129,10 @@ flowchart LR
     R1 --> C["Cloudinary"]
     R2 --> C
     R3 --> C
+    DB --> G["GitHub Actions Backup Workflow"]
+    G --> S["SQL Backup Artifact (.sql.gz)"]
+    G --> X["CSV Backup Artifact (.csv.zip)"]
+    G --> T["TiDB Cloud Sync"]
     M["UptimeRobot"] -. monitors .-> V
     M -. monitors .-> W
     M -. monitors .-> R1
@@ -142,6 +146,7 @@ flowchart LR
 - Backend traffic is routed through a Cloudflare Worker.
 - Multiple Render services can serve the same API.
 - All backend instances must use the same shared database and matching environment configuration.
+- GitHub Actions creates dual database backups as SQL and CSV artifacts, and syncs SQL data to TiDB Cloud.
 
 ---
 
@@ -193,6 +198,20 @@ flowchart TD
     E --> F{"5xx / timeout?"}
     F -- Yes --> G["Try next healthy backend"]
     F -- No --> H["Return API response with x-backend-used header"]
+```
+
+### Backup Flow
+
+```mermaid
+flowchart TD
+    A["Scheduled GitHub Actions trigger"] --> B["Connect to Aiven / source DB"]
+    B --> C["Create SQL dump"]
+    C --> D["Compress to .sql.gz"]
+    B --> E["Export tables as CSV files"]
+    E --> F["Zip CSV folder to .csv.zip"]
+    D --> G["Upload SQL artifact"]
+    F --> H["Upload CSV artifact"]
+    D --> I["Import SQL into TiDB Cloud"]
 ```
 
 ---
