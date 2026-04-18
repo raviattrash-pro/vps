@@ -1,154 +1,351 @@
+# Vision Public School ERP
+
 <div align="center">
-  <img src="https://api.dicebear.com/9.x/shapes/svg?seed=VPS&backgroundColor=0f4c3a" width="120" height="120" alt="VPS Logo" />
-  <h1>🏫 Vision Public School (VPS)</h1>
-  <p><strong>The All-in-One Enterprise School Management System</strong></p>
+  <img src="https://api.dicebear.com/9.x/shapes/svg?seed=VPS&backgroundColor=0f4c3a" width="110" height="110" alt="VPS logo" />
 
-  <div>
-    <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-    <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot" />
-    <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
-  </div>
+  <h3>Modern school management platform for students, teachers, staff, and administrators</h3>
 
-  <br />
+  <p>
+    <img src="https://img.shields.io/badge/Frontend-React%20%2B%20Vite-1f7a5c?style=for-the-badge" alt="Frontend badge" />
+    <img src="https://img.shields.io/badge/Backend-Spring%20Boot-2f855a?style=for-the-badge" alt="Backend badge" />
+    <img src="https://img.shields.io/badge/Database-MySQL%20Compatible-285e61?style=for-the-badge" alt="Database badge" />
+    <img src="https://img.shields.io/badge/Deploy-Vercel%20%2B%20Render-0f4c3a?style=for-the-badge" alt="Deploy badge" />
+  </p>
 
-  ---
-
-  [Explore Features](#-features) • [User Guide](#-user-operations-manual) • [Setup Guide](#-developer-setup) • [Support](#-support--faq)
-
-  ---
+  <p>
+    <a href="#overview">Overview</a> |
+    <a href="#screenshots">Screenshots</a> |
+    <a href="#high-level-design-hld">HLD</a> |
+    <a href="#low-level-design-lld">LLD</a> |
+    <a href="#quick-start">Quick Start</a> |
+    <a href="#deployment-flow">Deployment</a>
+  </p>
 </div>
 
-<br />
+---
 
-## 🌟 Overview
-Vision Public School (VPS) is a high-performance, cloud-native ERP system designed to digitize every aspect of school administration. Built with a **modern glassmorphism UI**, it ensures that students, parents, faculty, and management stay connected through a unified digital ecosystem.
+## Overview
+
+Vision Public School ERP is a full-stack school management system that brings academic, administrative, finance, and engagement workflows into one application.
+
+It includes:
+
+- role-based dashboards for `ADMIN`, `TEACHER`, `STUDENT`, and staff users
+- attendance, marksheet, syllabus, homework, notices, payments, certificates, transport, blog, and gallery modules
+- JWT-based authentication with a React frontend and Spring Boot backend
+- cloud deployment using `Vercel` for frontend and `Render` for backend
+- Cloudflare Worker-based edge proxy and failover routing for backend availability
 
 ---
 
-## 📸 Interface Previews
+## Why This Project
+
+- Schools often use disconnected tools for attendance, fee tracking, notices, marks, and content.
+- This project brings those workflows into one UI and one API.
+- It is designed to be practical for real deployment, not just a demo CRUD app.
+
+---
+
+## Core Modules
+
+| Module | Highlights |
+| --- | --- |
+| Authentication | JWT login, role-aware navigation, protected routes |
+| Student Management | admissions, profile records, class/section mapping |
+| Academics | homework, syllabus, study material, marksheets, analytics |
+| Communication | notices, Q&A, live class, blog, poll system |
+| Operations | attendance, visitors, transport, health profile, inventory |
+| Finance | payment submission, verification flow, reporting |
+| Media | gallery, uploads, Cloudinary-backed media handling |
+
+---
+
+## Screenshots
 
 <details open>
-<summary><strong>🔍 Click to Expand: System Dashboards</strong></summary>
+<summary><strong>Open screenshot gallery</strong></summary>
 
-| Student Hub | Admin Command Center |
-| :---: | :---: |
-| ![Student Dashboard](assets/sop/student_dashboard.png) | ![Admin Users](assets/sop/admin_users.png) |
+| Login | Student Dashboard |
+| --- | --- |
+| ![Login](assets/sop/login.png) | ![Student Dashboard](assets/sop/student_dashboard.png) |
 
-| Faculty Portal | Finance Hub |
-| :---: | :---: |
-| ![Teacher Dashboard](assets/sop/teacher_dashboard.png) | ![Accountant Reports](assets/sop/accountant_reports.png) |
+| Teacher Dashboard | Admin Dashboard |
+| --- | --- |
+| ![Teacher Dashboard](assets/sop/teacher_dashboard.png) | ![Admin Users](assets/sop/admin_users.png) |
+
+| Payment Flow | Notice Board |
+| --- | --- |
+| ![Fee Payment](assets/sop/fee_payment_qr.png) | ![Notice Board](assets/sop/notice_board.png) |
+
+| Homework Flow | Finance Reports |
+| --- | --- |
+| ![Homework Assignment](assets/sop/homework_assignment.png) | ![Accountant Reports](assets/sop/accountant_reports.png) |
 
 </details>
 
 ---
 
-## 🛠️ Infrastructure & Stack
+## Tech Stack
 
-### **Service Providers**
-| Component | Provider | Role | Status |
-| :--- | :--- | :--- | :--- |
-| **Backend** | Render | Spring Boot API | Always On (via Pinger) |
-| **Frontend** | Vercel | React/Vite | Instant Load |
-| **Primary DB** | Aiven | MySQL (Write) | Managed & Secure |
-| **Secondary DB** | TiDB Cloud | MySQL (Read/Backup) | Auto-Synced Daily |
-| **Artifacts** | GitHub | SQL Backups | Stored for 5 Days |
+### Frontend
 
-### **Architecture Flow**
+- React 18
+- Vite
+- React Router
+- Framer Motion
+- Recharts
+- Tailwind CSS
+
+### Backend
+
+- Spring Boot
+- Spring Security
+- JPA / Hibernate
+- JWT authentication
+- MySQL-compatible database
+
+### Infrastructure
+
+- Vercel for frontend hosting
+- Render for backend hosting
+- Cloudflare Worker for API routing and backend failover
+- Cloudinary for media uploads
+
+---
+
+## High Level Design (HLD)
+
 ```mermaid
-graph LR
-    User((User)) --> Web[Frontend - Vercel]
-    Web --> API[Backend - Render]
-    API --> DB[(Aiven MySQL)]
-    API --> CDN[Cloudinary Media]
-    DB -.-> TiDB[(TiDB Backup)]
+flowchart LR
+    U["Users"] --> V["Vercel Frontend"]
+    V --> W["Cloudflare Worker"]
+    W --> R1["Render Backend A"]
+    W --> R2["Render Backend B"]
+    W --> R3["Render Backend C"]
+    R1 --> DB[("Shared MySQL-Compatible DB")]
+    R2 --> DB
+    R3 --> DB
+    R1 --> C["Cloudinary"]
+    R2 --> C
+    R3 --> C
+```
+
+### HLD Notes
+
+- Frontend stays stable behind one public domain.
+- Backend traffic is routed through a Cloudflare Worker.
+- Multiple Render services can serve the same API.
+- All backend instances must use the same shared database and matching environment configuration.
+
+---
+
+## Low Level Design (LLD)
+
+```mermaid
+flowchart TD
+    A["Browser Request"] --> B["React Route"]
+    B --> C["AuthContext"]
+    C --> D["Fetch Wrapper"]
+    D --> E["Cloudflare Worker"]
+    E --> F{"Backend Selection"}
+    F --> G["Render Node"]
+    G --> H["Spring Security Filter Chain"]
+    H --> I["JWT Authentication Filter"]
+    I --> J["Controller Layer"]
+    J --> K["Service / Repository Layer"]
+    K --> L[("Database")]
+```
+
+### Authentication Sequence
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant FE as Frontend
+    participant CF as Cloudflare Worker
+    participant API as Spring Boot API
+    participant DB as Database
+
+    User->>FE: Submit admissionNo + password
+    FE->>CF: POST /api/auth/login
+    CF->>API: Forward request
+    API->>DB: Find user and verify password
+    DB-->>API: User record
+    API-->>CF: JWT + user payload
+    CF-->>FE: Response
+    FE->>FE: Save token and user in localStorage
+```
+
+### Backend Request Routing
+
+```mermaid
+flowchart TD
+    A["Incoming request"] --> B{"OPTIONS request?"}
+    B -- Yes --> C["Return CORS response"]
+    B -- No --> D["Choose backend from pool"]
+    D --> E["Proxy request to selected Render node"]
+    E --> F{"5xx / timeout?"}
+    F -- Yes --> G["Try next healthy backend"]
+    F -- No --> H["Return API response with x-backend-used header"]
 ```
 
 ---
 
-## 🧑‍💻 User Operations Manual
+## Current Deployment Flow
 
-<details>
-<summary><strong>🎓 For Students & Parents</strong></summary>
+### Production Routing
 
-### **Operations**
-1.  **Fee Payment**: Scan the QR code in the **Fees** section, pay via UPI, and upload the receipt.
-2.  **Academic tracking**: Access **Homework**, **Syllabus**, and **Study Materials** from the sidebar.
-3.  **Live Class**: Click the green **Join** button when a session is active.
-4.  **Results**: Instantly download marksheets from the **Marks** tab.
+```text
+Vercel frontend -> Cloudflare Worker -> Render backend pool -> shared database
+```
 
-### **Visual Guide**
-![Fee Payment](assets/sop/fee_payment_qr.png)
-*Typical payment process for students*
+### Important Production Notes
 
-</details>
-
-<details>
-<summary><strong>👩‍🏫 For Faculty & Teachers</strong></summary>
-
-### **Operations**
-1.  **Attendance**: Toggle **P/A** for your assigned class and click **Save**.
-2.  **Assigning Content**: Use the **Create Content** panel to post homework and syllabus.
-3.  **Virtual Classroom**: Enter a topic and click **Go Live** to start a session.
-
-### **Visual Guide**
-![Homework Assignment](assets/sop/homework_assignment.png)
-*Homework creation portal for teachers*
-
-</details>
-
-<details>
-<summary><strong>🛠️ For Management & Staff</strong></summary>
-
-### **Operations**
-1.  **Finance**: Verify student payments and generate class-wise collection reports.
-2.  **Notice Board**: Broadcast urgent school-wide announcements.
-3.  **User Management**: Register new students and staff members.
-
-### **Visual Guide**
-![Notice Board](assets/sop/notice_board.png)
-*Central notice board for school-wide communication*
-
-</details>
+- `VITE_API_BASE_URL` should not end with a trailing slash.
+- The frontend now normalizes trailing slashes automatically.
+- Vercel uses SPA rewrites so routes like `/admin` work on refresh.
+- The Worker is responsible for retrying healthy Render nodes when one backend is down.
 
 ---
 
-## 🚀 Developer Setup
+## Project Structure
 
-<details>
-<summary><strong>⚙️ Requirements & Installation</strong></summary>
+```text
+.
+|-- assets/
+|   `-- sop/                 # screenshots for documentation
+|-- vps-frontend/            # React + Vite frontend
+|-- vps-backend/             # Spring Boot backend
+|-- DEPLOY.md
+|-- FULL_SYSTEM_DOCUMENTATION.md
+|-- MONITORING.md
+|-- SOP.md
+|-- TECHNICAL_ARCHITECTURE.md
+`-- USER_MANUAL.md
+```
 
-> [!IMPORTANT]
-> Ensure you have Node.js (v18+) and JDK (v17+) installed before proceeding.
+---
 
-### **1. Configure Environment**
-Rename the sample env files and fill in your secrets:
-*   **Backend**: Edit `src/main/resources/application.properties` (MySQL/Cloudinary/JWT).
-*   **Frontend**: Create `.env` with `VITE_API_BASE_URL`.
+## Quick Start
 
-### **2. Local Execution**
+### Prerequisites
+
+- Node.js 18+
+- npm
+- Java 17+
+- Maven
+- MySQL-compatible database
+
+### Frontend
+
 ```bash
-# Start Backend
-cd vps-backend && mvn spring-boot:run
-
-# Start Frontend
-cd vps-frontend && npm install && npm run dev
+cd vps-frontend
+npm install
+npm run dev
 ```
-</details>
+
+### Backend
+
+```bash
+cd vps-backend
+mvn spring-boot:run
+```
+
+### Frontend Environment
+
+Create a `.env` file in `vps-frontend`:
+
+```env
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+### Backend Environment
+
+Configure runtime secrets for:
+
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
 
 ---
 
-## 🆘 Support & FAQ
+## Cloudflare Worker Setup
 
-> [!TIP]
-> Always use Chrome or Edge for the smoothest experience with interactive charts and video sessions.
+This project supports multiple Render backends behind a single Worker URL.
 
-*   **Q: How do I reset my password?**  
-    Contact the school Admin to trigger a secure reset from the dashboard.
-*   **Q: Where can I Find SQL Backups?**  
-    Backups are stored in the GitHub Artifacts section of this repository for up to 5 days.
+Typical Worker responsibilities:
+
+- CORS handling for the Vercel frontend
+- proxying API traffic to Render
+- passive failover when a backend is unavailable
+- returning `x-backend-used` for easy debugging
+
+If you add more Render services later, update only the backend pool inside the Worker config and redeploy the Worker.
 
 ---
+
+## Local Development Tips
+
+- Use the frontend directly against local backend during development.
+- Keep one shared staging database if you want to test multi-node Render behavior.
+- Verify login, protected routes, and route refresh after deployment.
+- Use browser DevTools and inspect the `x-backend-used` response header to identify which Render node served the request.
+
+---
+
+## Security Notes
+
+Before production hardening, review:
+
+- JWT secret management
+- seeded default accounts
+- route-level authorization on admin APIs
+- password reset restrictions
+- public upload exposure
+
+Security review is strongly recommended before scaling usage.
+
+---
+
+## Documentation Map
+
+- [DEPLOY.md](DEPLOY.md)
+- [FULL_SYSTEM_DOCUMENTATION.md](FULL_SYSTEM_DOCUMENTATION.md)
+- [MONITORING.md](MONITORING.md)
+- [SOP.md](SOP.md)
+- [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)
+- [USER_MANUAL.md](USER_MANUAL.md)
+- [DEPLOYMENT_NOTES.md](DEPLOYMENT_NOTES.md)
+- [CODE_CHANGES_2026-04-18.md](CODE_CHANGES_2026-04-18.md)
+
+---
+
+## Roadmap Ideas
+
+- active health-check endpoint for Worker routing
+- admin audit logs
+- stronger authorization rules per endpoint
+- password reset and forced password-change workflow
+- CI pipeline for frontend and backend deployment verification
+- observability dashboard for multi-node backend health
+
+---
+
+## Maintainer Notes
+
+If you are deploying this project in production:
+
+- keep frontend on Vercel
+- keep Worker as the single API entry point
+- keep backend nodes stateless
+- keep all backend nodes on the same code version
+- keep all backend nodes on the same database and environment configuration
+
+---
+
 <div align="center">
-  <p><i>Vision Public School - Excellence in Every Action</i></p>
+  <sub>Built for a real school workflow, with production deployment and failover in mind.</sub>
 </div>
